@@ -53,7 +53,9 @@ Android debug APK for arm64 devices.
 1. Open GitHub Actions.
 2. Run **Dev Builds** manually, or push to `main`, `master`, `develop`, or `release/**`.
 3. Download the artifact named `temu-shopping-lists-android-debug-arm64`.
-4. Install the APK on an Android device with debug/unknown-app installs enabled.
+4. If GitHub Actions artifact storage is full, open **Releases** and download
+   the APK from the newest `Android debug APK ...` prerelease instead.
+5. Install the APK on an Android device with debug/unknown-app installs enabled.
 
 The workflow runs `typecheck`, unit tests, lint, web build, regenerates the
 Tauri Android project, verifies the `ACTION_SEND` text share target, then builds

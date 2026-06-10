@@ -25,7 +25,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   android-debug:
@@ -137,9 +137,31 @@ jobs:
         run: pnpm exec tauri android build --ci --debug --apk -t aarch64
 
       - name: Upload debug APK
+        id: upload-debug-apk
+        continue-on-error: true
         uses: actions/upload-artifact@v7
         with:
           name: temu-shopping-lists-android-debug-arm64
           path: src-tauri/gen/android/app/build/outputs/**/*.apk
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish debug APK fallback release
+        if: steps.upload-debug-apk.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t apk_files < <(find src-tauri/gen/android/app/build/outputs -type f -name "*.apk" | sort)
+          if [ "${#apk_files[@]}" -eq 0 ]; then
+            echo "No APK file found for fallback release" >&2
+            exit 1
+          fi
+
+          fallback_tag="android-debug-${GITHUB_RUN_NUMBER}"
+          gh release create "$fallback_tag" "${apk_files[@]}" \
+            --title "Android debug APK ${GITHUB_RUN_NUMBER}" \
+            --notes "Debug APK fallback for ${GITHUB_SHA}. Created because Actions artifact upload failed, usually due to artifact storage quota." \
+            --prerelease \
+            --target "$GITHUB_SHA"
