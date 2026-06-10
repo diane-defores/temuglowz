@@ -122,6 +122,48 @@ body {
   flex-wrap: wrap;
 }
 
+.split-row {
+  justify-content: space-between;
+}
+
+.session-create,
+.session-edit-row {
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.session-create {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.7fr) minmax(14rem, 1.3fr) auto;
+}
+
+.session-edit-row {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) auto;
+}
+
+.session-url-input {
+  width: 100%;
+}
+
+.zoom-control {
+  display: inline-grid;
+  gap: 0.25rem;
+  min-width: 12rem;
+}
+
+.danger-button {
+  background: #991b1b;
+  border-color: #991b1b;
+}
+
+@media (max-width: 720px) {
+  .session-create,
+  .session-edit-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 input,
 textarea,
 select,

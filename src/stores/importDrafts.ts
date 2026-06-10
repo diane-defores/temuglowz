@@ -44,6 +44,17 @@ export const useImportDraftsStore = defineStore("importDrafts", {
       return draft;
     },
 
+    useWebviewUrl(rawUrl: string): ImportDraft {
+      const parsed = parseSharedImportText(rawUrl);
+      if (!parsed) {
+        throw new Error("invalid Temu product URL from WebView");
+      }
+
+      const draft = this.createDraftFromParsed("webview", rawUrl, parsed);
+      this.draft = draft;
+      return draft;
+    },
+
     useClipboardText(rawText: string): ImportDraft {
       return this.useSharedText(rawText);
     },

@@ -10,6 +10,7 @@ import { validateProductSnapshotInput } from "@/lib/validators";
 import type {
   ProductPriceSnapshot,
   ProductSnapshot,
+  ImportSource,
   SnapshotMetadataStatus,
 } from "@/types/domain";
 
@@ -68,6 +69,7 @@ export const useProductSnapshotsStore = defineStore("productSnapshots", {
       quantity?: number;
       price?: ProductPriceSnapshot;
       metadataStatus?: SnapshotMetadataStatus;
+      source?: ImportSource;
     }): ProductSnapshot {
       const parsed = normalizeTemuProductUrl(params.canonicalUrl);
       if (!parsed) {
@@ -79,7 +81,7 @@ export const useProductSnapshotsStore = defineStore("productSnapshots", {
         productId: parsed.productId,
         originalUrl: params.originalUrl,
         canonicalUrl: params.canonicalUrl,
-        source: "manual",
+        source: params.source ?? "manual",
         title: params.title.trim(),
         notes: (params.notes ?? "").trim(),
         imageUrl: params.imageUrl?.trim(),

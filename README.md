@@ -10,12 +10,14 @@ This project is a Vue 3 + Vite + TypeScript + Tauri 2 scaffold for saving Temu p
 - Duplicate detection for canonical URL / product id
 - Export serialization for backup payloads
 - Android share bridge placeholders (manifest/config/Kotlin contract), without stealth
+- Optional in-app Temu shopping sessions with app-owned WebView controls
 
 ## Out of scope
 
 - Temu cart import promises
 - Any anti-fingerprint / stealth WebView behavior
 - Cookies, session dumps, or credentials storage
+- Claims of partnership, certification, or authorization by Temu
 
 ## Install & run
 
@@ -90,6 +92,19 @@ The app includes a typed command path for a native share bridge:
 - `src-tauri/android/AndroidManifest.share-intent.xml` documents the required `ACTION_SEND` intent filter
 - `src-tauri/android/ShareIntentBridge.kt` documents parsing of shared text on Android (placeholder)
 
+## In-app Temu shopping sessions
+
+The app can expose a Temu shopping workspace on Android: users create named
+shopping sessions, open Temu in native WebViews, use the app bottom bar for
+navigation/readability controls, and capture the current product URL into the
+existing import/list flow.
+
+This is an independent user tool. It does not imply a partnership with Temu,
+does not automate cart scraping, and does not sync or export Temu cookies,
+localStorage, IndexedDB, passwords, or account sessions. Saved product/list data
+can sync through the premium sync path only after the existing entitlement and
+identity gates allow it.
+
 ## Data policy
 
 - Shared URLs and draft text are validated and sanitized.
@@ -104,5 +119,6 @@ The app includes a typed command path for a native share bridge:
 See:
 
 - `shipflow_data/workflow/test-checklists/temu-shopping-lists-android.md`
+- `shipflow_data/workflow/test-checklists/temu-shopping-webview-sessions.md`
 - `shipflow_data/workflow/test-checklists/temu-shopping-lists-entitlements.md`
 - `shipflow_data/workflow/specs/temu-shopping-lists-android-app.md`

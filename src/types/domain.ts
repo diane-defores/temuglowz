@@ -7,7 +7,27 @@ export type AvailabilityState =
 
 export type SnapshotMetadataStatus = "ok" | "manual_required" | "incomplete";
 
-export type ImportSource = "share" | "manual" | "edit";
+export type ImportSource = "share" | "manual" | "edit" | "webview";
+
+export interface ShoppingSessionSettings {
+  darkMode: boolean;
+  textZoom: number;
+}
+
+export interface ShoppingSession {
+  id: string;
+  name: string;
+  startUrl: string;
+  currentUrl: string;
+  lastCapturedUrl: string | null;
+  lastCaptureAt: number | null;
+  createdAt: number;
+  updatedAt: number;
+  lastActiveAt: number;
+  displayOrder: number;
+  color?: string;
+  icon?: string;
+}
 
 export interface ProductPriceSnapshot {
   amount: number;
@@ -50,7 +70,23 @@ export interface ShoppingList {
   updatedAt: number;
 }
 
-export type ImportDraftSource = "intent" | "manual" | "clipboard";
+export type ImportDraftSource = "intent" | "manual" | "clipboard" | "webview";
+
+export type WebviewCaptureResult =
+  | {
+      ok: true;
+      source: "webview";
+      rawUrl: string;
+      canonicalUrl: string;
+      capturedAt: number;
+    }
+  | {
+      ok: false;
+      source: "webview";
+      reason: "unavailable" | "invalid_url" | "error";
+      error?: string;
+      rawUrl?: string;
+    };
 
 export interface ImportDraft {
   id: string;

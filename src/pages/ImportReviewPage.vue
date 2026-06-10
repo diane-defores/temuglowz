@@ -60,6 +60,7 @@ function save(): void {
     notes: note.value,
     metadataStatus: draft.value.status,
     quantity: quantity.value,
+    source: draft.value.source === "webview" ? "webview" : "manual",
   });
 
   if (draft.value.status === "needs_review" && !snapshot.title.trim()) {
@@ -148,4 +149,3 @@ function useNewList(): void {
     </div>
   </section>
 </template>
-
