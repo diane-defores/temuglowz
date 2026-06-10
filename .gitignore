@@ -1,6 +1,7 @@
 node_modules/
 dist/
 dist-*/
+ci-artifacts/
 .vite/
 .vite-temp/
 .playwright-mcp/
