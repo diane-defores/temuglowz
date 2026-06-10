@@ -503,6 +503,7 @@ Non-blocking decisions to revisit during implementation:
 | 2026-06-09 22:03:58 UTC | sf-docs | GPT-5 Codex | Bootstrapped `shipflow_data/technical` and mapped planned code coverage for Governance Corpus Gate | Technical docs baseline added for clean-slate scaffold; audit-ready map + temp coverage status | /sf-start Temu shopping lists Android app |
 | 2026-06-10 07:40:52 UTC | sf-start | GPT-5 Codex + gpt-5.3-codex-spark worker | Implemented Vue/Vite/Tauri MVP scaffold, validators/parsers/stores, tests, export checks, Android generated project/share-target manifest, and technical docs | partial: web/local-first MVP validated; Android runtime share payload bridge and real-device proof pending; Android build blocked by host/NDK architecture mismatch | /sf-verify Temu shopping lists Android app |
 | 2026-06-10 07:44:48 UTC | sf-verify | GPT-5 Codex | Ran automated checks, browser proof, metadata lint, checklist gate, policy scan, Tauri frontend build, and Android build attempt | partial: automated/web proof passed; required Android device/share-payload scenarios remain NOT_RUN; Android build blocked by local NDK host mismatch | finalize Android share bridge on compatible Android toolchain/device |
+| 2026-06-10 07:55:25 UTC | sf-ship | GPT-5 Codex | Initialized Git, created private GitHub repo `diane-defores/temu-shopping-lists`, pushed `main`, and confirmed `Dev Builds` workflow is active | shipped for remote collaboration and CI debug APK builds; product validation remains partial per sf-verify | finalize Android share bridge on compatible Android toolchain/device |
 
 ## Current Chantier Flow
 
@@ -511,6 +512,6 @@ Non-blocking decisions to revisit during implementation:
 - sf-start: partial
 - sf-verify: partial
 - sf-end: not launched
-- sf-ship: not launched
+- sf-ship: shipped
 
 Next command: `finalize Android share bridge on compatible Android toolchain/device`
