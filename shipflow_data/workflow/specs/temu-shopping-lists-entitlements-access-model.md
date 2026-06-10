@@ -1,13 +1,13 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.2"
 project: "temu"
 created: "2026-06-10"
 created_at: "2026-06-10 09:19:07 UTC"
 updated: "2026-06-10"
-updated_at: "2026-06-10 09:19:07 UTC"
-status: draft
+updated_at: "2026-06-10 09:45:29 UTC"
+status: ready
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
 scope: "Entitlements and access model for Temu Shopping Lists"
@@ -26,6 +26,8 @@ linked_systems:
   - "src/lib/cloudSyncQueue.ts"
   - "README.md"
   - "skills/references/product-entitlements-playbook.md"
+  - "/home/claude/winflowz/shipflow_data/workflow/docs/technical/suite-authentication.md"
+  - "/home/claude/winflowz/shipflow_data/workflow/specs/unified-suite-authentication.md"
 depends_on:
   - artifact: "/home/claude/shipflow/skills/references/product-entitlements-playbook.md"
     artifact_version: "1.0.1"
@@ -50,7 +52,9 @@ evidence:
   - "convex/schema.ts already has userId-scoped shopping list and product snapshot tables for optional future cloud sync."
   - "src/lib/cloudSync.ts and src/lib/cloudSyncQueue.ts are placeholders/local queue utilities and do not enforce server-side access."
   - "README states stored data is local-first and not a full browser profile or Temu session store."
-next_step: "/sf-ready Entitlements and access model for Temu Shopping Lists"
+  - "User decision 2026-06-10: Diane wants one central suite-owned entitlement ledger for her operated products, with separate product ids."
+  - "WinFlowz commit b779876 formalized one suite-owned ledger as the default for Diane-operated products and names Temu Shopping Lists as a future product to join through product_id."
+next_step: "/sf-start Entitlements and access model for Temu Shopping Lists"
 ---
 
 # Title
@@ -59,13 +63,14 @@ Entitlements And Access Model For Temu Shopping Lists
 
 ## Status
 
-Draft. This spec is intentionally not ready until the operator confirms whether Temu Shopping Lists is a standalone product or part of a suite entitlement ledger.
+Ready for `/sf-start`. The previous blocker is resolved: Temu Shopping Lists should join the existing suite-owned entitlement ledger rather than creating a product-local durable ledger.
 
 Current compliance verdict:
 
 - The local-first MVP is not currently violating the product-entitlements doctrine because it has no protected cloud runtime, premium feature gate, quota, billing provider, activation code, or entitlement-backed data access.
-- The project must not add cloud-protected user data, premium gates, quotas, activation codes, billing, app-store purchases, provider webhooks, or support access grants until this spec or a successor spec defines the server-owned entitlement source of truth.
+- The project must not add cloud-protected user data, premium gates, quotas, activation codes, billing, app-store purchases, provider webhooks, or support access grants until it can query or mirror the suite-owned ledger for `product_id=temu_shopping_lists`.
 - The existing Convex schema is only an optional sync scaffold. It must not become a production authorization model by relying on client-supplied `userId`.
+- Product-local entitlement state, if any is added later, may only be a cache, mirror, or bridge adapter. The durable answer to "does this user have access?" belongs to the suite ledger.
 
 ## User Story
 
@@ -75,11 +80,11 @@ Primary actor: product operator / implementation agent.
 
 Trigger: work begins on cloud sync, login/account, paid plans, premium gates, usage limits, activation codes, billing provider events, or protected product data.
 
-Observable result: the project has a documented access architecture that fails closed, separates identity from product access, and either adapts to a canonical suite ledger or explicitly documents a standalone entitlement ledger.
+Observable result: the project has a documented access architecture that fails closed, separates identity from product access, and adapts to the canonical suite ledger under `product_id=temu_shopping_lists`.
 
 ## Minimal Behavior Contract
 
-The project must remain local-first and ungated until an entitlement model is approved. When protected cloud sync, premium capabilities, quotas, billing, or activation codes are introduced, the backend must verify identity and then read a server-owned entitlement ledger before granting protected reads, writes, feature use, or quota consumption. Authentication alone must never grant product access. Provider payments, marketplace purchases, app-store events, manual grants, and activation codes are event inputs only; they must not become the runtime authorization source. If identity, entitlement lookup, provider verification, bridge sync, product namespace, or quota checks are unavailable or malformed, the app must deny protected access and show a recoverable "access not active/unavailable" state.
+The project must remain local-first and ungated until an entitlement bridge is implemented. When protected cloud sync, premium capabilities, quotas, billing, or activation codes are introduced, the backend must verify identity and then read the suite-owned entitlement ledger before granting protected reads, writes, feature use, or quota consumption for `product_id=temu_shopping_lists`. Authentication alone must never grant product access. Provider payments, marketplace purchases, app-store events, manual grants, and activation codes are event inputs only; they must not become the runtime authorization source. If identity, entitlement lookup, provider verification, bridge sync, product namespace, or quota checks are unavailable or malformed, the app must deny protected access and show a recoverable "access not active/unavailable" state.
 
 Easy-to-miss edge case: a user who is signed in but has no active entitlement must still be recognized as a user while being denied protected sync/premium data access.
 
@@ -91,7 +96,7 @@ Easy-to-miss edge case: a user who is signed in but has no active entitlement mu
 - Given a provider event, manual grant, app-store event, or activation code is processed, when it references a known product and plan, then it is normalized into the server-owned entitlement/event ledger with idempotency.
 - Given a refund, chargeback, expiry, revoke, or failed renewal event arrives, when the entitlement is recomputed, then protected access is removed without deleting identity or local-only data.
 - Given a single-use activation code is redeemed by one user, when another user tries to reuse it, then redemption is denied and support diagnostics stay redacted.
-- Given the product is part of a suite, when entitlement storage is implemented, then Temu Shopping Lists adapts to the canonical suite ledger instead of creating a second durable entitlement ledger.
+- Given the product is part of Diane's suite, when entitlement storage is implemented, then Temu Shopping Lists adapts to the canonical suite ledger instead of creating a second durable entitlement ledger.
 
 ## Error Behavior
 
@@ -119,14 +124,14 @@ The project needs an explicit stop gate before monetization or protected cloud s
 
 ## Solution
 
-Define a product-access architecture and compliance gate before implementing protected sync or monetization. The first implementation should be an audit-and-guardrail pass: document whether Temu Shopping Lists is standalone or suite-owned, add explicit product identifiers and access states, mark Convex sync as not production-authorized until backend checks exist, and write tests/docs that prevent premium/cloud features from shipping without server-owned entitlement verification.
+Define a product-access architecture and compliance gate before implementing protected sync or monetization. The first implementation should be an audit-and-guardrail pass: document Temu Shopping Lists as suite-ledger-owned, add explicit product identifiers and access states, mark Convex sync as not production-authorized until backend checks exist, and write tests/docs that prevent premium/cloud features from shipping without server-owned entitlement verification.
 
-Recommended default until operator decision: keep all current app features local-first/free and treat cloud sync, premium gates, quotas, billing, and activation codes as blocked by entitlement design.
+Approved default after operator decision: keep all current app features local-first/free and treat cloud sync, premium gates, quotas, billing, and activation codes as blocked until Temu can query or mirror the suite-owned ledger for `product_id=temu_shopping_lists`.
 
 ## Scope In
 
 - Entitlement compliance audit against `/home/claude/shipflow/skills/references/product-entitlements-playbook.md`.
-- Decision record for product family: standalone product vs suite-ledger product.
+- Decision record for product family: suite-ledger product under the shared Diane-operated product ledger.
 - Stable internal identifiers:
   - `product_id`: recommended `temu_shopping_lists`.
   - initial `plan_id` candidates: `free_local`, `sync`, `pro`, `lifetime_deal`.
@@ -170,7 +175,16 @@ Proof profile:
 - Static/local proof that no billing or entitlement runtime currently exists.
 - Schema/doc proof that Convex `userId` scaffolding is not treated as production authorization.
 - Future server proof required before cloud sync or premium work ships.
-- Manual/operator proof required for product-family decision and support runbook.
+- Manual/operator proof recorded for product-family decision; support runbook still required before real grants/codes.
+
+Proof order:
+
+1. Confirm product-family decision and suite-ledger dependency.
+2. Add product-local allowlists and status semantics without provider writes.
+3. Mark sync scaffold as non-authorizing.
+4. Define backend access-check contract.
+5. Add checklist/support artifacts before grants, codes, paid features, or protected sync.
+6. Run code checks and entitlement lifecycle smoke only after server bridge/provider surfaces exist.
 
 Checklist path if implementation begins: `shipflow_data/workflow/test-checklists/temu-shopping-lists-entitlements.md`.
 
@@ -184,8 +198,16 @@ Required scenario IDs:
 - `TC-ENT-AUTO-006`: Provider/manual events are idempotent by `sourceEventId` or equivalent.
 - `TC-ENT-AUTO-007`: Revoked/refunded/expired entitlements deny protected access.
 - `TC-ENT-AUTO-008`: Activation code redemption never logs or persists raw codes client-side.
-- `TC-ENT-MANUAL-001`: Operator confirms standalone vs suite-ledger decision.
+- `TC-ENT-MANUAL-001`: Operator confirms suite-ledger decision.
 - `TC-ENT-MANUAL-002`: Support runbook can check, grant, revoke, expire, refund, and reissue access without exposing secrets.
+
+Required results:
+
+- The app has exactly one stable product id, `temu_shopping_lists`.
+- Protected sync/premium code paths fail closed unless backend entitlement proof is available.
+- No product-local durable entitlement ledger is created.
+- Local-only snapshots stay readable without entitlement.
+- Provider-specific implementation remains blocked until a provider spec checks current official docs.
 
 Exception with proof:
 
@@ -201,7 +223,9 @@ Exception without proof:
 - Decision Quality Contract: `/home/claude/shipflow/skills/references/decision-quality-contract.md`, version `1.0.0`, active.
 - Documentation Freshness Gate: `/home/claude/shipflow/skills/references/documentation-freshness-gate.md`, version `1.2.0`, active.
 - Existing MVP spec: `shipflow_data/workflow/specs/temu-shopping-lists-android-app.md`, version `1.0.0`, status ready.
-- Existing technical doc: `shipflow_data/technical/apps/temu-shopping-lists-android-app.md`, version `1.0.0`, draft.
+- Existing technical doc: `shipflow_data/technical/apps/temu-shopping-lists-android-app.md`, version `1.0.1`, draft.
+- WinFlowz suite-authentication decision: `/home/claude/winflowz/shipflow_data/workflow/docs/technical/suite-authentication.md`, version `1.0.11`, reviewed. Verdict: one suite-owned entitlement ledger is the default for Diane-operated products.
+- WinFlowz unified-suite-authentication spec: `/home/claude/winflowz/shipflow_data/workflow/specs/unified-suite-authentication.md`, version `1.0.26`, active. Verdict: future apps such as Temu Shopping Lists should add a `product_id` and product gates instead of creating a second durable ledger.
 - Convex Auth docs: `https://docs.convex.dev/auth`, accessed 2026-06-10. Fresh-docs verdict: `fresh-docs checked`; current docs state Convex uses OpenID Connect JWTs for authentication and functions can access authenticated identity through backend auth APIs.
 - Convex schema docs: `https://docs.convex.dev/database/schemas`, accessed 2026-06-10. Fresh-docs verdict: `fresh-docs checked`; current docs support schema validation/type safety but do not replace authorization checks.
 
@@ -209,6 +233,7 @@ Exception without proof:
 
 - Local-only data remains usable without entitlement.
 - Protected cloud data requires backend-verified identity and entitlement.
+- Durable entitlement truth for Temu Shopping Lists belongs to the suite ledger, not to this app repository.
 - Entitlement state maps every status to `grantsAccess: true | false`.
 - `active` and `trialing` can grant access; `inactive`, `expired`, `revoked`, `refunded`, and `pending_review` do not.
 - Environment is part of entitlement truth; local/preview/staging/production access must not cross over.
@@ -255,11 +280,11 @@ Do not update public pricing, checkout, FAQ, or app-store copy until provider an
 
 ## Implementation Tasks
 
-- [ ] Task 1: Document product-family decision.
+- [x] Task 1: Document product-family decision.
   - File: `shipflow_data/technical/apps/temu-shopping-lists-android-app.md`
-  - Action: Add "Access and Entitlements" section naming whether this product is standalone or suite-ledger-owned.
+  - Action: Add "Access and Entitlements" section naming this product as suite-ledger-owned under `product_id=temu_shopping_lists`.
   - Validate with: metadata lint and review against product-entitlements playbook.
-  - Notes: This is the readiness blocker.
+  - Notes: Readiness blocker resolved on 2026-06-10.
 
 - [ ] Task 2: Define stable access identifiers.
   - File: `src/lib/entitlements.ts` or `src/lib/accessModel.ts` plus technical docs.
@@ -296,7 +321,7 @@ Do not update public pricing, checkout, FAQ, or app-store copy until provider an
 
 ## Acceptance Criteria
 
-- [ ] AC1: The project has a documented standalone vs suite-ledger decision before any protected sync or paid feature is implemented.
+- [x] AC1: The project has a documented suite-ledger decision before any protected sync or paid feature is implemented.
 - [ ] AC2: Authentication is explicitly documented as identity only, not product access.
 - [ ] AC3: The stable `product_id`, plan ids, source ids, and entitlement statuses are allowlisted before runtime entitlement writes exist.
 - [ ] AC4: Cloud sync code and docs state that client-owned `userId` is not authorization.
@@ -345,6 +370,7 @@ Do not update public pricing, checkout, FAQ, or app-store copy until provider an
 - Current local preflight found no entitlement ledger in this project.
 - Existing `convex/schema.ts` is sync scaffolding only; it is not an authorization model.
 - Product entitlement work should use the smallest safe path: first document the decision and access contract, then implement server checks, then add provider/event surfaces.
+- Temu Shopping Lists must not create `product_entitlements`, activation-code, billing-event, or support-grant truth locally. It should add product-local UI/status/gates and bridge to the suite ledger.
 - Fresh-docs checked:
   - Convex Auth: `https://docs.convex.dev/auth`
   - Convex Schemas: `https://docs.convex.dev/database/schemas`
@@ -352,25 +378,37 @@ Do not update public pricing, checkout, FAQ, or app-store copy until provider an
 
 ## Open Questions
 
-- Is Temu Shopping Lists intentionally standalone, or should it join an existing suite entitlement ledger?
+None.
+
+## Deferred Product Decisions
+
 - Will cloud sync be free, paid, lifetime-deal gated, or unavailable in the first public version?
 - Which provider, if any, will be used first: direct manual grants, Stripe, Paddle, Lemon Squeezy, Google Play, App Store, partner/LTD codes, or none?
 - Does losing paid access remove only cloud/premium capability while preserving local archives on device?
 - Should WebView beta capture be free, entitlement-gated, or quota-limited?
+
+## Resolved Decisions
+
+- Product family: Temu Shopping Lists joins the suite-owned ledger for Diane-operated products.
+- Stable product id: `temu_shopping_lists`.
+- Durable access truth: suite ledger, not this app repository.
+- Product-local access state: allowed only as cache, bridge mirror, UI status, or product-specific gates.
 
 ## Skill Run History
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
 | 2026-06-10 09:19:07 UTC | sf-spec | GPT-5 Codex | Created entitlement and access model spec from TASK-2026-06-10-012, product-entitlements playbook, local preflight, and Convex docs freshness check | draft spec created; standalone vs suite-ledger decision remains a readiness blocker | /sf-ready Entitlements and access model for Temu Shopping Lists |
+| 2026-06-10 09:43:39 UTC | sf-spec | GPT-5 Codex | Updated spec after operator confirmed one central suite-owned ledger across Diane-operated products | Spec moved to ready: Temu Shopping Lists should use `product_id=temu_shopping_lists` in the suite ledger and must not create a second durable ledger | /sf-start Entitlements and access model for Temu Shopping Lists |
+| 2026-06-10 09:45:29 UTC | sf-ready | GPT-5 Codex | Evaluated readiness after the suite-ledger blocker was resolved | Ready: no open blocking questions remain; test contract now names proof order and required results; provider/sync monetization choices are deferred, not blockers | /sf-start Entitlements and access model for Temu Shopping Lists |
 
 ## Current Chantier Flow
 
-- sf-spec: done
-- sf-ready: not launched
+- sf-spec: done, updated after ledger decision
+- sf-ready: ready
 - sf-start: not launched
 - sf-verify: not launched
 - sf-end: not launched
 - sf-ship: not launched
 
-Next command: `/sf-ready Entitlements and access model for Temu Shopping Lists`
+Next command: `/sf-start Entitlements and access model for Temu Shopping Lists`

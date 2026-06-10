@@ -1,7 +1,7 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.1"
 project: "temu"
 created: "2026-06-10"
 updated: "2026-06-10"
@@ -18,6 +18,8 @@ linked_systems:
   - src-tauri/
   - convex/
   - shipflow_data/workflow/specs/temu-shopping-lists-android-app.md
+  - shipflow_data/workflow/specs/temu-shopping-lists-entitlements-access-model.md
+  - /home/claude/winflowz/shipflow_data/workflow/docs/technical/suite-authentication.md
 depends_on:
   - artifact: "shipflow_data/workflow/specs/temu-shopping-lists-android-app.md"
     artifact_version: "1.0.0"
@@ -26,6 +28,7 @@ supersedes: []
 evidence:
   - "Vue/Vite local-first MVP scaffold exists with parser, validator, store, backup, and UI tests."
   - "Android Tauri project was initialized, but real-device share payload proof remains pending."
+  - "User decision 2026-06-10: Temu Shopping Lists should use the suite-owned entitlement ledger with product_id=temu_shopping_lists."
 next_review: "2026-07-10"
 next_step: "/sf-verify Temu shopping lists Android app"
 ---
@@ -66,6 +69,26 @@ Document the implemented app surfaces for the local-first Temu shopping-list arc
 - Convex is optional scaffolding only until sync functions and merge tests are implemented.
 - Android runtime share payload delivery is not verified until a compatible Android toolchain/device test passes.
 
+## Access And Entitlements
+
+Temu Shopping Lists is a suite-ledger product, not a standalone entitlement
+system. Its stable `product_id` is `temu_shopping_lists`.
+
+Current MVP behavior remains local-first and free: saved Temu product snapshots,
+lists, backup export/import, and local browsing do not require entitlement
+checks because they do not access protected backend product data.
+
+Protected cloud sync, premium capabilities, quotas, billing, app-store
+purchases, activation codes, support grants, or paid WebView beta access must
+not ship until the app can query or mirror the suite-owned entitlement ledger.
+The durable source of truth is the WinFlowz suite ledger, not this repository.
+
+Product-local access state is allowed only as a cache, bridge mirror, UI status,
+or product-specific gate. It must never become durable entitlement truth. The
+app must also never treat authentication, client-supplied `userId`,
+client-supplied `productId`, local storage, or Convex sync scaffolding as
+authorization.
+
 ## Validation
 
 ```bash
@@ -94,4 +117,3 @@ Current known limits:
 ## Maintenance Rule
 
 Update this document whenever app entrypoints, persistence contracts, Android share handling, Convex sync posture, backup format, validation commands, or security invariants change.
-
