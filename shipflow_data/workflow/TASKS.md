@@ -9,6 +9,7 @@
 🔴 [temu] task: Spec the in-app Temu WebView capture mode | status: todo | area: webview | id: TASK-2026-06-10-001 | next: /sf-spec In-app Temu WebView capture mode | notes: define opt-in browser, capture boundaries, privacy guardrails, validation, and scope exclusions before implementation
 🔴 [temu] task: Finalize real Android share payload bridge | status: todo | area: android-share | id: TASK-2026-06-10-002 | next: implement native intent-to-import payload delivery | notes: required before Android share-target proof can move from partial to passed
 🔴 [temu] task: Run real-device Android install and Temu share smoke test | status: todo | area: qa | id: TASK-2026-06-10-003 | next: install debug APK and execute TC-MANUAL-001 through TC-MANUAL-005 | notes: use GitHub Release APK while Actions artifact quota is full
+🔴 [temu] task: Audit and align product entitlements doctrine before sync or monetization | status: todo | area: entitlements | id: TASK-2026-06-10-012 | next: /sf-spec Entitlements and access model for Temu Shopping Lists | notes: load product-entitlements-playbook; decide standalone vs suite ledger; do not add premium gates, quotas, activation codes, billing, or protected cloud data until server-owned entitlement contract exists
 
 ---
 
