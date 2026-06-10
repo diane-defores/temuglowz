@@ -1,7 +1,7 @@
 ---
 artifact: support_runbook
 metadata_schema_version: "1.0"
-artifact_version: "1.0.1"
+artifact_version: "1.0.2"
 project: "temu"
 created: "2026-06-10"
 updated: "2026-06-10"
@@ -18,7 +18,7 @@ linked_systems:
   - /home/claude/winflowz/shipflow_data/workflow/docs/technical/suite-authentication.md
 depends_on:
   - artifact: "shipflow_data/workflow/specs/temu-shopping-lists-entitlements-access-model.md"
-    artifact_version: "1.0.4"
+    artifact_version: "1.0.5"
     required_status: "reviewed"
   - artifact: "/home/claude/winflowz/shipflow_data/workflow/docs/technical/suite-authentication.md"
     artifact_version: "1.0.11"
@@ -28,7 +28,7 @@ evidence:
   - "Temu Shopping Lists is a suite-ledger product with product_id=temu_shopping_lists."
   - "Support flow must exist before activation codes, grants, refunds, or paid protected features ship."
 next_review: "2026-07-10"
-next_step: "/sf-verify Entitlements and access model for Temu Shopping Lists"
+next_step: "provider/support tooling spec before real grants, codes, refunds, billing, or protected sync"
 ---
 
 # Temu Shopping Lists Entitlements Support Runbook

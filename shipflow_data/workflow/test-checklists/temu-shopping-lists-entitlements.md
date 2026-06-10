@@ -1,7 +1,7 @@
 ---
 artifact: test_checklist
 metadata_schema_version: "1.0"
-artifact_version: "1.0.1"
+artifact_version: "1.0.2"
 project: "temu"
 created: "2026-06-10"
 updated: "2026-06-10"
@@ -21,13 +21,13 @@ linked_systems:
   - convex/schema.ts
 depends_on:
   - artifact: "shipflow_data/workflow/specs/temu-shopping-lists-entitlements-access-model.md"
-    artifact_version: "1.0.4"
+    artifact_version: "1.0.5"
     required_status: "reviewed"
 supersedes: []
 evidence:
   - "Spec requires entitlement scenarios before protected sync, premium, billing, activation codes, or support grants."
 next_review: "2026-07-10"
-next_step: "/sf-verify Entitlements and access model for Temu Shopping Lists"
+next_step: "closed for current guardrail scope"
 ---
 
 # Temu Shopping Lists Entitlements - Test Checklist

@@ -1,0 +1,15 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## 2026-06-10
+
+### Added
+
+- Added Temu Shopping Lists entitlement guardrails for the suite-owned ledger model, including a stable `temu_shopping_lists` product id, allowlisted plans/sources/statuses, fail-closed protected access evaluation, and unit coverage.
+- Added entitlement compliance docs, checklist, and support runbook skeleton before any protected sync, provider billing, activation-code, or support-grant implementation.
+
+### Changed
+
+- Marked existing Convex/cloud sync scaffolding as non-authorizing until a backend bridge verifies identity and suite-ledger entitlement server-side.
+- Documented the local-first/free MVP boundary in README and technical docs so saved product snapshots remain separate from future paid or protected features.

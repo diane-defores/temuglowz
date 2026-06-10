@@ -1,12 +1,12 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "1.0.4"
+artifact_version: "1.0.5"
 project: "temu"
 created: "2026-06-10"
 created_at: "2026-06-10 09:19:07 UTC"
 updated: "2026-06-10"
-updated_at: "2026-06-10 10:19:48 UTC"
+updated_at: "2026-06-10 10:46:58 UTC"
 status: reviewed
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -57,7 +57,7 @@ evidence:
   - "README states stored data is local-first and not a full browser profile or Temu session store."
   - "User decision 2026-06-10: Diane wants one central suite-owned entitlement ledger for her operated products, with separate product ids."
   - "WinFlowz commit b779876 formalized one suite-owned ledger as the default for Diane-operated products and names Temu Shopping Lists as a future product to join through product_id."
-next_step: "/sf-verify Entitlements and access model for Temu Shopping Lists"
+next_step: "closed"
 ---
 
 # Title
@@ -407,6 +407,7 @@ None.
 | 2026-06-10 09:45:29 UTC | sf-ready | GPT-5 Codex | Evaluated readiness after the suite-ledger blocker was resolved | Ready: no open blocking questions remain; test contract now names proof order and required results; provider/sync monetization choices are deferred, not blockers | /sf-start Entitlements and access model for Temu Shopping Lists |
 | 2026-06-10 10:11:02 UTC | sf-start | GPT-5 Codex | Implemented the bounded entitlement guardrail slice: access allowlists, fail-closed protected access contract, sync scaffold guardrails, checklist, README note, and support runbook skeleton | Implemented locally; provider-specific work remains intentionally blocked until a provider spec and fresh official docs exist | /sf-verify Entitlements and access model for Temu Shopping Lists |
 | 2026-06-10 10:19:48 UTC | sf-verify | GPT-5 Codex | Verified the entitlement guardrail slice against code, docs, checklist, metadata, tests, build, CI surface, and static scans | Verified for the current local guardrail scope; provider/server-bridge proof remains deferred and blocked by explicit future specs before protected sync, grants, codes, or billing | /sf-end Entitlements and access model for Temu Shopping Lists |
+| 2026-06-10 10:46:58 UTC | sf-ship | GPT-5 Codex | Closed and shipped the verified entitlement guardrail slice with tracker and changelog updates | Shipped; repository pushed after checks; provider/server-bridge work remains blocked by future specs before protected sync, grants, codes, or billing | closed |
 
 ## Current Chantier Flow
 
@@ -414,7 +415,7 @@ None.
 - sf-ready: ready
 - sf-start: implemented
 - sf-verify: verified for current guardrail scope
-- sf-end: not launched
-- sf-ship: not launched
+- sf-end: closed via sf-ship full mode
+- sf-ship: shipped
 
-Next command: `/sf-end Entitlements and access model for Temu Shopping Lists`
+Next command: none
