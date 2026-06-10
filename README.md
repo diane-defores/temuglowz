@@ -82,10 +82,13 @@ The app includes a typed command path for a native share bridge:
 - Shared URLs and draft text are validated and sanitized.
 - Data is kept local-first with Pinia persisted storage.
 - Stored data is not a full browser profile and does not contain Temu cookies/session data.
+- Cloud sync, premium gates, quotas, billing, activation codes, and paid WebView beta access are not production-enabled in this MVP.
+- Temu Shopping Lists uses the suite-owned entitlement model with `product_id=temu_shopping_lists`; this repository must not create a durable product-local entitlement ledger.
 
 ## Test checklist
 
 See:
 
 - `shipflow_data/workflow/test-checklists/temu-shopping-lists-android.md`
+- `shipflow_data/workflow/test-checklists/temu-shopping-lists-entitlements.md`
 - `shipflow_data/workflow/specs/temu-shopping-lists-android-app.md`

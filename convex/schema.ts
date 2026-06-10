@@ -9,6 +9,7 @@ export default defineSchema({
     locale: v.optional(v.string()),
   }),
 
+  // Sync scaffold only. These userId fields are not an authorization model.
   shoppingLists: defineTable({
     userId: v.string(),
     listId: v.string(),

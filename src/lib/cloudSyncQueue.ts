@@ -1,5 +1,6 @@
 const QUEUE_KEY = "temu:cloud-sync-queue-v1";
 
+// Local queue only. It is not proof of identity, entitlement, or cloud access.
 function readQueue(): unknown[] {
   const raw = localStorage.getItem(QUEUE_KEY);
   if (!raw) {
@@ -43,4 +44,3 @@ export function hasPendingCloudSync(): boolean {
 export function flushCloudSyncQueue(): void {
   clearCloudSyncQueue();
 }
-

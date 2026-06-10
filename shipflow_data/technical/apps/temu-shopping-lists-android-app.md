@@ -1,7 +1,7 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "1.0.1"
+artifact_version: "1.0.2"
 project: "temu"
 created: "2026-06-10"
 updated: "2026-06-10"
@@ -19,6 +19,8 @@ linked_systems:
   - convex/
   - shipflow_data/workflow/specs/temu-shopping-lists-android-app.md
   - shipflow_data/workflow/specs/temu-shopping-lists-entitlements-access-model.md
+  - shipflow_data/workflow/test-checklists/temu-shopping-lists-entitlements.md
+  - shipflow_data/technical/support/entitlements-runbook.md
   - /home/claude/winflowz/shipflow_data/workflow/docs/technical/suite-authentication.md
 depends_on:
   - artifact: "shipflow_data/workflow/specs/temu-shopping-lists-android-app.md"
@@ -29,6 +31,7 @@ evidence:
   - "Vue/Vite local-first MVP scaffold exists with parser, validator, store, backup, and UI tests."
   - "Android Tauri project was initialized, but real-device share payload proof remains pending."
   - "User decision 2026-06-10: Temu Shopping Lists should use the suite-owned entitlement ledger with product_id=temu_shopping_lists."
+  - "Entitlement guardrail slice added on 2026-06-10 with access allowlists, fail-closed access contract, checklist, and support runbook skeleton."
 next_review: "2026-07-10"
 next_step: "/sf-verify Temu shopping lists Android app"
 ---
@@ -42,10 +45,13 @@ Document the implemented app surfaces for the local-first Temu shopping-list arc
 ## Owned Files
 
 - `src/`: Vue app, routes, pages, Pinia stores, URL/import parsing, validation, backup serialization, and browser-facing share bridge.
+- `src/lib/accessModel.ts`: product id, plan/source/status allowlists and fail-closed protected access contract.
 - `src-tauri/`: Tauri configuration, Rust commands, Android generated project, manifest share target, and Android share-intent contract files.
 - `convex/schema.ts`: optional future cloud-sync schema scaffold.
 - `README.md`: developer setup, scope, and non-affiliation notes.
 - `shipflow_data/workflow/test-checklists/temu-shopping-lists-android.md`: manual Android proof checklist.
+- `shipflow_data/workflow/test-checklists/temu-shopping-lists-entitlements.md`: entitlement proof checklist.
+- `shipflow_data/technical/support/entitlements-runbook.md`: support runbook skeleton before real grants/codes.
 
 ## Entrypoints
 

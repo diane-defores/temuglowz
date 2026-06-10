@@ -1,12 +1,12 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "1.0.2"
+artifact_version: "1.0.3"
 project: "temu"
 created: "2026-06-10"
 created_at: "2026-06-10 09:19:07 UTC"
 updated: "2026-06-10"
-updated_at: "2026-06-10 09:45:29 UTC"
+updated_at: "2026-06-10 10:11:02 UTC"
 status: ready
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -24,6 +24,9 @@ linked_systems:
   - "convex/schema.ts"
   - "src/lib/cloudSync.ts"
   - "src/lib/cloudSyncQueue.ts"
+  - "src/lib/accessModel.ts"
+  - "shipflow_data/workflow/test-checklists/temu-shopping-lists-entitlements.md"
+  - "shipflow_data/technical/support/entitlements-runbook.md"
   - "README.md"
   - "skills/references/product-entitlements-playbook.md"
   - "/home/claude/winflowz/shipflow_data/workflow/docs/technical/suite-authentication.md"
@@ -54,7 +57,7 @@ evidence:
   - "README states stored data is local-first and not a full browser profile or Temu session store."
   - "User decision 2026-06-10: Diane wants one central suite-owned entitlement ledger for her operated products, with separate product ids."
   - "WinFlowz commit b779876 formalized one suite-owned ledger as the default for Diane-operated products and names Temu Shopping Lists as a future product to join through product_id."
-next_step: "/sf-start Entitlements and access model for Temu Shopping Lists"
+next_step: "/sf-verify Entitlements and access model for Temu Shopping Lists"
 ---
 
 # Title
@@ -286,30 +289,30 @@ Do not update public pricing, checkout, FAQ, or app-store copy until provider an
   - Validate with: metadata lint and review against product-entitlements playbook.
   - Notes: Readiness blocker resolved on 2026-06-10.
 
-- [ ] Task 2: Define stable access identifiers.
+- [x] Task 2: Define stable access identifiers.
   - File: `src/lib/entitlements.ts` or `src/lib/accessModel.ts` plus technical docs.
   - Action: Add allowlisted `product_id`, allowed `plan_id`, allowed source ids, and status-to-access mapping.
   - Validate with: unit tests for unknown ids and status grants.
-  - Notes: Do not add provider writes yet.
+  - Notes: Implemented in `src/lib/accessModel.ts`; no provider writes added.
 
-- [ ] Task 3: Mark Convex sync scaffold as not production-authorized.
+- [x] Task 3: Mark Convex sync scaffold as not production-authorized.
   - File: `convex/schema.ts`, `src/lib/cloudSync.ts`, `src/lib/cloudSyncQueue.ts`, technical docs.
   - Action: Add explicit comments/docs or guard types so future sync work cannot treat `userId` as authorization.
   - Validate with: typecheck and lint.
-  - Notes: Keep comments succinct and code-owned.
+  - Notes: `setSyncEnabled` now requires active entitlement proof; server-side recheck is still required before production sync.
 
-- [ ] Task 4: Design backend access check contract.
+- [x] Task 4: Design backend access check contract.
   - File: `convex/access.ts` or future server module, `shipflow_data/technical/architecture.md`.
   - Action: Specify function signature and behavior for checking identity, product namespace, entitlement status, and feature/quota permission.
   - Validate with: unit/integration tests once Convex functions exist.
-  - Notes: Fail closed on missing or malformed state.
+  - Notes: Implemented as the provider-neutral `evaluateProtectedAccess` contract in `src/lib/accessModel.ts`; future Convex/server bridge must recompute the same decision server-side.
 
-- [ ] Task 5: Create entitlement test checklist.
+- [x] Task 5: Create entitlement test checklist.
   - File: `shipflow_data/workflow/test-checklists/temu-shopping-lists-entitlements.md`
   - Action: Add TC-ENT scenarios from this spec with PASS/FAIL/NOT_RUN status columns.
   - Validate with: checklist parser or manual table review.
 
-- [ ] Task 6: Add support runbook skeleton before any real grants/codes.
+- [x] Task 6: Add support runbook skeleton before any real grants/codes.
   - File: `shipflow_data/technical/support/entitlements-runbook.md` or nearest canonical technical support path.
   - Action: Document safe lookup, grant, revoke, refund, expire, reissue, duplicate-account, and wrong-code flows.
   - Validate with: metadata lint.
@@ -322,14 +325,14 @@ Do not update public pricing, checkout, FAQ, or app-store copy until provider an
 ## Acceptance Criteria
 
 - [x] AC1: The project has a documented suite-ledger decision before any protected sync or paid feature is implemented.
-- [ ] AC2: Authentication is explicitly documented as identity only, not product access.
-- [ ] AC3: The stable `product_id`, plan ids, source ids, and entitlement statuses are allowlisted before runtime entitlement writes exist.
-- [ ] AC4: Cloud sync code and docs state that client-owned `userId` is not authorization.
-- [ ] AC5: A protected backend access check contract exists before production cloud sync.
+- [x] AC2: Authentication is explicitly documented as identity only, not product access.
+- [x] AC3: The stable `product_id`, plan ids, source ids, and entitlement statuses are allowlisted before runtime entitlement writes exist.
+- [x] AC4: Cloud sync code and docs state that client-owned `userId` is not authorization.
+- [x] AC5: A protected backend access check contract exists before production cloud sync.
 - [ ] AC6: No provider event, activation code, or manual grant can activate access without server-side normalization and idempotency.
-- [ ] AC7: Signed-in/no-entitlement and backend-unavailable states deny protected access but remain recoverable in UI.
+- [x] AC7: Signed-in/no-entitlement and backend-unavailable states deny protected access but remain recoverable in UI.
 - [ ] AC8: Refund/revoke/expire behavior removes protected access without deleting identity or local-only data.
-- [ ] AC9: Support diagnostics redact tokens, cookies, raw codes, provider secrets, and unnecessary personal data.
+- [x] AC9: Support diagnostics redact tokens, cookies, raw codes, provider secrets, and unnecessary personal data.
 - [ ] AC10: Any provider-specific follow-up spec includes current official docs and webhook/signature validation requirements.
 
 ## Test Strategy
@@ -401,14 +404,15 @@ None.
 | 2026-06-10 09:19:07 UTC | sf-spec | GPT-5 Codex | Created entitlement and access model spec from TASK-2026-06-10-012, product-entitlements playbook, local preflight, and Convex docs freshness check | draft spec created; standalone vs suite-ledger decision remains a readiness blocker | /sf-ready Entitlements and access model for Temu Shopping Lists |
 | 2026-06-10 09:43:39 UTC | sf-spec | GPT-5 Codex | Updated spec after operator confirmed one central suite-owned ledger across Diane-operated products | Spec moved to ready: Temu Shopping Lists should use `product_id=temu_shopping_lists` in the suite ledger and must not create a second durable ledger | /sf-start Entitlements and access model for Temu Shopping Lists |
 | 2026-06-10 09:45:29 UTC | sf-ready | GPT-5 Codex | Evaluated readiness after the suite-ledger blocker was resolved | Ready: no open blocking questions remain; test contract now names proof order and required results; provider/sync monetization choices are deferred, not blockers | /sf-start Entitlements and access model for Temu Shopping Lists |
+| 2026-06-10 10:11:02 UTC | sf-start | GPT-5 Codex | Implemented the bounded entitlement guardrail slice: access allowlists, fail-closed protected access contract, sync scaffold guardrails, checklist, README note, and support runbook skeleton | Implemented locally; provider-specific work remains intentionally blocked until a provider spec and fresh official docs exist | /sf-verify Entitlements and access model for Temu Shopping Lists |
 
 ## Current Chantier Flow
 
 - sf-spec: done, updated after ledger decision
 - sf-ready: ready
-- sf-start: not launched
+- sf-start: implemented
 - sf-verify: not launched
 - sf-end: not launched
 - sf-ship: not launched
 
-Next command: `/sf-start Entitlements and access model for Temu Shopping Lists`
+Next command: `/sf-verify Entitlements and access model for Temu Shopping Lists`
