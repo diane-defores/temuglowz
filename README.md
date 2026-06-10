@@ -32,6 +32,11 @@ Build for browser test target:
 pnpm build
 ```
 
+The browser build is a development and test surface for the Vue application.
+The product target is currently Android Tauri with native WebView; a public web
+version is not guaranteed. If a web version is needed later, treat it as a
+separate product/platform decision.
+
 TypeScript checks:
 
 ```bash
@@ -53,12 +58,18 @@ in `.env.local`, which is intentionally ignored by Git. Until the suite
 entitlement bridge is implemented, Convex cloud sync functions fail closed and
 must not be treated as active user sync.
 
-Android build flows (environment required):
+Android native builds:
 
 ```bash
 pnpm tauri:android:init
 pnpm tauri:android:dev
+pnpm tauri:android:build
 ```
+
+Use these local Android commands only when the host Android SDK/NDK matches the
+machine architecture. In this workspace, Android native proof is CI-first:
+GitHub Actions on Blacksmith is the source of truth for Tauri Android/WebView
+builds.
 
 ## Debug APK from GitHub Actions
 
@@ -80,8 +91,8 @@ share target, then builds the debug APK.
 ## Commands
 
 - `pnpm tauri` - run Tauri CLI
-- `pnpm tauri:android:dev` - Android local dev
-- `pnpm tauri:android:build` - Android production bundle
+- `pnpm tauri:android:dev` - Android local dev when the local SDK/NDK is compatible
+- `pnpm tauri:android:build` - Android local bundle when the local SDK/NDK is compatible; otherwise use CI
 
 ## Android share intake
 

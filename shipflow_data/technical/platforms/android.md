@@ -1,7 +1,7 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.1"
 project: "temu"
 created: "2026-06-10"
 updated: "2026-06-10"
@@ -29,7 +29,8 @@ supersedes: []
 evidence:
   - "Tauri Android project generated with `pnpm tauri:android:init`."
   - "Generated Android manifest includes ACTION_SEND text/plain share target."
-  - "Android build currently blocked by host/NDK architecture mismatch before APK output."
+  - "Local Android native builds are not authoritative on this aarch64 workspace because the installed NDK is linux-x86_64."
+  - "GitHub Actions Blacksmith run 27301921202 built the Android debug APK successfully for commit cde00d0 on 2026-06-10."
 next_review: "2026-07-10"
 next_step: "/sf-verify Temu shopping lists Android app"
 ---
@@ -66,6 +67,23 @@ Track the native Android surface for receiving user-initiated Temu product links
 
 ## Validation
 
+Local validation is limited to TypeScript, Vue/browser, Convex typecheck, unit
+tests, lint, and web build:
+
+```bash
+pnpm typecheck
+pnpm typecheck:convex
+pnpm test:once
+pnpm lint:check
+pnpm build
+```
+
+Android native proof is CI-first for this project. Use GitHub Actions
+Blacksmith as the source of truth for Tauri Android/WebView builds.
+
+Local Android commands are allowed only on a host with a compatible Android
+SDK/NDK:
+
 ```bash
 pnpm tauri:android:init
 pnpm tauri:android:build
@@ -95,13 +113,15 @@ Manual validation is required on Android:
 
 Known environment gap:
 
-- Current host is `aarch64`, but the detected Android NDK clang path is `prebuilt/linux-x86_64`, causing an exec format linker failure during `pnpm tauri:android:build`.
+- Current workspace host is `aarch64`, but the detected Android NDK clang path is `prebuilt/linux-x86_64`, causing an exec format linker failure during local `pnpm tauri:android:build`.
+- Do not spend implementation time trying to prove Android locally in this workspace unless the SDK/NDK architecture is fixed first. Use CI Blacksmith and the debug APK/release fallback instead.
 
 ## Reader Checklist
 
 - Confirm `AndroidManifest.xml` still has exactly the intended text share filter.
 - Confirm GitHub Actions uses the Blacksmith runner and keeps Android NDK, Rust, pnpm, and Gradle cache hits healthy.
 - Confirm GitHub Actions uploads `temu-shopping-lists-android-debug-arm64` or publishes the fallback prerelease APK when artifact quota is full.
+- Confirm native Android/WebView build proof comes from CI unless a compatible local SDK/NDK is explicitly available.
 - Confirm no Android code logs private payloads, cookies, addresses, order history, or payment data.
 - Confirm manual URL fallback remains available.
 - Confirm runtime share payload delivery before marking Android proof as passed.

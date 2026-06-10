@@ -1,7 +1,7 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "1.0.6"
+artifact_version: "1.0.7"
 project: "temu"
 created: "2026-06-10"
 updated: "2026-06-10"
@@ -32,6 +32,7 @@ evidence:
   - "Android Tauri project was initialized, but real-device share payload proof remains pending."
   - "User decision 2026-06-10: Temu Shopping Lists should use the suite-owned entitlement ledger with product_id=temu_shopping_lists."
   - "Entitlement guardrail slice added on 2026-06-10 with access allowlists, fail-closed access contract, checklist, and support runbook skeleton."
+  - "Development mode decision 2026-06-10: local checks cover TS/Vue/Convex/unit/web only; native Android/Tauri/WebView proof is CI-first on GitHub Actions Blacksmith."
 next_review: "2026-07-10"
 next_step: "/sf-verify Temu shopping lists Android app"
 ---
@@ -73,6 +74,7 @@ Document the implemented app surfaces for the local-first Temu shopping-list arc
 - The app must not store Temu cookies, session state, account data, or browser profiles.
 - The app must not include scraping, stealth WebView, anti-bot bypass, or automated cart import code.
 - Convex is optional scaffolding only until sync functions and merge tests are implemented.
+- The product target is Android Tauri with native WebView; a public web app must not be assumed from the browser test surface.
 - Android runtime share payload delivery is not verified until a compatible Android toolchain/device test passes.
 
 ## Access And Entitlements
@@ -135,19 +137,29 @@ Current implementation status:
 
 ## Validation
 
+Local development mode:
+
+- Authoritative local checks: `pnpm typecheck`, `pnpm typecheck:convex`,
+  `pnpm test:once`, `pnpm lint:check`, `pnpm build`, and focused browser smoke
+  tests for Vue-only screens.
+- Non-authoritative in this workspace: local `pnpm tauri:android:*`, because
+  this host is `aarch64` while the installed Android NDK clang is
+  `linux-x86_64`.
+- Authoritative native Android proof: GitHub Actions `Dev Builds` on
+  Blacksmith, plus real-device APK smoke tests.
+
 ```bash
 pnpm typecheck
 pnpm typecheck:convex
 pnpm test:once
 pnpm lint:check
 pnpm build
-pnpm tauri:build
-pnpm tauri:android:build
 ```
 
 Current known limits:
 
-- `pnpm tauri:android:build` reaches Android linking but fails in this environment because the installed NDK clang is `linux-x86_64` and cannot execute on the current `aarch64` host.
+- `pnpm tauri:android:build` reaches Android linking but fails in this local environment because the installed NDK clang is `linux-x86_64` and cannot execute on the current `aarch64` host.
+- Android build proof is available from CI Blacksmith run `27301921202` for commit `cde00d0`, which built and published fallback release `android-debug-8`.
 - Linux desktop `cargo check` is blocked by missing Tauri Linux prerequisites (`pkg-config`, `webkit2gtk-4.1`, `rsvg2`).
 - Android real-device Sharesheet proof is still required.
 
@@ -157,6 +169,7 @@ Current known limits:
 - Check store tests before changing list or snapshot persistence.
 - Check Android manifest and share bridge together before claiming Android Sharesheet support.
 - Check README and manual checklist when changing product scope or Android setup.
+- Check `CLAUDE.md` development mode before choosing local, CI, or device proof.
 - Run the policy scan for forbidden scraping/stealth/cookie/session code before verification.
 
 ## Maintenance Rule

@@ -1,7 +1,7 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.1"
 project: "temu"
 created: "2026-06-09"
 updated: "2026-06-10"
@@ -21,6 +21,7 @@ supersedes: []
 evidence:
   - "Initial scaffold now exists for Vue/Vite/Tauri Android, local persistence, tests, and Android share-target contract."
   - "Spec-driven Android Temu import requirements in shipflow_data/workflow/specs/temu-shopping-lists-android-app.md."
+  - "Development mode decision 2026-06-10: native Android/Tauri/WebView proof is CI-first on GitHub Actions Blacksmith, not local on the current aarch64 workspace."
 next_review: "2026-07-09"
 next_step: "/sf-docs technical audit"
 ---
@@ -50,8 +51,8 @@ Map code areas to technical documentation and validation checkpoints for the Tem
 | Path pattern | Subsystem | Primary doc | Validation | Docs trigger |
 | --- | --- | --- | --- | --- |
 | `src/` | Temu import flow + list UX + persisted local state | `shipflow_data/technical/apps/temu-shopping-lists-android-app.md` | `pnpm typecheck`, `pnpm test:once`, `pnpm lint:check`, `pnpm build` | `src` domain changes, list/item model changes, share-review UX, offline persistence logic |
-| `src-tauri/**` | Android share target platform integration and Tauri commands | `shipflow_data/technical/platforms/android.md` | `pnpm tauri:build`, `pnpm tauri:android:build` where compatible | Native command/API additions, share intent contract, Android placeholder/Kotlin handoff |
-| `src-tauri/src/lib.rs`, `src-tauri/src/main.rs`, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`, `src-tauri/src/backup.rs` | Tauri runtime entrypoints and backup command profile | `shipflow_data/technical/apps/temu-shopping-lists-android-app.md` + `shipflow_data/technical/platforms/android.md` | `pnpm tauri:build`, `cargo check` where Linux prerequisites exist | Share payload command contract, Android manifest/config placeholder |
+| `src-tauri/**` | Android share target, Tauri commands, and native WebView plugin integration | `shipflow_data/technical/platforms/android.md` | CI `Dev Builds` on Blacksmith for Android; local Tauri Android only when SDK/NDK architecture is compatible | Native command/API additions, share intent contract, Android placeholder/Kotlin handoff, WebView plugin changes |
+| `src-tauri/src/lib.rs`, `src-tauri/src/main.rs`, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`, `src-tauri/src/backup.rs` | Tauri runtime entrypoints and backup command profile | `shipflow_data/technical/apps/temu-shopping-lists-android-app.md` + `shipflow_data/technical/platforms/android.md` | CI `Dev Builds` for Android; `cargo check` only where Linux prerequisites and toolchain are compatible | Share payload command contract, Android manifest/config placeholder, WebView command registration |
 | `convex/**` | cloud sync model and mutation/query contracts | `shipflow_data/technical/apps/temu-shopping-lists-android-app.md` + future `shipflow_data/technical/architecture.md` | Convex checks when sync functions are added | schema changes, merge/update semantics, image persistence policy, auth expectations |
 | `scripts/**` (when created) | utility scripts: backups, seeds, maintenance exports | `shipflow_data/technical/README.md` | `npm run test`/`npm run lint` in script owner package | serialization format, backup/export contract, redaction policy |
 | `README.md`, `shipflow_data/**` | governance and onboarding | `shipflow_data/technical/README.md` | `python3 /home/claude/shipflow/tools/shipflow_metadata_lint.py shipflow_data/technical/README.md shipflow_data/technical/code-docs-map.md` | any governance or path-routing update |
