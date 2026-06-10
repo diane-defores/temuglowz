@@ -2,6 +2,10 @@ import { defineStore } from "pinia";
 
 import { createId } from "@/utils/id";
 import { normalizeTemuProductUrl } from "@/utils/url";
+import {
+  queueCloudSyncDelete,
+  queueCloudSyncUpsert,
+} from "@/lib/cloudSync";
 import { validateProductSnapshotInput } from "@/lib/validators";
 import type {
   ProductPriceSnapshot,
@@ -50,6 +54,7 @@ export const useProductSnapshotsStore = defineStore("productSnapshots", {
         ...snapshot,
         updatedAt: now(),
       };
+      queueCloudSyncUpsert("product_snapshot", snapshot.id, this.snapshots[snapshot.id]);
     },
 
     buildSnapshotFromDraft(params: {
@@ -95,12 +100,14 @@ export const useProductSnapshotsStore = defineStore("productSnapshots", {
       const keep = new Set(referencedIds);
       for (const id of Object.keys(this.snapshots)) {
         if (!keep.has(id)) {
+          queueCloudSyncDelete("product_snapshot", id);
           delete this.snapshots[id];
         }
       }
     },
 
     deleteSnapshot(id: string): void {
+      queueCloudSyncDelete("product_snapshot", id);
       delete this.snapshots[id];
     },
 
@@ -125,4 +132,3 @@ export const useProductSnapshotsStore = defineStore("productSnapshots", {
     key: "temu:product-snapshots",
   },
 });
-

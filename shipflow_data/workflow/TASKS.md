@@ -28,6 +28,7 @@
 🟡 [temu] task: Evaluate assistive theme and CSS injection guardrails | status: todo | area: webview | id: TASK-2026-06-10-009 | notes: only consider local readability/highlight helpers; never alter checkout meaning, pricing, shipping fees, warnings, or Temu identity
 🟡 [temu] task: Add WebView beta manual QA checklist | status: todo | area: qa | id: TASK-2026-06-10-010 | notes: include login boundary, no credential capture, URL capture, snapshot persistence, share fallback, and blocked/removed product behavior
 🟡 [temu] task: Review Temu affiliation, privacy, and platform policy risk before public distribution | status: todo | area: policy | id: TASK-2026-06-10-011 | notes: ensure app copy avoids implying Temu partnership and that WebView capture remains personal and user-initiated
+🟡 [temu] task: Spec price and availability history for saved Temu products | status: todo | area: product-history | id: TASK-2026-06-10-013 | next: /sf-spec Price and availability history for Temu product snapshots | notes: deferred follow-up after premium multi-device sync; track observed price, availability, source URL, capture timestamp, and comparison UX without blocking the first cloud sync slice
 
 ---
 

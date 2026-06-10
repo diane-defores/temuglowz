@@ -1,7 +1,7 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "1.0.2"
+artifact_version: "1.0.6"
 project: "temu"
 created: "2026-06-10"
 updated: "2026-06-10"
@@ -95,10 +95,49 @@ app must also never treat authentication, client-supplied `userId`,
 client-supplied `productId`, local storage, or Convex sync scaffolding as
 authorization.
 
+## Premium Cloud Sync
+
+Premium cloud sync is specified as a local-first, multi-device feature in
+`shipflow_data/workflow/specs/temu-shopping-lists-premium-cloud-sync.md`.
+The first implementation slice is URL-backed sync for lists, list items, and
+product snapshots. Existing product media fields such as `imageUrl` and
+`galleryImageUrls` may sync as URL strings only; copied binary images, image
+mirroring, price-history timelines, billing providers, activation codes, and
+Temu browser/session data stay outside the first slice.
+
+Cloud sync must promote local data only after suite identity and active
+`cloud_sync` entitlement are verified. A clean install may hydrate from cloud
+only after the same checks pass. Existing local data must never be silently
+wiped by sign-in, sign-out, failed sync, account mismatch, expired entitlement,
+or an empty cloud snapshot.
+
+The sync model requires stable domain keys, checksums, account association
+metadata, typed offline operations, idempotency keys, tombstones for deletes,
+and visible states for local-only, blocked, pending, syncing, synced, retrying,
+conflict, account mismatch, and error. "Saved locally" and "synced to cloud"
+must remain distinct in UI and docs.
+
+Current implementation status:
+
+- Local stores can enqueue typed sync operations only after an active sync
+  session gate has verified local identity, entitlement, and account marker.
+- `convex/` now has a typechecked fail-closed backend surface and sync schema
+  scaffolding.
+- `/sync` exposes local-only/pending queue status without claiming active cloud
+  backup.
+- Convex project `diane-defores/temu` exists with dev deployment
+  `dev:chatty-canary-255`; `convex/_generated/` is generated and committed.
+- Deployment proof currently shows the backend fails closed with
+  `missing_identity` when called without app auth.
+- Real cloud writes, hydration, promotion, conflict UI, and reinstall recovery
+  remain unshipped until the suite entitlement bridge and Convex deployment
+  proof exist.
+
 ## Validation
 
 ```bash
 pnpm typecheck
+pnpm typecheck:convex
 pnpm test:once
 pnpm lint:check
 pnpm build

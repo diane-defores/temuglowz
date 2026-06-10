@@ -5,6 +5,7 @@
       <nav>
         <RouterLink to="/">Listes</RouterLink>
         <RouterLink to="/import/manual">Import manuel</RouterLink>
+        <RouterLink to="/sync">Synchronisation</RouterLink>
       </nav>
     </header>
 
@@ -13,4 +14,3 @@
     </main>
   </div>
 </template>
-

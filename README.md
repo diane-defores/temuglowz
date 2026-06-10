@@ -34,9 +34,22 @@ TypeScript checks:
 
 ```bash
 pnpm typecheck
+pnpm typecheck:convex
 pnpm test:once
 pnpm lint
 ```
+
+Convex backend checks:
+
+```bash
+pnpm typecheck:convex
+pnpm convex:codegen
+```
+
+The dev Convex project is `diane-defores/temu`; local deployment variables live
+in `.env.local`, which is intentionally ignored by Git. Until the suite
+entitlement bridge is implemented, Convex cloud sync functions fail closed and
+must not be treated as active user sync.
 
 Android build flows (environment required):
 
@@ -84,6 +97,7 @@ The app includes a typed command path for a native share bridge:
 - Stored data is not a full browser profile and does not contain Temu cookies/session data.
 - Cloud sync, premium gates, quotas, billing, activation codes, and paid WebView beta access are not production-enabled in this MVP.
 - Temu Shopping Lists uses the suite-owned entitlement model with `product_id=temu_shopping_lists`; this repository must not create a durable product-local entitlement ledger.
+- Premium cloud sync scaffolding is URL-first and fail-closed: local stores can enqueue typed sync operations, but backend writes remain blocked until suite identity, entitlement bridge, and Convex deployment proof exist.
 
 ## Test checklist
 

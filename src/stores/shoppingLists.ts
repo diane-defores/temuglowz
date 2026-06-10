@@ -4,6 +4,10 @@ import { defineStore } from "pinia";
 import type { ShoppingList, ShoppingListItem } from "@/types/domain";
 import { createId } from "@/utils/id";
 import { useProductSnapshotsStore } from "@/stores/productSnapshots";
+import {
+  queueCloudSyncDelete,
+  queueCloudSyncUpsert,
+} from "@/lib/cloudSync";
 
 interface ShoppingState {
   lists: Record<string, ShoppingList>;
@@ -82,6 +86,7 @@ export const useShoppingListsStore = defineStore("shoppingLists", {
         createdAt: now(),
         updatedAt: now(),
       };
+      queueCloudSyncUpsert("shopping_list", id, this.lists[id]);
 
       return id;
     },
@@ -99,6 +104,7 @@ export const useShoppingListsStore = defineStore("shoppingLists", {
 
       list.name = name;
       list.updatedAt = now();
+      queueCloudSyncUpsert("shopping_list", list.id, list);
     },
 
     deleteList(listId: string): void {
@@ -107,6 +113,10 @@ export const useShoppingListsStore = defineStore("shoppingLists", {
       }
 
       const removed = this.lists[listId];
+      removed.itemIds.forEach((itemId) => {
+        queueCloudSyncDelete("shopping_list_item", itemId);
+      });
+      queueCloudSyncDelete("shopping_list", listId);
       delete this.lists[listId];
 
       removed.itemIds.forEach((itemId) => {
@@ -132,6 +142,8 @@ export const useShoppingListsStore = defineStore("shoppingLists", {
         existing.quantity += quantity;
         existing.note = note.trim() || existing.note;
         list.updatedAt = now();
+        queueCloudSyncUpsert("shopping_list_item", existing.id, existing);
+        queueCloudSyncUpsert("shopping_list", list.id, list);
         return existingId;
       }
 
@@ -147,6 +159,8 @@ export const useShoppingListsStore = defineStore("shoppingLists", {
       this.items[itemId] = item;
       list.itemIds.unshift(itemId);
       list.updatedAt = now();
+      queueCloudSyncUpsert("shopping_list_item", item.id, item);
+      queueCloudSyncUpsert("shopping_list", list.id, list);
 
       return itemId;
     },
@@ -158,8 +172,10 @@ export const useShoppingListsStore = defineStore("shoppingLists", {
       }
 
       list.itemIds = list.itemIds.filter((id) => id !== itemId);
+      queueCloudSyncDelete("shopping_list_item", itemId);
       delete this.items[itemId];
       list.updatedAt = now();
+      queueCloudSyncUpsert("shopping_list", list.id, list);
       this.purgeUnusedSnapshots();
     },
 
@@ -169,9 +185,13 @@ export const useShoppingListsStore = defineStore("shoppingLists", {
         return;
       }
 
-      list.itemIds.forEach((itemId) => delete this.items[itemId]);
+      list.itemIds.forEach((itemId) => {
+        queueCloudSyncDelete("shopping_list_item", itemId);
+        delete this.items[itemId];
+      });
       list.itemIds = [];
       list.updatedAt = now();
+      queueCloudSyncUpsert("shopping_list", list.id, list);
       this.purgeUnusedSnapshots();
     },
 
@@ -204,6 +224,8 @@ export const useShoppingListsStore = defineStore("shoppingLists", {
 
       item.quantity = quantity;
       list.updatedAt = now();
+      queueCloudSyncUpsert("shopping_list_item", item.id, item);
+      queueCloudSyncUpsert("shopping_list", list.id, list);
     },
 
     findDuplicateByCanonicalOrProductId(listId: string, params: {
@@ -262,4 +284,3 @@ export function useShoppingListCount(): number {
   const store = useShoppingListsStore();
   return computed(() => store.listEntries.length).value;
 }
-

@@ -71,6 +71,37 @@ body {
   color: #b91c1c;
 }
 
+.notice {
+  display: grid;
+  gap: 0.25rem;
+  margin: 1rem 0;
+  padding: 0.75rem;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  background: #fffbeb;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 700;
+}
+
+.status-pill.blocked {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.sync-header,
+.sync-job-row {
+  justify-content: space-between;
+}
+
 .card-list {
   display: grid;
   gap: 0.75rem;
@@ -116,4 +147,3 @@ button:disabled {
   color: #1d4ed8;
   text-decoration: none;
 }
-

@@ -9,7 +9,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["src/**/*.test.ts", "src/**/*.spec.ts"],
+    include: ["src/**/*.test.ts", "src/**/*.spec.ts", "convex/**/*.test.ts"],
     globals: true,
     environment: "node",
     restoreMocks: true,

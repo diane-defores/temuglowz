@@ -23,6 +23,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/pages/ImportReviewPage.vue"),
   },
   {
+    path: "/sync",
+    name: "sync",
+    component: () => import("@/pages/SyncPage.vue"),
+  },
+  {
     path: "/product/:snapshotId",
     name: "product-detail",
     component: () => import("@/pages/ProductDetailPage.vue"),
@@ -31,4 +36,3 @@ const routes: RouteRecordRaw[] = [
 ];
 
 export default routes;
-
