@@ -1,7 +1,7 @@
 ---
 artifact: support_runbook
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.1"
 project: "temu"
 created: "2026-06-10"
 updated: "2026-06-10"
@@ -18,8 +18,8 @@ linked_systems:
   - /home/claude/winflowz/shipflow_data/workflow/docs/technical/suite-authentication.md
 depends_on:
   - artifact: "shipflow_data/workflow/specs/temu-shopping-lists-entitlements-access-model.md"
-    artifact_version: "1.0.3"
-    required_status: "ready"
+    artifact_version: "1.0.4"
+    required_status: "reviewed"
   - artifact: "/home/claude/winflowz/shipflow_data/workflow/docs/technical/suite-authentication.md"
     artifact_version: "1.0.11"
     required_status: "reviewed"

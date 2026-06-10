@@ -1,13 +1,13 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "1.0.3"
+artifact_version: "1.0.4"
 project: "temu"
 created: "2026-06-10"
 created_at: "2026-06-10 09:19:07 UTC"
 updated: "2026-06-10"
-updated_at: "2026-06-10 10:11:02 UTC"
-status: ready
+updated_at: "2026-06-10 10:19:48 UTC"
+status: reviewed
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
 scope: "Entitlements and access model for Temu Shopping Lists"
@@ -226,7 +226,7 @@ Exception without proof:
 - Decision Quality Contract: `/home/claude/shipflow/skills/references/decision-quality-contract.md`, version `1.0.0`, active.
 - Documentation Freshness Gate: `/home/claude/shipflow/skills/references/documentation-freshness-gate.md`, version `1.2.0`, active.
 - Existing MVP spec: `shipflow_data/workflow/specs/temu-shopping-lists-android-app.md`, version `1.0.0`, status ready.
-- Existing technical doc: `shipflow_data/technical/apps/temu-shopping-lists-android-app.md`, version `1.0.1`, draft.
+- Existing technical doc: `shipflow_data/technical/apps/temu-shopping-lists-android-app.md`, version `1.0.2`, draft.
 - WinFlowz suite-authentication decision: `/home/claude/winflowz/shipflow_data/workflow/docs/technical/suite-authentication.md`, version `1.0.11`, reviewed. Verdict: one suite-owned entitlement ledger is the default for Diane-operated products.
 - WinFlowz unified-suite-authentication spec: `/home/claude/winflowz/shipflow_data/workflow/specs/unified-suite-authentication.md`, version `1.0.26`, active. Verdict: future apps such as Temu Shopping Lists should add a `product_id` and product gates instead of creating a second durable ledger.
 - Convex Auth docs: `https://docs.convex.dev/auth`, accessed 2026-06-10. Fresh-docs verdict: `fresh-docs checked`; current docs state Convex uses OpenID Connect JWTs for authentication and functions can access authenticated identity through backend auth APIs.
@@ -317,10 +317,11 @@ Do not update public pricing, checkout, FAQ, or app-store copy until provider an
   - Action: Document safe lookup, grant, revoke, refund, expire, reissue, duplicate-account, and wrong-code flows.
   - Validate with: metadata lint.
 
-- [ ] Task 7: Block provider-specific implementation until provider selected.
+- [x] Task 7: Block provider-specific implementation until provider selected.
   - File: future provider spec.
   - Action: Require fresh official docs for chosen provider webhook signatures, event ids, refunds, cancellations, and environment handling.
   - Validate with: documentation freshness gate.
+  - Notes: Enforced as a scope boundary in README, spec, checklist, and support runbook; no provider runtime was added.
 
 ## Acceptance Criteria
 
@@ -329,11 +330,11 @@ Do not update public pricing, checkout, FAQ, or app-store copy until provider an
 - [x] AC3: The stable `product_id`, plan ids, source ids, and entitlement statuses are allowlisted before runtime entitlement writes exist.
 - [x] AC4: Cloud sync code and docs state that client-owned `userId` is not authorization.
 - [x] AC5: A protected backend access check contract exists before production cloud sync.
-- [ ] AC6: No provider event, activation code, or manual grant can activate access without server-side normalization and idempotency.
+- [x] AC6: No provider event, activation code, or manual grant can activate access without server-side normalization and idempotency.
 - [x] AC7: Signed-in/no-entitlement and backend-unavailable states deny protected access but remain recoverable in UI.
-- [ ] AC8: Refund/revoke/expire behavior removes protected access without deleting identity or local-only data.
+- [x] AC8: Refund/revoke/expire behavior removes protected access without deleting identity or local-only data.
 - [x] AC9: Support diagnostics redact tokens, cookies, raw codes, provider secrets, and unnecessary personal data.
-- [ ] AC10: Any provider-specific follow-up spec includes current official docs and webhook/signature validation requirements.
+- [x] AC10: Any provider-specific follow-up spec includes current official docs and webhook/signature validation requirements.
 
 ## Test Strategy
 
@@ -405,14 +406,15 @@ None.
 | 2026-06-10 09:43:39 UTC | sf-spec | GPT-5 Codex | Updated spec after operator confirmed one central suite-owned ledger across Diane-operated products | Spec moved to ready: Temu Shopping Lists should use `product_id=temu_shopping_lists` in the suite ledger and must not create a second durable ledger | /sf-start Entitlements and access model for Temu Shopping Lists |
 | 2026-06-10 09:45:29 UTC | sf-ready | GPT-5 Codex | Evaluated readiness after the suite-ledger blocker was resolved | Ready: no open blocking questions remain; test contract now names proof order and required results; provider/sync monetization choices are deferred, not blockers | /sf-start Entitlements and access model for Temu Shopping Lists |
 | 2026-06-10 10:11:02 UTC | sf-start | GPT-5 Codex | Implemented the bounded entitlement guardrail slice: access allowlists, fail-closed protected access contract, sync scaffold guardrails, checklist, README note, and support runbook skeleton | Implemented locally; provider-specific work remains intentionally blocked until a provider spec and fresh official docs exist | /sf-verify Entitlements and access model for Temu Shopping Lists |
+| 2026-06-10 10:19:48 UTC | sf-verify | GPT-5 Codex | Verified the entitlement guardrail slice against code, docs, checklist, metadata, tests, build, CI surface, and static scans | Verified for the current local guardrail scope; provider/server-bridge proof remains deferred and blocked by explicit future specs before protected sync, grants, codes, or billing | /sf-end Entitlements and access model for Temu Shopping Lists |
 
 ## Current Chantier Flow
 
 - sf-spec: done, updated after ledger decision
 - sf-ready: ready
 - sf-start: implemented
-- sf-verify: not launched
+- sf-verify: verified for current guardrail scope
 - sf-end: not launched
 - sf-ship: not launched
 
-Next command: `/sf-verify Entitlements and access model for Temu Shopping Lists`
+Next command: `/sf-end Entitlements and access model for Temu Shopping Lists`

@@ -1,7 +1,7 @@
 ---
 artifact: test_checklist
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.1"
 project: "temu"
 created: "2026-06-10"
 updated: "2026-06-10"
@@ -21,8 +21,8 @@ linked_systems:
   - convex/schema.ts
 depends_on:
   - artifact: "shipflow_data/workflow/specs/temu-shopping-lists-entitlements-access-model.md"
-    artifact_version: "1.0.3"
-    required_status: "ready"
+    artifact_version: "1.0.4"
+    required_status: "reviewed"
 supersedes: []
 evidence:
   - "Spec requires entitlement scenarios before protected sync, premium, billing, activation codes, or support grants."
@@ -39,11 +39,11 @@ next_step: "/sf-verify Entitlements and access model for Temu Shopping Lists"
 | TC-ENT-AUTO-003 | Protected sync | Unauthenticated protected sync is rejected | yes | Missing identity returns deny/fail-closed result | PASS | Covered by unit tests | `evaluateProtectedAccess` in `src/lib/accessModel.test.ts` | Server bridge proof still future |  |
 | TC-ENT-AUTO-004 | Protected sync | Authenticated user without entitlement is rejected | yes | Missing entitlement returns deny/fail-closed result | PASS | Covered by unit tests | `evaluateProtectedAccess` in `src/lib/accessModel.test.ts` | Server bridge proof still future |  |
 | TC-ENT-AUTO-005 | Protected sync | Client-supplied ids or entitlement-like payloads cannot grant access | yes | Unknown product/source/status normalizes to null or denies access | PASS | Covered by unit tests | `normalizeEntitlementSnapshot` in `src/lib/accessModel.test.ts` | Backend must still recompute server-side |  |
-| TC-ENT-AUTO-006 | Provider events | Provider/manual events are idempotent | yes before provider work | Duplicate `sourceEventId` does not duplicate access | NOT_RUN | Provider integration out of scope | Future provider spec | Requires selected provider docs |  |
+| TC-ENT-AUTO-006 | Provider events | Provider/manual events are idempotent | no | Duplicate `sourceEventId` does not duplicate access | NOT_RUN | Provider integration out of scope | Future provider spec | Required before provider work; requires selected provider docs |  |
 | TC-ENT-AUTO-007 | Revocation | Revoked/refunded/expired entitlements deny protected access | yes | Non-granting statuses deny access | PASS | Covered by unit tests | `grantsAccess` in `src/lib/accessModel.test.ts` |  |  |
-| TC-ENT-AUTO-008 | Activation codes | Activation code redemption never logs or persists raw codes client-side | yes before codes | Raw codes are not stored in browser/mobile persistent storage or logs | NOT_RUN | Activation codes out of scope | Support runbook skeleton | Requires implementation proof before use |  |
+| TC-ENT-AUTO-008 | Activation codes | Activation code redemption never logs or persists raw codes client-side | no | Raw codes are not stored in browser/mobile persistent storage or logs | NOT_RUN | Activation codes out of scope | Support runbook skeleton | Required before activation-code implementation |  |
 | TC-ENT-MANUAL-001 | Operator decision | Confirm suite-ledger decision | yes | Product uses suite ledger under `product_id=temu_shopping_lists` | PASS | Decision documented | `shipflow_data/technical/apps/temu-shopping-lists-android-app.md` |  |  |
-| TC-ENT-MANUAL-002 | Support | Runbook can check/grant/revoke/expire/refund/reissue without secrets | yes before users | Support flow is documented and redacted | PARTIAL | Skeleton exists; real suite tooling not wired | `shipflow_data/technical/support/entitlements-runbook.md` | Complete before grants/codes |  |
+| TC-ENT-MANUAL-002 | Support | Runbook can check/grant/revoke/expire/refund/reissue without secrets | no | Support flow is documented and redacted | NOT_RUN | Skeleton exists; real suite tooling not wired | `shipflow_data/technical/support/entitlements-runbook.md` | Required before grants/codes/users |  |
 
 ## Notes
 
