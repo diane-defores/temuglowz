@@ -505,6 +505,7 @@ Non-blocking decisions to revisit during implementation:
 | 2026-06-10 07:44:48 UTC | sf-verify | GPT-5 Codex | Ran automated checks, browser proof, metadata lint, checklist gate, policy scan, Tauri frontend build, and Android build attempt | partial: automated/web proof passed; required Android device/share-payload scenarios remain NOT_RUN; Android build blocked by local NDK host mismatch | finalize Android share bridge on compatible Android toolchain/device |
 | 2026-06-10 07:55:25 UTC | sf-ship | GPT-5 Codex | Initialized Git, created private GitHub repo `diane-defores/temu-shopping-lists`, pushed `main`, and confirmed `Dev Builds` workflow is active | shipped for remote collaboration and CI debug APK builds; product validation remains partial per sf-verify | finalize Android share bridge on compatible Android toolchain/device |
 | 2026-06-10 08:26:58 UTC | sf-fix | GPT-5 Codex | Switched debug APK CI to Blacksmith runner and added aggressive Android NDK, Rust, pnpm, and Gradle cache policy | CI hardening prepared; YAML and metadata lint passed locally; product validation remains partial per sf-verify | push and confirm CI run |
+| 2026-06-10 08:48:51 UTC | sf-tasks | GPT-5 Codex | Created local project task tracker and added WebView, capture, cart import, theme injection, policy, Android share, and QA follow-ups | task tracker updated; no lifecycle status change | /sf-spec In-app Temu WebView capture mode |
 
 ## Current Chantier Flow
 
