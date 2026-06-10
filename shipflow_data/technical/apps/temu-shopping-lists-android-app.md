@@ -1,7 +1,7 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "1.0.7"
+artifact_version: "1.0.8"
 project: "temu"
 created: "2026-06-10"
 updated: "2026-06-10"
@@ -33,6 +33,7 @@ evidence:
   - "User decision 2026-06-10: Temu Shopping Lists should use the suite-owned entitlement ledger with product_id=temu_shopping_lists."
   - "Entitlement guardrail slice added on 2026-06-10 with access allowlists, fail-closed access contract, checklist, and support runbook skeleton."
   - "Development mode decision 2026-06-10: local checks cover TS/Vue/Convex/unit/web only; native Android/Tauri/WebView proof is CI-first on GitHub Actions Blacksmith."
+  - "Debug APK distribution is via GitHub prerelease assets while Actions artifact quota is constrained."
 next_review: "2026-07-10"
 next_step: "/sf-verify Temu shopping lists Android app"
 ---
@@ -159,7 +160,7 @@ pnpm build
 Current known limits:
 
 - `pnpm tauri:android:build` reaches Android linking but fails in this local environment because the installed NDK clang is `linux-x86_64` and cannot execute on the current `aarch64` host.
-- Android build proof is available from CI Blacksmith run `27301921202` for commit `cde00d0`, which built and published fallback release `android-debug-8`.
+- Android build proof is available from CI Blacksmith run `27301921202` for commit `cde00d0`, which built and published release `android-debug-8`.
 - Linux desktop `cargo check` is blocked by missing Tauri Linux prerequisites (`pkg-config`, `webkit2gtk-4.1`, `rsvg2`).
 - Android real-device Sharesheet proof is still required.
 

@@ -1,7 +1,7 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "1.0.1"
+artifact_version: "1.0.2"
 project: "temu"
 created: "2026-06-10"
 updated: "2026-06-10"
@@ -31,6 +31,7 @@ evidence:
   - "Generated Android manifest includes ACTION_SEND text/plain share target."
   - "Local Android native builds are not authoritative on this aarch64 workspace because the installed NDK is linux-x86_64."
   - "GitHub Actions Blacksmith run 27301921202 built the Android debug APK successfully for commit cde00d0 on 2026-06-10."
+  - "Workflow changed after quota proof to publish debug APK prereleases directly and avoid Actions artifact quota annotations."
 next_review: "2026-07-10"
 next_step: "/sf-verify Temu shopping lists Android app"
 ---
@@ -49,7 +50,7 @@ Track the native Android surface for receiving user-initiated Temu product links
 - `src-tauri/android/ShareIntentBridge.kt`: placeholder parsing contract for Android shared text.
 - `src-tauri/src/lib.rs`: Tauri commands consumed by the frontend share bridge.
 - `src/lib/shareBridge.ts`: frontend consumption path for pending share payloads.
-- `.github/workflows/dev-builds.yml`: GitHub Actions debug APK build, Blacksmith runner selection, aggressive build caches, artifact upload, and release fallback.
+- `.github/workflows/dev-builds.yml`: GitHub Actions debug APK build, Blacksmith runner selection, build caches, and prerelease APK publishing.
 
 ## Entrypoints
 
@@ -89,18 +90,17 @@ pnpm tauri:android:init
 pnpm tauri:android:build
 ```
 
-GitHub Actions validation and artifact:
+GitHub Actions validation and APK distribution:
 
 ```bash
 workflow: Dev Builds
 runner: blacksmith-2vcpu-ubuntu-2404
-artifact: temu-shopping-lists-android-debug-arm64
-fallback release asset: app-universal-debug.apk
+release asset: app-universal-debug.apk
 ```
 
 CI cache policy:
 
-- Android NDK cache keyed by pinned `ANDROID_NDK_VERSION`.
+- Android SDK/NDK setup uses Blacksmith transparent cache and pinned `ANDROID_NDK_VERSION`; avoid explicit caching of `/usr/local/lib/android/sdk/ndk` because restoring modes/utimes there can produce non-fatal tar warnings.
 - Rust cache for `src-tauri` with `cache-on-failure` enabled.
 - Gradle caches stored under workspace-local `.gradle-cache` plus generated Android `.gradle`.
 - pnpm store cache through `actions/setup-node`.
@@ -114,13 +114,13 @@ Manual validation is required on Android:
 Known environment gap:
 
 - Current workspace host is `aarch64`, but the detected Android NDK clang path is `prebuilt/linux-x86_64`, causing an exec format linker failure during local `pnpm tauri:android:build`.
-- Do not spend implementation time trying to prove Android locally in this workspace unless the SDK/NDK architecture is fixed first. Use CI Blacksmith and the debug APK/release fallback instead.
+- Do not spend implementation time trying to prove Android locally in this workspace unless the SDK/NDK architecture is fixed first. Use CI Blacksmith and the debug APK prerelease instead.
 
 ## Reader Checklist
 
 - Confirm `AndroidManifest.xml` still has exactly the intended text share filter.
 - Confirm GitHub Actions uses the Blacksmith runner and keeps Android NDK, Rust, pnpm, and Gradle cache hits healthy.
-- Confirm GitHub Actions uploads `temu-shopping-lists-android-debug-arm64` or publishes the fallback prerelease APK when artifact quota is full.
+- Confirm GitHub Actions publishes the debug APK prerelease asset.
 - Confirm native Android/WebView build proof comes from CI unless a compatible local SDK/NDK is explicitly available.
 - Confirm no Android code logs private payloads, cookies, addresses, order history, or payment data.
 - Confirm manual URL fallback remains available.
