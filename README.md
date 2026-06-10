@@ -57,9 +57,10 @@ Android debug APK for arm64 devices.
    the APK from the newest `Android debug APK ...` prerelease instead.
 5. Install the APK on an Android device with debug/unknown-app installs enabled.
 
-The workflow runs `typecheck`, unit tests, lint, web build, regenerates the
-Tauri Android project, verifies the `ACTION_SEND` text share target, then builds
-the debug APK.
+The workflow runs on a Blacksmith Ubuntu runner with aggressive Android NDK,
+Rust, pnpm, and Gradle caching. It runs `typecheck`, unit tests, lint, web
+build, regenerates the Tauri Android project, verifies the `ACTION_SEND` text
+share target, then builds the debug APK.
 
 ## Commands
 

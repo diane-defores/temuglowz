@@ -48,7 +48,7 @@ Track the native Android surface for receiving user-initiated Temu product links
 - `src-tauri/android/ShareIntentBridge.kt`: placeholder parsing contract for Android shared text.
 - `src-tauri/src/lib.rs`: Tauri commands consumed by the frontend share bridge.
 - `src/lib/shareBridge.ts`: frontend consumption path for pending share payloads.
-- `.github/workflows/dev-builds.yml`: GitHub Actions debug APK build and artifact upload.
+- `.github/workflows/dev-builds.yml`: GitHub Actions debug APK build, Blacksmith runner selection, aggressive build caches, artifact upload, and release fallback.
 
 ## Entrypoints
 
@@ -75,8 +75,17 @@ GitHub Actions validation and artifact:
 
 ```bash
 workflow: Dev Builds
+runner: blacksmith-2vcpu-ubuntu-2404
 artifact: temu-shopping-lists-android-debug-arm64
+fallback release asset: app-universal-debug.apk
 ```
+
+CI cache policy:
+
+- Android NDK cache keyed by pinned `ANDROID_NDK_VERSION`.
+- Rust cache for `src-tauri` with `cache-on-failure` enabled.
+- Gradle caches stored under workspace-local `.gradle-cache` plus generated Android `.gradle`.
+- pnpm store cache through `actions/setup-node`.
 
 Manual validation is required on Android:
 
@@ -91,7 +100,8 @@ Known environment gap:
 ## Reader Checklist
 
 - Confirm `AndroidManifest.xml` still has exactly the intended text share filter.
-- Confirm GitHub Actions uploads `temu-shopping-lists-android-debug-arm64`.
+- Confirm GitHub Actions uses the Blacksmith runner and keeps Android NDK, Rust, pnpm, and Gradle cache hits healthy.
+- Confirm GitHub Actions uploads `temu-shopping-lists-android-debug-arm64` or publishes the fallback prerelease APK when artifact quota is full.
 - Confirm no Android code logs private payloads, cookies, addresses, order history, or payment data.
 - Confirm manual URL fallback remains available.
 - Confirm runtime share payload delivery before marking Android proof as passed.
