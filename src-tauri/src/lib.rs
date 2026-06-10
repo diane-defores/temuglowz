@@ -30,6 +30,7 @@ fn validate_backup_payload(payload_json: String) -> bool {
   backup::validate_payload(&payload_json).is_ok()
 }
 
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   Builder::default()
     .manage(ShareBridgeState::default())
