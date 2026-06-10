@@ -1,0 +1,11 @@
+node_modules/
+dist/
+dist-*/
+.vite/
+.vite-temp/
+.playwright-mcp/
+src-tauri/target/
+src-tauri/gen/android/app/build/
+src-tauri/gen/android/.gradle/
+src-tauri/gen/android/build/
+*.log

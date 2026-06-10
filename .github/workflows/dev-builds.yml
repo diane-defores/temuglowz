@@ -1,0 +1,145 @@
+name: Dev Builds
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+      - "release/**"
+    paths:
+      - "src/**"
+      - "src-tauri/**"
+      - "convex/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "vite.config.ts"
+      - "vite.tauri.config.ts"
+      - "vitest.config.ts"
+      - "tsconfig*.json"
+      - ".github/workflows/dev-builds.yml"
+
+concurrency:
+  group: dev-builds-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  android-debug:
+    name: Android debug APK (arm64)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Accept Android licenses and select NDK
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "ndk;28.2.13676358"
+          echo "NDK_HOME=$ANDROID_HOME/ndk/28.2.13676358" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/28.2.13676358" >> "$GITHUB_ENV"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20.19.0
+          cache: pnpm
+
+      - name: Install Rust stable with Android target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - name: Cache Rust
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+          shared-key: tauri-android-debug
+
+      - name: Cache Gradle
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('src-tauri/gen/android/**/*.gradle*', 'src-tauri/gen/android/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test:once
+
+      - name: Lint
+        run: pnpm lint:check
+
+      - name: Build web target
+        run: pnpm build
+
+      - name: Initialize Android project
+        run: pnpm exec tauri android init --ci
+
+      - name: Ensure Android share target manifest
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          manifest = Path("src-tauri/gen/android/app/src/main/AndroidManifest.xml")
+          text = manifest.read_text()
+          if "android.intent.action.SEND" not in text:
+              share_filter = """            <intent-filter>
+                  <action android:name="android.intent.action.SEND" />
+                  <category android:name="android.intent.category.DEFAULT" />
+                  <data android:mimeType="text/plain" />
+              </intent-filter>
+          """
+              marker = "            </intent-filter>\n        </activity>"
+              if marker not in text:
+                  raise SystemExit("MainActivity launcher intent-filter marker not found")
+              text = text.replace(marker, f"            </intent-filter>\n{share_filter}        </activity>", 1)
+              manifest.write_text(text)
+          PY
+
+      - name: Verify Android share target manifest
+        shell: bash
+        run: |
+          grep -q 'android.intent.action.SEND' src-tauri/gen/android/app/src/main/AndroidManifest.xml
+          grep -q 'android:mimeType="text/plain"' src-tauri/gen/android/app/src/main/AndroidManifest.xml
+
+      - name: Build debug APK
+        run: pnpm exec tauri android build --ci --debug --apk -t aarch64
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: temu-shopping-lists-android-debug-arm64
+          path: src-tauri/gen/android/app/build/outputs/**/*.apk
+          if-no-files-found: error
+          retention-days: 14

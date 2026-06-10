@@ -1,0 +1,54 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Temu Shopping Lists",
+  "version": "0.1.0",
+  "identifier": "com.temushoppinglists.app",
+  "build": {
+    "frontendDist": "../dist/tauri",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "pnpm tauri:dev",
+    "beforeBuildCommand": "pnpm tauri:build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Temu Shopping Lists",
+        "width": 1280,
+        "height": 760,
+        "minWidth": 920,
+        "minHeight": 620,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {
+    "deep-link": {
+      "mobile": [
+        {
+          "scheme": [
+            "temu-lists"
+          ],
+          "host": "share",
+          "pathPrefix": [
+            "/import"
+          ]
+        }
+      ]
+    }
+  }
+}

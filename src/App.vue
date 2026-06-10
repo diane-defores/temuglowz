@@ -1,0 +1,16 @@
+<template>
+  <div class="app-root">
+    <header class="app-header">
+      <h1>Temu Shopping Lists</h1>
+      <nav>
+        <RouterLink to="/">Listes</RouterLink>
+        <RouterLink to="/import/manual">Import manuel</RouterLink>
+      </nav>
+    </header>
+
+    <main class="app-main">
+      <RouterView />
+    </main>
+  </div>
+</template>
+

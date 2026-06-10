@@ -1,0 +1,119 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: #111827;
+  background: #f8fafc;
+}
+
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #dbeafe;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: #ffffff;
+}
+
+.app-header nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.app-header a {
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+.app-main {
+  padding: 1rem;
+  max-width: 1024px;
+  width: min(100%, 1024px);
+  margin: 0 auto;
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.muted {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.danger {
+  color: #b91c1c;
+}
+
+.card-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.list-card,
+.item-card {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0.75rem;
+  background: #f8fbff;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+input,
+textarea,
+select,
+button {
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  padding: 0.6rem 0.75rem;
+}
+
+button {
+  cursor: pointer;
+  background: #1d4ed8;
+  color: #ffffff;
+  border-color: #1d4ed8;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.link-btn {
+  color: #1d4ed8;
+  text-decoration: none;
+}
+

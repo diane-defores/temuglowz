@@ -1,0 +1,101 @@
+---
+artifact: technical_module_context
+metadata_schema_version: "1.0"
+artifact_version: "1.0.0"
+project: "temu"
+created: "2026-06-10"
+updated: "2026-06-10"
+status: draft
+source_skill: sf-build
+scope: "android-tauri-share-target"
+owner: "Diane"
+confidence: "medium"
+risk_level: "high"
+security_impact: "yes"
+docs_impact: "yes"
+linked_systems:
+  - src-tauri/
+  - src-tauri/gen/android/app/src/main/AndroidManifest.xml
+  - src/lib/shareBridge.ts
+  - .github/workflows/dev-builds.yml
+depends_on:
+  - artifact: "Tauri v2 mobile plugin docs"
+    artifact_version: "accessed 2026-06-09"
+    required_status: "reviewed"
+  - artifact: "Android Developers receive shared data docs"
+    artifact_version: "accessed 2026-06-09"
+    required_status: "reviewed"
+supersedes: []
+evidence:
+  - "Tauri Android project generated with `pnpm tauri:android:init`."
+  - "Generated Android manifest includes ACTION_SEND text/plain share target."
+  - "Android build currently blocked by host/NDK architecture mismatch before APK output."
+next_review: "2026-07-10"
+next_step: "/sf-verify Temu shopping lists Android app"
+---
+
+# Android Tauri Share Target
+
+## Purpose
+
+Track the native Android surface for receiving user-initiated Temu product links through the Android Sharesheet.
+
+## Owned Files
+
+- `src-tauri/tauri.conf.json`: Tauri app identity and mobile config.
+- `src-tauri/gen/android/app/src/main/AndroidManifest.xml`: generated Android manifest with `ACTION_SEND` `text/plain` intent filter.
+- `src-tauri/android/AndroidManifest.share-intent.xml`: reference snippet for regenerating the share filter.
+- `src-tauri/android/ShareIntentBridge.kt`: placeholder parsing contract for Android shared text.
+- `src-tauri/src/lib.rs`: Tauri commands consumed by the frontend share bridge.
+- `src/lib/shareBridge.ts`: frontend consumption path for pending share payloads.
+- `.github/workflows/dev-builds.yml`: GitHub Actions debug APK build and artifact upload.
+
+## Entrypoints
+
+- Android Sharesheet sends `android.intent.action.SEND` with MIME `text/plain`.
+- The app manifest makes `MainActivity` exported for this explicit user action.
+- The frontend imports pending payloads through `consume_pending_share` when a native bridge supplies one.
+
+## Invariants
+
+- Shared payloads are untrusted text and must be parsed by `src/lib/importParser.ts`.
+- Android sharing must not request Temu credentials, cookies, account data, or broad storage access.
+- The app must accept manual URL paste even when native share delivery is unavailable.
+- Regenerating `src-tauri/gen/android` must preserve the `ACTION_SEND` filter.
+- Full Android support cannot be claimed until a real device/emulator test proves payload delivery into import review.
+
+## Validation
+
+```bash
+pnpm tauri:android:init
+pnpm tauri:android:build
+```
+
+GitHub Actions validation and artifact:
+
+```bash
+workflow: Dev Builds
+artifact: temu-shopping-lists-android-debug-arm64
+```
+
+Manual validation is required on Android:
+
+- `TC-MANUAL-001`: app appears in Sharesheet for Temu product text.
+- `TC-MANUAL-002`: shared payload opens import review with parsed URL.
+- `TC-MANUAL-004`: saved product remains visible after restart and airplane mode.
+
+Known environment gap:
+
+- Current host is `aarch64`, but the detected Android NDK clang path is `prebuilt/linux-x86_64`, causing an exec format linker failure during `pnpm tauri:android:build`.
+
+## Reader Checklist
+
+- Confirm `AndroidManifest.xml` still has exactly the intended text share filter.
+- Confirm GitHub Actions uploads `temu-shopping-lists-android-debug-arm64`.
+- Confirm no Android code logs private payloads, cookies, addresses, order history, or payment data.
+- Confirm manual URL fallback remains available.
+- Confirm runtime share payload delivery before marking Android proof as passed.
+
+## Maintenance Rule
+
+Update this document when Tauri Android config, generated manifest, share-intent bridge, package identifier, Android permissions, or manual Android proof status changes.
