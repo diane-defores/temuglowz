@@ -80,7 +80,7 @@ function save(): void {
   if (existingDuplicate && duplicateResolution.value === "cancel") {
     importStore.clearDraft();
     notificationsStore.info("Import annule.");
-    router.push({ name: "lists" });
+    router.push({ name: "shopping-shell" });
     return;
   }
 
@@ -89,7 +89,7 @@ function save(): void {
       snapshots.upsertSnapshot(snapshot);
       importStore.clearDraft();
       notificationsStore.success("Snapshot mis a jour.");
-      router.push({ name: "lists" });
+      router.push({ name: "shopping-shell" });
     } catch (error) {
       notificationsStore.error(error instanceof Error ? error.message : "Impossible de mettre a jour ce produit.");
     }
@@ -101,7 +101,7 @@ function save(): void {
     shoppingStore.addItem(selectedListId.value, snapshot.id, quantity.value, note.value);
     importStore.clearDraft();
     notificationsStore.success("Produit enregistre dans la liste.");
-    router.push({ name: "lists" });
+    router.push({ name: "shopping-shell" });
   } catch (error) {
     notificationsStore.error(error instanceof Error ? error.message : "Impossible d'enregistrer ce produit.");
   }

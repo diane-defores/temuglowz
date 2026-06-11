@@ -123,9 +123,9 @@ function syncNativeSessions(): void {
     sessions: sessionSummaries.value,
     activeSessionId: sessionsStore.activeSessionId,
   }).then((result) => {
-    sessionsStore.setDegradedMode(result.degraded);
-    if (result.degraded && !hasShownDegradedNotice.value) {
-      notificationsStore.warning("La WebView tourne en mode degrade. L'import manuel reste disponible.");
+    sessionsStore.setDegradedMode(result.unavailable);
+    if (!result.ok && result.unavailable && !hasShownDegradedNotice.value) {
+      notificationsStore.warning("La WebView native est indisponible pour le moment. L'import manuel reste disponible.");
       hasShownDegradedNotice.value = true;
     }
   }).catch(() => {
@@ -139,9 +139,9 @@ function syncNativeSessions(): void {
 
 function syncNativeShoppingLists(): void {
   syncShoppingLists(shoppingListSummaries.value).then((result) => {
-    sessionsStore.setDegradedMode(result.degraded);
-    if (result.degraded && !hasShownDegradedNotice.value) {
-      notificationsStore.warning("La WebView tourne en mode degrade. Certaines actions peuvent etre limitees.");
+    sessionsStore.setDegradedMode(result.unavailable);
+    if (!result.ok && result.unavailable && !hasShownDegradedNotice.value) {
+      notificationsStore.warning("La synchronisation native est indisponible pour le moment.");
       hasShownDegradedNotice.value = true;
     }
   }).catch(() => {
@@ -170,7 +170,7 @@ async function openShoppingSession(sessionOrId: ShoppingSession | string): Promi
     sessionsStore.settings.darkMode,
     sessionsStore.settings.textZoom,
   );
-  sessionsStore.setDegradedMode(result.degraded);
+  sessionsStore.setDegradedMode(result.unavailable);
   if (!result.ok) {
     notificationsStore.warning(result.error ?? "Impossible d'ouvrir cette session dans la WebView pour le moment.");
   }
@@ -180,7 +180,7 @@ async function openShoppingSession(sessionOrId: ShoppingSession | string): Promi
 async function returnHome(): Promise<void> {
   activeWebviewSessionId.value = null;
   const result = await hideWebview();
-  sessionsStore.setDegradedMode(result.degraded);
+  sessionsStore.setDegradedMode(result.unavailable);
   if (!result.ok && result.error) {
     notificationsStore.warning(result.error);
   }
@@ -218,13 +218,20 @@ async function resolveCaptureUrl(detail: Record<string, unknown>): Promise<strin
 }
 
 async function addCurrentProductToList(rawUrl: string, listId: string): Promise<void> {
+  const targetList = shoppingListsStore.getList(listId);
+  if (!targetList) {
+    notificationsStore.error("Impossible d'ajouter le produit : liste introuvable.");
+    return;
+  }
+
   let draft;
   try {
     draft = importDraftsStore.useWebviewUrl(rawUrl);
   } catch {
-    showInfo(INVALID_PRODUCT_PAGE_MESSAGE);
+    notificationsStore.warning(INVALID_PRODUCT_PAGE_MESSAGE);
     return;
   }
+
   const duplicateItemId = shoppingListsStore.findDuplicateByCanonicalOrProductId(listId, {
     canonicalUrl: draft.canonicalUrl,
   });
@@ -235,6 +242,7 @@ async function addCurrentProductToList(rawUrl: string, listId: string): Promise<
       shoppingListsStore.setItemQuantity(listId, duplicateItemId, existing.quantity + 1);
     }
     importDraftsStore.clearDraft();
+    notificationsStore.success(`Quantite augmentee dans ${targetList.name}.`);
     return;
   }
 
@@ -248,15 +256,21 @@ async function addCurrentProductToList(rawUrl: string, listId: string): Promise<
   productSnapshotsStore.upsertSnapshot(snapshot);
   shoppingListsStore.addItem(listId, snapshot.id, 1);
   importDraftsStore.clearDraft();
-  notificationsStore.success("Produit ajoute a la liste.");
+  notificationsStore.success(`Produit ajoute a ${targetList.name}.`);
 }
 
 async function removeCurrentProductFromList(rawUrl: string, listId: string): Promise<void> {
+  const targetList = shoppingListsStore.getList(listId);
+  if (!targetList) {
+    notificationsStore.error("Impossible de retirer le produit : liste introuvable.");
+    return;
+  }
+
   let draft;
   try {
     draft = importDraftsStore.useWebviewUrl(rawUrl);
   } catch {
-    showInfo(INVALID_PRODUCT_PAGE_MESSAGE);
+    notificationsStore.warning(INVALID_PRODUCT_PAGE_MESSAGE);
     return;
   }
   const duplicateItemId = shoppingListsStore.findDuplicateByCanonicalOrProductId(listId, {
@@ -265,7 +279,7 @@ async function removeCurrentProductFromList(rawUrl: string, listId: string): Pro
 
   if (duplicateItemId) {
     shoppingListsStore.removeItem(listId, duplicateItemId);
-    notificationsStore.success("Produit retire de la liste.");
+    notificationsStore.success(`Produit retire de ${targetList.name}.`);
   } else {
     notificationsStore.info("Ce produit n'etait pas present dans cette liste.");
   }
@@ -324,18 +338,31 @@ const onNativeCaptureRequested = (async (event: CustomEvent) => {
     sessionsStore.updateCurrentUrl(detail.sessionId, rawUrl);
   }
 
-  if (action === "add" && listId) {
-    await addCurrentProductToList(rawUrl, listId);
-    return;
-  }
+  try {
+    if (action === "add") {
+      if (!listId) {
+        notificationsStore.error("Impossible d'ajouter le produit : aucune liste cible n'a ete transmise.");
+        return;
+      }
+      await addCurrentProductToList(rawUrl, listId);
+      return;
+    }
 
-  if (action === "remove" && listId) {
-    await removeCurrentProductFromList(rawUrl, listId);
-    return;
-  }
+    if (action === "remove") {
+      if (!listId) {
+        notificationsStore.error("Impossible de retirer le produit : aucune liste cible n'a ete transmise.");
+        return;
+      }
+      await removeCurrentProductFromList(rawUrl, listId);
+      return;
+    }
 
-  if (action === "observe") {
-    await observeCurrentProduct(rawUrl);
+    if (action === "observe") {
+      await observeCurrentProduct(rawUrl);
+      return;
+    }
+  } catch (error) {
+    notificationsStore.error(error instanceof Error ? error.message : "L'action WebView n'a pas pu aboutir.");
     return;
   }
 

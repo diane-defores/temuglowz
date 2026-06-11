@@ -119,7 +119,7 @@
               v-if="sessionsStore.degradedMode"
               class="degraded-pill"
             >
-              Mode navigateur
+              WebView indisponible
             </span>
             <button
               class="section-icon-action"

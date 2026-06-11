@@ -30,7 +30,7 @@
     <div class="header-end">
       <RouterLink
         class="header-link"
-        :to="{ name: 'lists' }"
+        :to="{ name: 'shopping-shell' }"
       >
         Listes
       </RouterLink>

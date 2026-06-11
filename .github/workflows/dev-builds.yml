@@ -1,8 +1,26 @@
-name: Dev Builds
+name: Temu Dev Checks and Manual Android Build
 
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
+      - master
+      - develop
+      - preview
+      - "release/**"
+    paths:
+      - "src/**"
+      - "src-tauri/**"
+      - "convex/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "vite.config.ts"
+      - "vite.tauri.config.ts"
+      - "vitest.config.ts"
+      - "tsconfig*.json"
+      - ".github/workflows/dev-builds.yml"
+  pull_request:
     branches:
       - main
       - master
@@ -26,7 +44,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: read
 
 env:
   ANDROID_NDK_VERSION: "28.2.13676358"
@@ -37,8 +55,8 @@ env:
   VITE_CONVEX_URL: ${{ vars.VITE_CONVEX_URL || 'https://chatty-canary-255.eu-west-1.convex.cloud' }}
 
 jobs:
-  android-debug:
-    name: Android debug APK (arm64)
+  android-checks:
+    name: Android checks
     runs-on: blacksmith-2vcpu-ubuntu-2404
     timeout-minutes: 60
 
@@ -147,25 +165,114 @@ jobs:
           grep -q 'android.intent.action.SEND' src-tauri/gen/android/app/src/main/AndroidManifest.xml
           grep -q 'android:mimeType="text/plain"' src-tauri/gen/android/app/src/main/AndroidManifest.xml
 
+  android-debug:
+    name: Manual Android debug build (arm64)
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    timeout-minutes: 60
+    needs:
+      - android-checks
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure git safe directory
+        run: git config --global --add safe.directory "*"
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Accept Android licenses and select NDK
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "ndk;$ANDROID_NDK_VERSION"
+          echo "NDK_HOME=$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION" >> "$GITHUB_ENV"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20.19.0
+          cache: pnpm
+
+      - name: Install Rust stable with Android target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - name: Cache Rust
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+          shared-key: tauri-android-debug
+          cache-on-failure: true
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Cache Gradle
+        uses: actions/cache@v5
+        with:
+          path: |
+            .gradle-cache/caches
+            .gradle-cache/wrapper
+            .gradle-cache/jdks
+            src-tauri/gen/android/.gradle
+          key: gradle-android-${{ runner.os }}-${{ hashFiles('src-tauri/gen/android/**/*.gradle*', 'src-tauri/gen/android/**/gradle-wrapper.properties', 'src-tauri/Cargo.lock', 'pnpm-lock.yaml') }}
+          restore-keys: |
+            gradle-android-${{ runner.os }}-
+            gradle-android-
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Initialize Android project
+        run: pnpm exec tauri android init --ci
+
+      - name: Ensure Android share target manifest
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          manifest = Path("src-tauri/gen/android/app/src/main/AndroidManifest.xml")
+          text = manifest.read_text()
+          if "android.intent.action.SEND" not in text:
+              share_filter = """            <intent-filter>
+                  <action android:name="android.intent.action.SEND" />
+                  <category android:name="android.intent.category.DEFAULT" />
+                  <data android:mimeType="text/plain" />
+              </intent-filter>
+          """
+              marker = "            </intent-filter>\n        </activity>"
+              if marker not in text:
+                  raise SystemExit("MainActivity launcher intent-filter marker not found")
+              text = text.replace(marker, f"            </intent-filter>\n{share_filter}        </activity>", 1)
+              manifest.write_text(text)
+          PY
+
+      - name: Verify Android share target manifest
+        shell: bash
+        run: |
+          grep -q 'android.intent.action.SEND' src-tauri/gen/android/app/src/main/AndroidManifest.xml
+          grep -q 'android:mimeType="text/plain"' src-tauri/gen/android/app/src/main/AndroidManifest.xml
+
       - name: Build debug APK
         run: pnpm exec tauri android build --ci --debug --apk -t aarch64
 
-      - name: Publish debug APK release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          mapfile -t apk_files < <(find src-tauri/gen/android/app/build/outputs -type f -name "*.apk" | sort)
-          if [ "${#apk_files[@]}" -eq 0 ]; then
-            echo "No APK file found for release" >&2
-            exit 1
-          fi
-
-          release_tag="android-debug-${GITHUB_RUN_NUMBER}"
-          gh release delete "$release_tag" --yes --cleanup-tag 2>/dev/null || true
-          gh release create "$release_tag" "${apk_files[@]}" \
-            --title "Android debug APK ${GITHUB_RUN_NUMBER}" \
-            --notes "Debug APK for ${GITHUB_SHA}. Published as a prerelease because Actions artifact storage is quota-limited in this repository." \
-            --prerelease \
-            --target "$GITHUB_SHA"
+      - name: Upload Android artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: temu-android-debug
+          path: src-tauri/gen/android/app/build/outputs/**/*.apk
+          if-no-files-found: error
+          retention-days: 1

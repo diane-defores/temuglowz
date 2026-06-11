@@ -52,7 +52,7 @@
         <RouterLink
           class="sidebar-link"
           :class="{ 'justify-content-center': iconsOnly }"
-          :to="{ name: 'lists' }"
+          :to="{ name: 'shopping-shell' }"
           title="Produits sauvegardés"
         >
           <i class="pi pi-shopping-bag" />

@@ -126,6 +126,7 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
     override fun load(webView: WebView) {
         mainWebView = webView
         multiProfileModeEnabled = WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROFILE)
+        disableMultiProfileMode = !multiProfileModeEnabled
         Log.i(TAG, "Temu WebView plugin loaded; multiProfile=$multiProfileModeEnabled")
     }
 
@@ -150,6 +151,7 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
             val name = args.name.trim().ifBlank { "Shopping" }
             sessionItems[sessionId] = SessionItem(sessionId, name)
 
+            enforceSingleHostFallback(sessionId)
             val host = sessionHosts[sessionId] ?: createHost(sessionId, name, url)
             host.name = name
             host.currentUrl = url
@@ -206,7 +208,7 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
         activity.runOnUiThread {
             val host = activeHost()
             val result = JSObject()
-            result.put("url", host?.currentUrl ?: host?.webView?.url)
+            result.put("url", host?.let { currentVisibleUrl(it) })
             result.put("sessionId", host?.id)
             result.put("available", host != null)
             result.put("degraded", isProfileDegraded())
@@ -326,11 +328,11 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
 
     private fun createWebView(sessionId: String): WebView {
         val webView = WebView(activity)
-        if (multiProfileModeEnabled && !disableMultiProfileMode) {
+        if (isPoolingEnabled()) {
             try {
                 WebViewCompat.setProfile(webView, webkitProfileName(sessionId))
             } catch (error: Exception) {
-                disableMultiProfileMode = true
+                disablePoolingAndDestroyInactiveHosts()
                 Log.w(TAG, "WebView profile isolation degraded: ${error.message}")
             }
         }
@@ -348,7 +350,7 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
         settings.displayZoomControls = false
         settings.textZoom = textZoomLevel
 
-        val cookieManager = if (multiProfileModeEnabled && !disableMultiProfileMode) {
+        val cookieManager = if (isPoolingEnabled()) {
             try {
                 WebViewCompat.getProfile(webView).cookieManager
             } catch (_: Exception) {
@@ -606,14 +608,12 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
                 menu.addView(buildPopupMenuItem(density, "+", "Ajouter à ${list.name.take(24)}", Typeface.DEFAULT) {
                     requestShoppingListActionFromBottomBar("add", list.id)
                     dismissPopupMenu()
-                    Toast.makeText(activity, "Ajout en cours", Toast.LENGTH_SHORT).show()
                 })
             }
             shoppingListItems.values.take(6).forEach { list ->
                 menu.addView(buildPopupMenuItem(density, "−", "Retirer de ${list.name.take(24)}", Typeface.DEFAULT) {
                     requestShoppingListActionFromBottomBar("remove", list.id)
                     dismissPopupMenu()
-                    Toast.makeText(activity, "Suppression en cours", Toast.LENGTH_SHORT).show()
                 })
             }
         }
@@ -804,14 +804,37 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
         host.webView.destroy()
     }
 
+    private fun isPoolingEnabled(): Boolean = multiProfileModeEnabled && !disableMultiProfileMode
+
+    private fun disablePoolingAndDestroyInactiveHosts() {
+        disableMultiProfileMode = true
+        enforceSingleHostFallback(activeSessionId)
+    }
+
+    private fun enforceSingleHostFallback(targetSessionId: String?) {
+        if (isPoolingEnabled()) return
+        sessionHosts.keys
+            .filter { it != targetSessionId }
+            .toList()
+            .forEach { destroyHost(it) }
+    }
+
     private fun activeHost(): SessionHost? = activeSessionId?.let { sessionHosts[it] }
 
     private fun hostForWebView(webView: WebView): SessionHost? =
         sessionHosts.values.firstOrNull { it.webView == webView }
 
+    private fun currentVisibleUrl(host: SessionHost): String? {
+        val liveUrl = host.webView.url?.trim()
+        if (!liveUrl.isNullOrEmpty()) {
+            return liveUrl
+        }
+        return host.currentUrl.takeIf { it.isNotBlank() }
+    }
+
     private fun requestCaptureFromBottomBar() {
         val host = activeHost()
-        val url = host?.currentUrl ?: host?.webView?.url
+        val url = host?.let { currentVisibleUrl(it) }
         dispatchToVue(
             "temu-webview-capture-requested",
             JSONObject()
@@ -824,7 +847,7 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
 
     private fun requestShoppingListActionFromBottomBar(action: String, listId: String) {
         val host = activeHost()
-        val url = host?.currentUrl ?: host?.webView?.url
+        val url = host?.let { currentVisibleUrl(it) }
         dispatchToVue(
             "temu-webview-capture-requested",
             JSONObject()
@@ -839,7 +862,7 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
 
     private fun requestObservationFromBottomBar() {
         val host = activeHost()
-        val url = host?.currentUrl ?: host?.webView?.url
+        val url = host?.let { currentVisibleUrl(it) }
         dispatchToVue(
             "temu-webview-capture-requested",
             JSONObject()
@@ -931,6 +954,10 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
     }
 
     private fun enforceWarmHostBound() {
+        if (!isPoolingEnabled()) {
+            enforceSingleHostFallback(activeSessionId)
+            return
+        }
         if (sessionHosts.size <= MAX_WARM_HOSTS) return
         val active = activeSessionId
         val removable = sessionHosts.values

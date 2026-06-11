@@ -97,14 +97,13 @@ async function syncActiveSession(): Promise<void> {
     sessionsStore.settings.darkMode,
     sessionsStore.settings.textZoom,
   );
-  sessionsStore.setDegradedMode(result.degraded);
+  sessionsStore.setDegradedMode(result.unavailable);
 
-  await syncSessions({
+  const syncResult = await syncSessions({
     sessions: sessionSummaries.value,
     activeSessionId: active.id,
-  }).catch(() => {
-    sessionsStore.setDegradedMode(true);
   });
+  sessionsStore.setDegradedMode(syncResult.unavailable);
 }
 
 async function captureProduct(): Promise<void> {

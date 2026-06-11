@@ -44,7 +44,7 @@
                 </span>
                 <RouterLink
                   class="settings-sync-toggle"
-                  :to="{ name: 'lists' }"
+                  :to="{ name: 'shopping-shell' }"
                   @click="closeSheet"
                 >
                   <span>Ouvrir les listes</span>

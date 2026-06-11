@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { useProductObservationsStore } from "@/stores/productObservations";
@@ -19,8 +19,17 @@ const productStore = useProductSnapshotsStore();
 
 const list = computed(() => shoppingStore.getList(listId));
 const items = computed(() => shoppingStore.getListItems(listId));
+const renameDraft = ref("");
 
 const totalItems = computed(() => items.value.length);
+
+watch(
+  list,
+  (value) => {
+    renameDraft.value = value?.name ?? "";
+  },
+  { immediate: true },
+);
 
 function availabilityLabel(value: AvailabilityState): string {
   const labels: Record<AvailabilityState, string> = {
@@ -60,7 +69,39 @@ function remove(itemId: string) {
 }
 
 function goBack() {
-  router.push({ name: "lists" });
+  router.push({ name: "shopping-shell" });
+}
+
+function renameCurrentList() {
+  if (!list.value) {
+    return;
+  }
+
+  try {
+    shoppingStore.renameList(listId, renameDraft.value);
+    notificationsStore.success("Liste renommee.");
+  } catch (error) {
+    notificationsStore.warning(error instanceof Error ? error.message : "Impossible de renommer cette liste.");
+  }
+}
+
+function deleteCurrentList() {
+  if (!list.value) {
+    return;
+  }
+
+  const confirmed = window.confirm(`Supprimer la liste "${list.value.name}" et ses produits sauvegardes ?`);
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    shoppingStore.deleteList(listId);
+    notificationsStore.success("Liste supprimee.");
+    router.push({ name: "shopping-shell" });
+  } catch (error) {
+    notificationsStore.error(error instanceof Error ? error.message : "Impossible de supprimer cette liste.");
+  }
 }
 
 function addQuantity(itemId: string) {
@@ -112,6 +153,43 @@ function removeQuantity(itemId: string) {
             <span>Retour</span>
           </button>
         </header>
+
+        <section
+          class="canonical-card"
+          aria-label="Gestion de la liste"
+        >
+          <form
+            class="canonical-form"
+            @submit.prevent="renameCurrentList"
+          >
+            <label class="canonical-field">
+              Nom de la liste
+              <input
+                v-model="renameDraft"
+                class="canonical-input"
+                maxlength="64"
+              >
+            </label>
+            <div class="canonical-actions">
+              <button
+                class="canonical-button canonical-button--primary"
+                type="submit"
+                :disabled="renameDraft.trim() === list.name"
+              >
+                <i class="pi pi-check" />
+                <span>Renommer</span>
+              </button>
+              <button
+                class="canonical-button canonical-button--danger"
+                type="button"
+                @click="deleteCurrentList"
+              >
+                <i class="pi pi-trash" />
+                <span>Supprimer la liste</span>
+              </button>
+            </div>
+          </form>
+        </section>
 
         <section
           v-if="items.length"

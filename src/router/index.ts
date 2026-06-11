@@ -9,7 +9,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/lists",
     name: "lists",
-    component: () => import("@/pages/ListsPage.vue"),
+    redirect: { name: "shopping-shell" },
   },
   {
     path: "/list/:listId",
