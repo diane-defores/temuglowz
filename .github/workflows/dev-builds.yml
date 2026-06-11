@@ -7,6 +7,7 @@ on:
       - main
       - master
       - develop
+      - preview
       - "release/**"
     paths:
       - "src/**"
@@ -32,8 +33,8 @@ env:
   CARGO_INCREMENTAL: "0"
   CARGO_TERM_COLOR: always
   GRADLE_USER_HOME: ${{ github.workspace }}/.gradle-cache
-  VITE_CONVEX_SITE_URL: "https://energized-crane-805.eu-west-1.convex.site"
-  VITE_CONVEX_URL: "https://energized-crane-805.eu-west-1.convex.cloud"
+  VITE_CONVEX_SITE_URL: ${{ vars.VITE_CONVEX_SITE_URL || 'https://chatty-canary-255.eu-west-1.convex.site' }}
+  VITE_CONVEX_URL: ${{ vars.VITE_CONVEX_URL || 'https://chatty-canary-255.eu-west-1.convex.cloud' }}
 
 jobs:
   android-debug:
