@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { useProductObservationsStore } from "@/stores/productObservations";
+import { useNotificationsStore } from "@/stores/notifications";
 import { useProductSnapshotsStore } from "@/stores/productSnapshots";
 import { useShoppingListsStore } from "@/stores/shoppingLists";
 import type { AvailabilityState } from "@/types/domain";
@@ -12,6 +13,7 @@ const router = useRouter();
 
 const listId = route.params.listId as string;
 const observationsStore = useProductObservationsStore();
+const notificationsStore = useNotificationsStore();
 const shoppingStore = useShoppingListsStore();
 const productStore = useProductSnapshotsStore();
 
@@ -41,6 +43,11 @@ function latestObservationLabel(snapshotId: string): string {
 }
 
 function openProduct(snapshotId: string) {
+  if (!productStore.getSnapshot(snapshotId)) {
+    notificationsStore.warning("Ce produit n'est plus disponible dans l'archive.");
+    return;
+  }
+
   router.push({
     name: "product-detail",
     params: { snapshotId },
@@ -49,6 +56,7 @@ function openProduct(snapshotId: string) {
 
 function remove(itemId: string) {
   shoppingStore.removeItem(listId, itemId);
+  notificationsStore.success("Produit retire de la liste.");
 }
 
 function goBack() {
@@ -58,34 +66,52 @@ function goBack() {
 function addQuantity(itemId: string) {
   const item = shoppingStore.items[itemId];
   if (!item) {
+    notificationsStore.warning("Cet article n'est plus disponible dans cette liste.");
     return;
   }
 
   shoppingStore.setItemQuantity(listId, itemId, item.quantity + 1);
+  notificationsStore.success("Quantite augmentee.");
 }
 
 function removeQuantity(itemId: string) {
   const item = shoppingStore.items[itemId];
   if (!item) {
+    notificationsStore.warning("Cet article n'est plus disponible dans cette liste.");
     return;
   }
 
   if (item.quantity <= 1) {
+    notificationsStore.info("La quantite minimale est 1.");
     return;
   }
 
   shoppingStore.setItemQuantity(listId, itemId, item.quantity - 1);
+  notificationsStore.success("Quantite reduite.");
 }
 </script>
 
 <template>
-  <section class="panel" v-if="list">
-    <div class="row" style="justify-content: space-between">
+  <section
+    v-if="list"
+    class="panel"
+  >
+    <div
+      class="row"
+      style="justify-content: space-between"
+    >
       <h2>{{ list.name }}</h2>
-      <button type="button" @click="goBack">Retour</button>
+      <button
+        type="button"
+        @click="goBack"
+      >
+        Retour
+      </button>
     </div>
 
-    <p class="muted">{{ totalItems }} produit(s) archivé(s)</p>
+    <p class="muted">
+      {{ totalItems }} produit(s) archivé(s)
+    </p>
 
     <div class="card-list">
       <article
@@ -95,7 +121,9 @@ function removeQuantity(itemId: string) {
       >
         <template v-if="productStore.getSnapshot(item.snapshotId)">
           <h3>{{ productStore.getSnapshot(item.snapshotId)?.title }}</h3>
-          <p class="muted">{{ productStore.getSnapshot(item.snapshotId)?.canonicalUrl }}</p>
+          <p class="muted">
+            {{ productStore.getSnapshot(item.snapshotId)?.canonicalUrl }}
+          </p>
           <p
             class="observation-badge"
             :class="{ due: observationsStore.isReminderDue(item.snapshotId) }"
@@ -103,26 +131,70 @@ function removeQuantity(itemId: string) {
             {{ latestObservationLabel(item.snapshotId) }}
           </p>
         </template>
-        <p v-else class="danger">Produit introuvable</p>
+        <p
+          v-else
+          class="danger"
+        >
+          Produit introuvable
+        </p>
 
-        <p class="muted">{{ item.note || "Sans note" }}</p>
-        <div class="row" style="justify-content: space-between">
+        <p class="muted">
+          {{ item.note || "Sans note" }}
+        </p>
+        <div
+          class="row"
+          style="justify-content: space-between"
+        >
           <div>Quantité: {{ item.quantity }}</div>
           <div class="actions">
-            <button type="button" @click="removeQuantity(item.id)">-</button>
-            <button type="button" @click="addQuantity(item.id)">+</button>
-            <button type="button" @click="openProduct(item.snapshotId)">Voir</button>
-            <button type="button" @click="remove(item.id)">Supprimer</button>
+            <button
+              type="button"
+              :disabled="item.quantity <= 1"
+              @click="removeQuantity(item.id)"
+            >
+              -
+            </button>
+            <button
+              type="button"
+              @click="addQuantity(item.id)"
+            >
+              +
+            </button>
+            <button
+              type="button"
+              @click="openProduct(item.snapshotId)"
+            >
+              Voir
+            </button>
+            <button
+              type="button"
+              @click="remove(item.id)"
+            >
+              Supprimer
+            </button>
           </div>
         </div>
       </article>
     </div>
 
-    <p v-if="items.length === 0" class="muted">Aucun produit pour le moment.</p>
+    <p
+      v-if="items.length === 0"
+      class="muted"
+    >
+      Aucun produit pour le moment.
+    </p>
   </section>
 
-  <section v-else class="panel">
+  <section
+    v-else
+    class="panel"
+  >
     <p>Liste introuvable.</p>
-    <button type="button" @click="goBack">Retour</button>
+    <button
+      type="button"
+      @click="goBack"
+    >
+      Retour
+    </button>
   </section>
 </template>

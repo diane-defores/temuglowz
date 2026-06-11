@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { useProductObservationsStore } from "@/stores/productObservations";
+import { useNotificationsStore } from "@/stores/notifications";
 import { useProductSnapshotsStore } from "@/stores/productSnapshots";
 import type { AvailabilityState } from "@/types/domain";
 
@@ -10,6 +11,7 @@ const router = useRouter();
 const route = useRoute();
 
 const snapshotId = route.params.snapshotId as string;
+const notificationsStore = useNotificationsStore();
 const store = useProductSnapshotsStore();
 const observationsStore = useProductObservationsStore();
 
@@ -52,12 +54,18 @@ function availabilityLabel(value: AvailabilityState): string {
 function saveObservation() {
   const current = snapshot.value;
   if (!current) {
+    notificationsStore.warning("Produit introuvable.");
     return;
   }
 
   const parsedAmount = priceAmount.value.trim()
     ? Number(priceAmount.value.replace(",", "."))
     : null;
+  if (priceAmount.value.trim() && (parsedAmount === null || !Number.isFinite(parsedAmount))) {
+    notificationsStore.warning("Le prix saisi est invalide. Entrez un nombre comme 14,99.");
+    return;
+  }
+
   const price = parsedAmount !== null && Number.isFinite(parsedAmount)
     ? {
       amount: parsedAmount,
@@ -66,19 +74,24 @@ function saveObservation() {
     }
     : undefined;
 
-  observationsStore.appendObservation({
-    snapshotId: current.id,
-    productId: current.productId,
-    canonicalUrl: current.canonicalUrl,
-    source: "manual",
-    status: "ok",
-    confidence: "user_observed",
-    availability: availability.value,
-    price,
-    observedAt: Date.now(),
-    note: note.value,
-  });
-  note.value = "";
+  try {
+    observationsStore.appendObservation({
+      snapshotId: current.id,
+      productId: current.productId,
+      canonicalUrl: current.canonicalUrl,
+      source: "manual",
+      status: "ok",
+      confidence: "user_observed",
+      availability: availability.value,
+      price,
+      observedAt: Date.now(),
+      note: note.value,
+    });
+    note.value = "";
+    notificationsStore.success("Observation enregistree.");
+  } catch (error) {
+    notificationsStore.error(error instanceof Error ? error.message : "Impossible d'enregistrer l'observation.");
+  }
 }
 
 function saveReminder() {
@@ -87,6 +100,7 @@ function saveReminder() {
     reminderEnabled.value,
     reminderIntervalDays.value,
   );
+  notificationsStore.success("Rappel enregistre.");
 }
 
 watch(
@@ -117,10 +131,17 @@ function goBack() {
 </script>
 
 <template>
-  <section class="panel" v-if="snapshot">
+  <section
+    v-if="snapshot"
+    class="panel"
+  >
     <h2>{{ snapshot.title }}</h2>
-    <p class="muted">URL source : {{ snapshot.originalUrl }}</p>
-    <p class="muted">ID produit : {{ snapshot.productId || "inconnu" }}</p>
+    <p class="muted">
+      URL source : {{ snapshot.originalUrl }}
+    </p>
+    <p class="muted">
+      ID produit : {{ snapshot.productId || "inconnu" }}
+    </p>
     <p>Disponibilité archivage : {{ snapshot.availability }}</p>
     <p>État des métadonnées : {{ snapshot.metadataStatus }}</p>
     <p>Quantité demandée : {{ snapshot.quantity }}</p>
@@ -154,7 +175,10 @@ function goBack() {
           <strong v-if="latestObservation.price">
             {{ latestObservation.price.amount }} {{ latestObservation.price.currency }}
           </strong>
-          <span v-else class="muted">non renseigné</span>
+          <span
+            v-else
+            class="muted"
+          >non renseigné</span>
         </p>
         <p class="muted">
           Source : {{ latestObservation.source }} · statut : {{ latestObservation.status }}
@@ -184,7 +208,7 @@ function goBack() {
             v-model="priceAmount"
             inputmode="decimal"
             placeholder="ex. 14,99"
-          />
+          >
         </label>
 
         <label>
@@ -192,7 +216,7 @@ function goBack() {
           <input
             v-model="priceCurrency"
             maxlength="8"
-          />
+          >
         </label>
 
         <label class="full-width">
@@ -204,7 +228,9 @@ function goBack() {
           />
         </label>
 
-        <button type="submit">Mettre à jour l'observation</button>
+        <button type="submit">
+          Mettre à jour l'observation
+        </button>
       </form>
 
       <div class="observation-reminder">
@@ -212,7 +238,7 @@ function goBack() {
           <input
             v-model="reminderEnabled"
             type="checkbox"
-          />
+          >
           me rappeler de vérifier ce produit
         </label>
         <label>
@@ -222,7 +248,7 @@ function goBack() {
             min="1"
             max="365"
             type="number"
-          />
+          >
         </label>
         <button
           type="button"
@@ -252,12 +278,15 @@ function goBack() {
       </details>
     </section>
 
-    <div v-if="snapshot.imageUrl" class="row">
+    <div
+      v-if="snapshot.imageUrl"
+      class="row"
+    >
       <img
         :src="snapshot.imageUrl"
         alt="Image produit"
         style="max-width: 220px; max-height: 220px; object-fit: cover; border-radius: 8px"
-      />
+      >
     </div>
 
     <div v-if="snapshot.galleryImageUrls.length">
@@ -268,31 +297,49 @@ function goBack() {
           :key="image"
           :src="image"
           style="max-width: 90px; max-height: 90px; object-fit: cover; border-radius: 6px"
-        />
+        >
       </div>
     </div>
 
     <div v-if="snapshot.notes">
       <h3>Notes</h3>
-      <p class="muted">{{ snapshot.notes }}</p>
+      <p class="muted">
+        {{ snapshot.notes }}
+      </p>
     </div>
 
     <div v-if="Object.keys(snapshot.selectedOptions).length">
       <h3>Options</h3>
       <ul>
-        <li v-for="(value, key) in snapshot.selectedOptions" :key="key">
+        <li
+          v-for="(value, key) in snapshot.selectedOptions"
+          :key="key"
+        >
           {{ key }}: {{ value }}
         </li>
       </ul>
     </div>
 
     <div class="actions">
-      <button type="button" @click="goBack">Retour</button>
+      <button
+        type="button"
+        @click="goBack"
+      >
+        Retour
+      </button>
     </div>
   </section>
 
-  <section v-else class="panel">
+  <section
+    v-else
+    class="panel"
+  >
     <p>Produit introuvable.</p>
-    <button type="button" @click="goBack">Retour</button>
+    <button
+      type="button"
+      @click="goBack"
+    >
+      Retour
+    </button>
   </section>
 </template>

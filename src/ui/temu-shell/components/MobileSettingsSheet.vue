@@ -105,6 +105,25 @@
                 <span>Synchronisation</span>
               </RouterLink>
             </div>
+
+            <p class="settings-section-label">Support</p>
+            <div class="settings-account-card">
+              <p class="settings-account-hint">Diagnostic de cette installation.</p>
+              <div class="settings-account-actions-row">
+                <span class="settings-account-status">{{ buildIdentityLabel }}</span>
+                <button
+                  class="settings-sync-toggle"
+                  type="button"
+                  @click="copyDiagnostics"
+                >
+                  <i
+                    class="pi"
+                    :class="diagnosticsCopied ? 'pi-check' : 'pi-copy'"
+                  />
+                  <span>{{ diagnosticsCopied ? "Copié" : "Copier" }}</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -116,6 +135,7 @@
 import { computed, ref, watch } from "vue";
 
 import { useShoppingSessionsStore } from "@/stores/shoppingSessions";
+import { buildDiagnosticsReport, buildIdentityHeader } from "@/lib/buildDiagnostics";
 import { setDarkMode, setTextZoom } from "@/lib/temuWebview";
 import {
   TEXT_ZOOM_MAX,
@@ -134,11 +154,13 @@ const emit = defineEmits<{
 
 const sessionsStore = useShoppingSessionsStore();
 const textZoomLevel = ref(normalizeTextZoomLevel(sessionsStore.settings.textZoom));
+const diagnosticsCopied = ref(false);
 
 const sessionCountLabel = computed(() => {
   const count = sessionsStore.sessionsByOrder.length;
   return count === 1 ? "1 session" : `${count} sessions`;
 });
+const buildIdentityLabel = computed(() => buildIdentityHeader()[0].replace("commit/build: ", ""));
 
 function closeSheet(): void {
   emit("update:modelValue", false);
@@ -155,6 +177,30 @@ function onTextZoomChange(): void {
   textZoomLevel.value = level;
   sessionsStore.setTextZoom(level);
   void setTextZoom(level);
+}
+
+async function copyDiagnostics(): Promise<void> {
+  const report = buildDiagnosticsReport({
+    sessions_count: String(sessionsStore.sessionsByOrder.length),
+    dark_mode: String(sessionsStore.settings.darkMode),
+    text_zoom: String(textZoomLevel.value),
+  });
+
+  try {
+    await navigator.clipboard.writeText(report);
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = report;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+  }
+
+  diagnosticsCopied.value = true;
+  window.setTimeout(() => {
+    diagnosticsCopied.value = false;
+  }, 2000);
 }
 
 watch(

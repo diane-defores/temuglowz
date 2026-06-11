@@ -45,6 +45,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 import { useImportDraftsStore } from "@/stores/importDrafts";
+import { useNotificationsStore } from "@/stores/notifications";
 import { useProductObservationsStore } from "@/stores/productObservations";
 import { useProductSnapshotsStore } from "@/stores/productSnapshots";
 import { useShoppingListsStore } from "@/stores/shoppingLists";
@@ -71,12 +72,15 @@ import MobileSettingsSheet from "./components/MobileSettingsSheet.vue";
 import NetworkWebviewHost from "./components/NetworkWebviewHost.vue";
 import { TEXT_ZOOM_DEFAULT, normalizeTextZoomLevel } from "./utils/textZoom";
 
+const INVALID_PRODUCT_PAGE_MESSAGE = "Cette action fonctionne seulement sur une fiche produit Temu. Ouvrez un produit, puis réessayez.";
+
 const sidebarVisible = ref(true);
 const rightSidebarVisible = ref(true);
 const settingsVisible = ref(false);
 const activeWebviewSessionId = ref<string | null>(null);
 const router = useRouter();
 const importDraftsStore = useImportDraftsStore();
+const notificationsStore = useNotificationsStore();
 const productObservationsStore = useProductObservationsStore();
 const productSnapshotsStore = useProductSnapshotsStore();
 const shoppingListsStore = useShoppingListsStore();
@@ -84,6 +88,7 @@ const sessionsStore = useShoppingSessionsStore();
 
 const isMobile = ref(typeof window !== "undefined" ? window.innerWidth <= 768 : true);
 const isTauri = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+const hasShownDegradedNotice = ref(false);
 
 const sessionSummaries = computed(() =>
   sessionsStore.sessionsByOrder.map((session) => ({
@@ -110,22 +115,42 @@ function handleResize(): void {
   isMobile.value = window.innerWidth <= 768;
 }
 
+function showInfo(message: string): void {
+  notificationsStore.info(message);
+}
+
 function syncNativeSessions(): void {
   syncSessions({
     sessions: sessionSummaries.value,
     activeSessionId: sessionsStore.activeSessionId,
   }).then((result) => {
     sessionsStore.setDegradedMode(result.degraded);
+    if (result.degraded && !hasShownDegradedNotice.value) {
+      notificationsStore.warning("La WebView tourne en mode degrade. L'import manuel reste disponible.");
+      hasShownDegradedNotice.value = true;
+    }
   }).catch(() => {
     sessionsStore.setDegradedMode(true);
+    if (!hasShownDegradedNotice.value) {
+      notificationsStore.warning("La WebView est indisponible pour le moment. L'import manuel reste disponible.");
+      hasShownDegradedNotice.value = true;
+    }
   });
 }
 
 function syncNativeShoppingLists(): void {
   syncShoppingLists(shoppingListSummaries.value).then((result) => {
     sessionsStore.setDegradedMode(result.degraded);
+    if (result.degraded && !hasShownDegradedNotice.value) {
+      notificationsStore.warning("La WebView tourne en mode degrade. Certaines actions peuvent etre limitees.");
+      hasShownDegradedNotice.value = true;
+    }
   }).catch(() => {
     sessionsStore.setDegradedMode(true);
+    if (!hasShownDegradedNotice.value) {
+      notificationsStore.warning("La synchronisation de la WebView est indisponible pour le moment.");
+      hasShownDegradedNotice.value = true;
+    }
   });
 }
 
@@ -147,6 +172,9 @@ async function openShoppingSession(sessionOrId: ShoppingSession | string): Promi
     sessionsStore.settings.textZoom,
   );
   sessionsStore.setDegradedMode(result.degraded);
+  if (!result.ok) {
+    notificationsStore.warning(result.error ?? "Impossible d'ouvrir cette session dans la WebView pour le moment.");
+  }
   syncNativeSessions();
 }
 
@@ -154,6 +182,9 @@ async function returnHome(): Promise<void> {
   activeWebviewSessionId.value = null;
   const result = await hideWebview();
   sessionsStore.setDegradedMode(result.degraded);
+  if (!result.ok && result.error) {
+    notificationsStore.warning(result.error);
+  }
   syncNativeSessions();
 }
 
@@ -180,6 +211,7 @@ async function resolveCaptureUrl(detail: Record<string, unknown>): Promise<strin
 
   const captured = await captureCurrentUrl();
   if (!captured.ok) {
+    showInfo(INVALID_PRODUCT_PAGE_MESSAGE);
     return null;
   }
 
@@ -187,7 +219,13 @@ async function resolveCaptureUrl(detail: Record<string, unknown>): Promise<strin
 }
 
 async function addCurrentProductToList(rawUrl: string, listId: string): Promise<void> {
-  const draft = importDraftsStore.useWebviewUrl(rawUrl);
+  let draft;
+  try {
+    draft = importDraftsStore.useWebviewUrl(rawUrl);
+  } catch {
+    showInfo(INVALID_PRODUCT_PAGE_MESSAGE);
+    return;
+  }
   const duplicateItemId = shoppingListsStore.findDuplicateByCanonicalOrProductId(listId, {
     canonicalUrl: draft.canonicalUrl,
   });
@@ -211,25 +249,42 @@ async function addCurrentProductToList(rawUrl: string, listId: string): Promise<
   productSnapshotsStore.upsertSnapshot(snapshot);
   shoppingListsStore.addItem(listId, snapshot.id, 1);
   importDraftsStore.clearDraft();
+  notificationsStore.success("Produit ajoute a la liste.");
 }
 
 async function removeCurrentProductFromList(rawUrl: string, listId: string): Promise<void> {
-  const draft = importDraftsStore.useWebviewUrl(rawUrl);
+  let draft;
+  try {
+    draft = importDraftsStore.useWebviewUrl(rawUrl);
+  } catch {
+    showInfo(INVALID_PRODUCT_PAGE_MESSAGE);
+    return;
+  }
   const duplicateItemId = shoppingListsStore.findDuplicateByCanonicalOrProductId(listId, {
     canonicalUrl: draft.canonicalUrl,
   });
 
   if (duplicateItemId) {
     shoppingListsStore.removeItem(listId, duplicateItemId);
+    notificationsStore.success("Produit retire de la liste.");
+  } else {
+    notificationsStore.info("Ce produit n'etait pas present dans cette liste.");
   }
   importDraftsStore.clearDraft();
 }
 
 async function observeCurrentProduct(rawUrl: string): Promise<void> {
-  const draft = importDraftsStore.useWebviewUrl(rawUrl);
+  let draft;
+  try {
+    draft = importDraftsStore.useWebviewUrl(rawUrl);
+  } catch {
+    showInfo(INVALID_PRODUCT_PAGE_MESSAGE);
+    return;
+  }
   const snapshot = productSnapshotsStore.findDuplicateByUrlOrProductId(draft.canonicalUrl);
 
   if (!snapshot) {
+    notificationsStore.info("Produit capture. Completez les details avant d'ajouter une observation.");
     await returnHome();
     await router.push({ name: "import-review" });
     return;
@@ -242,6 +297,7 @@ async function observeCurrentProduct(rawUrl: string): Promise<void> {
     source: "webview",
   });
   importDraftsStore.clearDraft();
+  notificationsStore.success("Observation ouverte pour ce produit.");
   await returnHome();
   await router.push({
     name: "product-detail",
@@ -284,7 +340,11 @@ const onNativeCaptureRequested = (async (event: CustomEvent) => {
     return;
   }
 
-  importDraftsStore.useWebviewUrl(rawUrl);
+  try {
+    importDraftsStore.useWebviewUrl(rawUrl);
+  } catch {
+    showInfo(INVALID_PRODUCT_PAGE_MESSAGE);
+  }
 }) as unknown as (event: Event) => void;
 
 watch(

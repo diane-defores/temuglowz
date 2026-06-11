@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { RouterLink } from "vue-router";
+import { useNotificationsStore } from "@/stores/notifications";
 import { useProductObservationsStore } from "@/stores/productObservations";
 import { useProductSnapshotsStore } from "@/stores/productSnapshots";
 import { useShoppingListsStore } from "@/stores/shoppingLists";
 import { serializeShoppingBackup } from "@/lib/backup";
 
 const shoppingListsStore = useShoppingListsStore();
+const notificationsStore = useNotificationsStore();
 const observationsStore = useProductObservationsStore();
 const productStore = useProductSnapshotsStore();
 
@@ -46,27 +48,37 @@ function lastSaved(listId: string): string {
 }
 
 function deleteList(listId: string) {
-  shoppingListsStore.deleteList(listId);
+  try {
+    shoppingListsStore.deleteList(listId);
+    notificationsStore.success("Liste supprimee.");
+  } catch (error) {
+    notificationsStore.error(error instanceof Error ? error.message : "Impossible de supprimer la liste.");
+  }
 }
 
 function exportBackup() {
-  const payload = serializeShoppingBackup({
-    lists: shoppingListsStore.listEntries,
-    items: Object.values(shoppingListsStore.items),
-    snapshots: Object.values(productStore.snapshots),
-    observations: Object.values(observationsStore.observations),
-  });
+  try {
+    const payload = serializeShoppingBackup({
+      lists: shoppingListsStore.listEntries,
+      items: Object.values(shoppingListsStore.items),
+      snapshots: Object.values(productStore.snapshots),
+      observations: Object.values(observationsStore.observations),
+    });
 
-  const blob = new Blob([JSON.stringify(payload, null, 2)], {
-    type: "application/json",
-  });
-  const fileUrl = URL.createObjectURL(blob);
-  const downloadLink = document.createElement("a");
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const fileUrl = URL.createObjectURL(blob);
+    const downloadLink = document.createElement("a");
 
-  downloadLink.href = fileUrl;
-  downloadLink.download = "temu-shopping-lists-backup.json";
-  downloadLink.click();
-  URL.revokeObjectURL(fileUrl);
+    downloadLink.href = fileUrl;
+    downloadLink.download = "temu-shopping-lists-backup.json";
+    downloadLink.click();
+    URL.revokeObjectURL(fileUrl);
+    notificationsStore.success("Sauvegarde exportee.");
+  } catch (error) {
+    notificationsStore.error(error instanceof Error ? error.message : "Impossible d'exporter la sauvegarde.");
+  }
 }
 </script>
 
@@ -83,23 +95,47 @@ function exportBackup() {
         maxlength="64"
         placeholder="Nom de la nouvelle liste"
         @keyup.enter="createList"
-      />
-      <button :disabled="!newListName.trim()" @click="createList">Ajouter</button>
+      >
+      <button
+        :disabled="!newListName.trim()"
+        @click="createList"
+      >
+        Ajouter
+      </button>
     </div>
-    <p v-if="creationError" class="danger">{{ creationError }}</p>
+    <p
+      v-if="creationError"
+      class="danger"
+    >
+      {{ creationError }}
+    </p>
 
     <div class="card-list">
-      <article v-for="list in lists" :key="list.id" class="list-card">
-        <div class="row" style="justify-content: space-between">
+      <article
+        v-for="list in lists"
+        :key="list.id"
+        class="list-card"
+      >
+        <div
+          class="row"
+          style="justify-content: space-between"
+        >
           <strong>{{ list.name }}</strong>
           <span class="muted">{{ itemCountForList(list.id) }} article(s)</span>
         </div>
-        <p class="muted">Dernier: {{ lastSaved(list.id) }}</p>
+        <p class="muted">
+          Dernier: {{ lastSaved(list.id) }}
+        </p>
         <div class="actions">
-          <RouterLink class="link-btn" :to="{ name: 'list-detail', params: { listId: list.id } }">
+          <RouterLink
+            class="link-btn"
+            :to="{ name: 'list-detail', params: { listId: list.id } }"
+          >
             Ouvrir
           </RouterLink>
-          <button @click="deleteList(list.id)">Supprimer</button>
+          <button @click="deleteList(list.id)">
+            Supprimer
+          </button>
         </div>
       </article>
     </div>
@@ -108,7 +144,14 @@ function exportBackup() {
     <p>
       Importer depuis un lien partagé en passant par Android ou via le formulaire.
     </p>
-    <RouterLink to="/import/manual">Importer par URL</RouterLink>
-    <button type="button" @click="exportBackup">Exporter la sauvegarde JSON</button>
+    <RouterLink to="/import/manual">
+      Importer par URL
+    </RouterLink>
+    <button
+      type="button"
+      @click="exportBackup"
+    >
+      Exporter la sauvegarde JSON
+    </button>
   </section>
 </template>

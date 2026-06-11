@@ -11,6 +11,7 @@ import {
   syncSessions,
 } from "@/lib/temuWebview";
 import { useImportDraftsStore } from "@/stores/importDrafts";
+import { useNotificationsStore } from "@/stores/notifications";
 import { useShoppingSessionsStore } from "@/stores/shoppingSessions";
 import { normalizeTemuProductUrl } from "@/utils/url";
 import type { WebviewCaptureResult } from "@/types/domain";
@@ -20,6 +21,7 @@ const TEMU_HOME_URL = "https://www.temu.com/";
 const router = useRouter();
 const sessionsStore = useShoppingSessionsStore();
 const importDrafts = useImportDraftsStore();
+const notificationsStore = useNotificationsStore();
 
 const newSessionName = ref("");
 const newSessionUrl = ref(TEMU_HOME_URL);
@@ -54,11 +56,16 @@ async function syncNativeSessions(activeSessionId = sessionsStore.activeSessionI
 async function createSession() {
   message.value = "";
   error.value = "";
-  const sessionId = sessionsStore.createSession(newSessionName.value, newSessionUrl.value);
-  renameDrafts.value[sessionId] = sessionsStore.getSession(sessionId)?.name ?? "";
-  newSessionName.value = "";
-  newSessionUrl.value = TEMU_HOME_URL;
-  await launchSession(sessionId);
+  try {
+    const sessionId = sessionsStore.createSession(newSessionName.value, newSessionUrl.value);
+    renameDrafts.value[sessionId] = sessionsStore.getSession(sessionId)?.name ?? "";
+    newSessionName.value = "";
+    newSessionUrl.value = TEMU_HOME_URL;
+    notificationsStore.success("Session shopping creee.");
+    await launchSession(sessionId);
+  } catch (error) {
+    notificationsStore.error(error instanceof Error ? error.message : "Impossible de creer la session.");
+  }
 }
 
 async function launchSession(sessionId: string) {
@@ -79,23 +86,36 @@ async function launchSession(sessionId: string) {
     sessionsStore.settings.textZoom,
   );
   applyBridgeState(result);
-  message.value = result.ok
-    ? `${session.name} est ouverte.`
-    : "Mode WebView indisponible ici; l'import manuel reste disponible.";
+  if (result.ok) {
+    notificationsStore.success(`${session.name} est ouverte.`);
+  } else {
+    notificationsStore.warning("Mode WebView indisponible ici; l'import manuel reste disponible.");
+  }
 }
 
 async function closeSession(sessionId: string) {
   const result = await closeNativeSession(sessionId);
   applyBridgeState(result);
-  sessionsStore.closeSession(sessionId);
+  try {
+    sessionsStore.closeSession(sessionId);
+  } catch (error) {
+    notificationsStore.error(error instanceof Error ? error.message : "Impossible de fermer la session.");
+    return;
+  }
   delete renameDrafts.value[sessionId];
+  notificationsStore.success("Session fermee.");
   await syncNativeSessions();
 }
 
 async function renameSession(sessionId: string) {
   const nextName = renameDrafts.value[sessionId] ?? "";
-  sessionsStore.renameSession(sessionId, nextName);
-  await syncNativeSessions(sessionsStore.activeSessionId);
+  try {
+    sessionsStore.renameSession(sessionId, nextName);
+    notificationsStore.success("Nom de session mis a jour.");
+    await syncNativeSessions(sessionsStore.activeSessionId);
+  } catch (error) {
+    notificationsStore.warning(error instanceof Error ? error.message : "Impossible de renommer cette session.");
+  }
 }
 
 async function toggleDarkMode() {
@@ -136,7 +156,7 @@ function captureFromRawUrl(rawUrl: string): WebviewCaptureResult {
 
 async function saveCapture(result: WebviewCaptureResult) {
   if (!result.ok) {
-    error.value = result.error ?? "Impossible d'enregistrer cette page.";
+    notificationsStore.warning(result.error ?? "Impossible d'enregistrer cette page.");
     return;
   }
 
@@ -145,6 +165,7 @@ async function saveCapture(result: WebviewCaptureResult) {
     sessionsStore.recordCapture(sessionId, result);
   }
   importDrafts.useWebviewUrl(result.rawUrl);
+  notificationsStore.success("Produit capture. Verifiez-le avant enregistrement.");
   await router.push({ name: "import-review" });
 }
 
@@ -160,12 +181,12 @@ function handleCaptureEvent(event: Event) {
   const custom = event as CustomEvent<{ url?: string; sessionId?: string }>;
   const url = custom.detail?.url;
   if (!url) {
-    error.value = "Aucune URL WebView à enregistrer.";
+    notificationsStore.warning("Aucune URL WebView a enregistrer.");
     return;
   }
 
   saveCapture(captureFromRawUrl(url)).catch((caught) => {
-    error.value = caught instanceof Error ? caught.message : String(caught);
+    notificationsStore.error(caught instanceof Error ? caught.message : String(caught));
   });
 }
 
@@ -222,22 +243,41 @@ onBeforeUnmount(() => {
     <div class="row split-row">
       <div>
         <h2>Shopping Temu</h2>
-        <p class="muted">Indépendant de Temu. Les sessions WebView restent locales.</p>
+        <p class="muted">
+          Indépendant de Temu. Les sessions WebView restent locales.
+        </p>
       </div>
-      <span v-if="sessionsStore.degradedMode" class="status-pill blocked">WebView dégradée</span>
-      <span v-else class="status-pill">Prêt</span>
+      <span
+        v-if="sessionsStore.degradedMode"
+        class="status-pill blocked"
+      >WebView dégradée</span>
+      <span
+        v-else
+        class="status-pill"
+      >Prêt</span>
     </div>
 
     <div class="session-create">
       <label>
         Nom
-        <input v-model="newSessionName" placeholder="Cuisine" />
+        <input
+          v-model="newSessionName"
+          placeholder="Cuisine"
+        >
       </label>
       <label>
         URL
-        <input v-model="newSessionUrl" class="session-url-input" />
+        <input
+          v-model="newSessionUrl"
+          class="session-url-input"
+        >
       </label>
-      <button type="button" @click="createSession">Nouvelle session</button>
+      <button
+        type="button"
+        @click="createSession"
+      >
+        Nouvelle session
+      </button>
     </div>
   </section>
 
@@ -245,7 +285,10 @@ onBeforeUnmount(() => {
     <div class="row split-row">
       <h2>Sessions</h2>
       <div class="actions">
-        <button type="button" @click="toggleDarkMode">
+        <button
+          type="button"
+          @click="toggleDarkMode"
+        >
           {{ sessionsStore.settings.darkMode ? "Mode clair" : "Mode sombre" }}
         </button>
         <label class="zoom-control">
@@ -257,41 +300,77 @@ onBeforeUnmount(() => {
             step="5"
             :value="sessionsStore.settings.textZoom"
             @input="changeTextZoom"
-          />
+          >
         </label>
       </div>
     </div>
 
-    <div v-if="sessions.length === 0" class="notice">
+    <div
+      v-if="sessions.length === 0"
+      class="notice"
+    >
       <strong>Aucune session.</strong>
     </div>
 
     <div class="card-list">
-      <article v-for="session in sessions" :key="session.id" class="list-card">
+      <article
+        v-for="session in sessions"
+        :key="session.id"
+        class="list-card"
+      >
         <div class="row split-row">
           <div>
             <strong>{{ session.name }}</strong>
-            <p class="muted">{{ session.currentUrl }}</p>
+            <p class="muted">
+              {{ session.currentUrl }}
+            </p>
           </div>
-          <span v-if="activeSession?.id === session.id" class="status-pill">Active</span>
+          <span
+            v-if="activeSession?.id === session.id"
+            class="status-pill"
+          >Active</span>
         </div>
 
         <div class="session-edit-row">
-          <input v-model="renameDrafts[session.id]" />
-          <button type="button" @click="renameSession(session.id)">Renommer</button>
+          <input v-model="renameDrafts[session.id]">
+          <button
+            type="button"
+            @click="renameSession(session.id)"
+          >
+            Renommer
+          </button>
         </div>
 
         <div class="actions">
-          <button type="button" @click="launchSession(session.id)">Ouvrir</button>
-          <button type="button" :disabled="activeSession?.id !== session.id" @click="captureActiveSession">
+          <button
+            type="button"
+            @click="launchSession(session.id)"
+          >
+            Ouvrir
+          </button>
+          <button
+            type="button"
+            :disabled="activeSession?.id !== session.id"
+            @click="captureActiveSession"
+          >
             Enregistrer la page
           </button>
-          <button type="button" class="danger-button" @click="closeSession(session.id)">Fermer</button>
+          <button
+            type="button"
+            class="danger-button"
+            @click="closeSession(session.id)"
+          >
+            Fermer
+          </button>
         </div>
       </article>
     </div>
 
-    <p v-if="message" class="muted">{{ message }}</p>
-    <p v-if="error" class="danger">{{ error }}</p>
+    <p
+      v-if="error"
+      class="danger"
+    >
+      {{ error }}
+    </p>
   </section>
 </template>

@@ -1,8 +1,5 @@
 <template>
-  <div
-    ref="hostEl"
-    class="webview-host"
-  >
+  <div class="webview-host">
     <div
       v-if="!isTauri || sessionsStore.degradedMode"
       class="dev-placeholder"
@@ -11,8 +8,12 @@
         <span class="placeholder-icon">
           <i class="pi pi-desktop" />
         </span>
-        <p class="placeholder-title">{{ session?.name ?? "Session shopping" }}</p>
-        <p class="placeholder-url">{{ session?.currentUrl ?? "https://www.temu.com/" }}</p>
+        <p class="placeholder-title">
+          {{ session?.name ?? "Session shopping" }}
+        </p>
+        <p class="placeholder-url">
+          {{ session?.currentUrl ?? "https://www.temu.com/" }}
+        </p>
         <p class="hint">
           Sur Android, la WebView native Temu s'affiche au-dessus de cette zone. Le mode navigateur garde la shell visible.
         </p>
@@ -42,22 +43,17 @@
             <span>Accueil</span>
           </button>
         </div>
-        <p
-          v-if="captureError"
-          class="capture-error"
-        >
-          {{ captureError }}
-        </p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
 import { useImportDraftsStore } from "@/stores/importDrafts";
+import { useNotificationsStore } from "@/stores/notifications";
 import { useShoppingSessionsStore } from "@/stores/shoppingSessions";
 import {
   captureCurrentUrl,
@@ -77,8 +73,7 @@ const emit = defineEmits<{
 const router = useRouter();
 const sessionsStore = useShoppingSessionsStore();
 const importDraftsStore = useImportDraftsStore();
-const hostEl = ref<HTMLElement | null>(null);
-const captureError = ref("");
+const notificationsStore = useNotificationsStore();
 const isTauri = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
 const session = computed(() => sessionsStore.getSession(props.sessionId));
@@ -113,7 +108,6 @@ async function syncActiveSession(): Promise<void> {
 }
 
 async function captureProduct(): Promise<void> {
-  captureError.value = "";
   const active = session.value;
   if (!active) {
     return;
@@ -121,13 +115,14 @@ async function captureProduct(): Promise<void> {
 
   const result = await captureCurrentUrl();
   if (!result.ok) {
-    captureError.value = result.error ?? "Aucune URL de produit Temu disponible dans cette session.";
+    notificationsStore.warning(result.error ?? "Aucune URL de produit Temu disponible dans cette session.");
     return;
   }
 
   sessionsStore.updateCurrentUrl(active.id, result.canonicalUrl);
   sessionsStore.recordCapture(active.id, result);
   importDraftsStore.useWebviewUrl(result.canonicalUrl);
+  notificationsStore.success("Produit capture. Verifiez-le avant enregistrement.");
   emit("close");
   await router.push({ name: "import-review" });
 }
@@ -239,9 +234,4 @@ watch(
   border-color: var(--surface-border);
 }
 
-.capture-error {
-  margin: 0.9rem 0 0;
-  color: #dc2626;
-  font-size: 0.85rem;
-}
 </style>
