@@ -1,18 +1,24 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { EntitlementSnapshot } from "@/lib/accessModel";
 import {
   isSyncEnabled,
   listReplayableCloudSyncJobs,
+  finalizePasswordSignIn,
   setSyncEnabled,
   setSyncEnabledForSession,
 } from "@/lib/cloudSync";
 import {
   clearCloudSyncQueue,
   enqueueCloudSyncJob,
+  listCloudSyncQueue,
 } from "@/lib/cloudSyncQueue";
 import { TEMU_SHOPPING_LISTS_PRODUCT_ID } from "@/lib/accessModel";
 import { computeSyncChecksum } from "@/lib/syncMerge";
+import {
+  postAuthSyncFeedback,
+  resetPostAuthSyncFeedback,
+} from "@/lib/postAuthSyncFeedback";
 import type { ShoppingList } from "@/types/domain";
 import type { SyncAccountMarker } from "@/types/sync";
 import { SYNC_PRODUCT_ID } from "@/types/sync";
@@ -68,6 +74,7 @@ function makeListPayload(): ShoppingList {
 
 describe("cloud sync access-aware replay", () => {
   beforeEach(() => {
+    vi.useRealTimers();
     const storage = new LocalStorageBag();
     Object.defineProperty(globalThis, "localStorage", {
       value: storage,
@@ -76,6 +83,12 @@ describe("cloud sync access-aware replay", () => {
     });
     clearCloudSyncQueue();
     setSyncEnabled(false);
+    resetPostAuthSyncFeedback();
+  });
+
+  afterEach(() => {
+    resetPostAuthSyncFeedback();
+    vi.useRealTimers();
   });
 
   it("blocks replay without identity or entitlement", () => {
@@ -181,5 +194,90 @@ describe("cloud sync access-aware replay", () => {
       reason: "inactive_entitlement",
       jobs: [],
     });
+  });
+
+  it("blocks post-auth handoff when the entitlement bridge is unavailable", async () => {
+    vi.useFakeTimers();
+    const payload = makeListPayload();
+    enqueueCloudSyncJob({
+      idempotencyKey: "job-local-pending",
+      domain: "shopping_list",
+      operationType: "upsert",
+      recordKey: payload.id,
+      payload,
+      payloadChecksum: computeSyncChecksum(payload),
+      accountMarker: ACCOUNT,
+      sourceDeviceId: "device-1",
+    });
+
+    const handoff = finalizePasswordSignIn({
+      email: "diane@example.com",
+      flow: "signIn",
+    });
+    await vi.advanceTimersByTimeAsync(1600);
+    const result = await handoff;
+
+    expect(result).toEqual({
+      status: "blocked",
+      reason: "entitlement_bridge_unavailable",
+      jobs: [],
+    });
+    expect(isSyncEnabled.value).toBe(false);
+    expect(postAuthSyncFeedback.stage).toBe("blocked");
+    expect(postAuthSyncFeedback.detail).toContain("vérification premium");
+    expect(listCloudSyncQueue()).toHaveLength(1);
+  });
+
+  it("blocks post-auth handoff when identity exists without entitlement", async () => {
+    vi.useFakeTimers();
+    const handoff = finalizePasswordSignIn({
+      email: "diane@example.com",
+      flow: "signIn",
+      globalUserId: ACCOUNT.accountId,
+      accountMarker: ACCOUNT,
+    });
+    await vi.advanceTimersByTimeAsync(1600);
+    const result = await handoff;
+
+    expect(result).toEqual({
+      status: "blocked",
+      reason: "missing_entitlement",
+      jobs: [],
+    });
+    expect(isSyncEnabled.value).toBe(false);
+    expect(postAuthSyncFeedback.stage).toBe("blocked");
+    expect(postAuthSyncFeedback.detail).toContain("Aucun entitlement premium actif");
+  });
+
+  it("enables post-auth sync handoff only with matching identity and active entitlement", async () => {
+    vi.useFakeTimers();
+    const payload = makeListPayload();
+    enqueueCloudSyncJob({
+      idempotencyKey: "job-active-account",
+      domain: "shopping_list",
+      operationType: "upsert",
+      recordKey: payload.id,
+      payload,
+      payloadChecksum: computeSyncChecksum(payload),
+      accountMarker: ACCOUNT,
+      sourceDeviceId: "device-1",
+    });
+
+    const handoff = finalizePasswordSignIn({
+      email: "diane@example.com",
+      flow: "signIn",
+      globalUserId: ACCOUNT.accountId,
+      entitlement: ACTIVE_ENTITLEMENT,
+      accountMarker: ACCOUNT,
+      sourceDeviceId: "device-1",
+    });
+    await vi.advanceTimersByTimeAsync(2300);
+    const result = await handoff;
+
+    expect(result.status).toBe("ready");
+    expect(result.jobs).toHaveLength(1);
+    expect(result.jobs[0]!.idempotencyKey).toBe("job-active-account");
+    expect(isSyncEnabled.value).toBe(true);
+    expect(postAuthSyncFeedback.stage).toBe("ready");
   });
 });

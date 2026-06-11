@@ -1,35 +1,70 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { postAuthSyncFeedback } from "@/lib/postAuthSyncFeedback";
+import {
+  postAuthSyncFeedback,
+  resetPostAuthSyncFeedback,
+} from "@/lib/postAuthSyncFeedback";
 
 const stageText = computed(() => {
   switch (postAuthSyncFeedback.stage) {
     case "waitingServer":
       return {
-        title: "Connexion au compte",
-        body: "Validation de la session et préparation de la synchronisation.",
+        title: "Vérification du compte",
+        body: "Validation de la session avant toute synchronisation cloud.",
       };
     case "dataReceived":
       return {
         title: "Identité reconnue",
         body: "Le compte est connecté. L'accès cloud premium reste une vérification séparée.",
       };
+    case "pending":
+      return {
+        title: "Accès premium à vérifier",
+        body: "Recherche d'un entitlement serveur avant de relancer la file de synchronisation.",
+      };
     case "dataApplied":
       return {
-        title: "Préparation locale terminée",
-        body: "Aucune donnée cloud premium n'est appliquée tant que l'entitlement n'est pas actif.",
+        title: "Données préparées",
+        body: "L'accès premium est confirmé. La file locale peut maintenant être traitée pour ce compte.",
       };
     case "ready":
       return {
-        title: "Compte connecté",
-        body: "Vous pouvez continuer en local. La synchronisation cloud reste protégée par entitlement.",
+        title: "Synchronisation prête",
+        body: "Le compte et l'accès premium sont confirmés pour cette session.",
+      };
+    case "blocked":
+      return {
+        title: "Synchronisation cloud bloquée",
+        body: postAuthSyncFeedback.detail,
+      };
+    case "error":
+      return {
+        title: "Synchronisation indisponible",
+        body: postAuthSyncFeedback.detail,
       };
     default:
       return {
         title: "",
         body: "",
       };
+  }
+});
+
+const canDismiss = computed(() => {
+  return postAuthSyncFeedback.mode === "blocked" || postAuthSyncFeedback.mode === "error";
+});
+
+const iconClass = computed(() => {
+  switch (postAuthSyncFeedback.mode) {
+    case "success":
+      return "pi-check";
+    case "blocked":
+      return "pi-lock";
+    case "error":
+      return "pi-exclamation-triangle";
+    default:
+      return "pi-spin pi-spinner";
   }
 });
 </script>
@@ -43,16 +78,24 @@ const stageText = computed(() => {
       >
         <div
           class="post-auth-sync-card"
-          :class="{ success: postAuthSyncFeedback.mode === 'success' }"
+          :class="postAuthSyncFeedback.mode"
         >
           <div class="post-auth-sync-icon">
             <i
               class="pi"
-              :class="postAuthSyncFeedback.mode === 'success' ? 'pi-check' : 'pi-spin pi-spinner'"
+              :class="iconClass"
             />
           </div>
           <h2>{{ stageText.title }}</h2>
           <p>{{ stageText.body }}</p>
+          <button
+            v-if="canDismiss"
+            class="post-auth-sync-dismiss"
+            type="button"
+            @click="resetPostAuthSyncFeedback"
+          >
+            Fermer
+          </button>
         </div>
       </div>
     </Transition>

@@ -1,13 +1,13 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "1.0.6"
+artifact_version: "1.0.8"
 project: "temu"
 created: "2026-06-10"
 created_at: "2026-06-10 11:35:09 UTC"
 updated: "2026-06-11"
-updated_at: "2026-06-11 10:46:49 UTC"
-status: active
+updated_at: "2026-06-11 11:15:29 UTC"
+status: ready
 source_skill: 100-sf-spec
 source_model: "GPT-5 Codex"
 scope: "Premium multi-device cloud sync for Temu Shopping Lists"
@@ -85,7 +85,7 @@ evidence:
   - "Official Convex docs checked on 2026-06-10 for auth in functions, public function access control, validators, schemas, mutations/queries, and file storage follow-up."
   - "User decision 2026-06-11: Temu auth and sync onboarding should copy SocialGlowz patterns, including the progressive post-auth sync feedback pop-up."
   - "Implementation slice 2026-06-11 added Convex Auth client/server wiring, SocialGlowz-style account forms, and post-auth sync feedback while preserving entitlement fail-closed behavior."
-next_step: "/101-sf-ready Refresh premium cloud sync spec after SocialGlowz auth/onboarding adaptation"
+next_step: "/102-sf-start Continue premium cloud sync suite entitlement bridge and guarded hydration"
 ---
 
 # Title
@@ -94,7 +94,7 @@ Premium Multi-Device Cloud Sync For Temu Shopping Lists
 
 ## Status
 
-Active chantier, updated by `/100-sf-spec` after the SocialGlowz auth/onboarding port. Re-run `/101-sf-ready` before the next implementation slice because the spec now explicitly covers the account onboarding and post-auth sync feedback path. This spec is intentionally high-risk because it touches user data, auth, premium entitlements, multi-device merge behavior, and cloud persistence. The first implementation slice should be complete for URL-backed product/list sync, but must not claim copied image storage, price-history tracking, billing-provider setup, or Temu account/browser-session sync.
+Ready for `/102-sf-start` after `/101-sf-ready` refresh on 2026-06-11. This spec is intentionally high-risk because it touches user data, auth, premium entitlements, multi-device merge behavior, and cloud persistence. The next implementation slice is the entitlement-aware sync handoff after SocialGlowz-style auth/onboarding. The first sync implementation must remain URL-backed product/list sync and must not claim copied image storage, price-history tracking, billing-provider setup, or Temu account/browser-session sync.
 
 ## User Story
 
@@ -252,8 +252,8 @@ Required results:
 - Entitlements spec: `shipflow_data/workflow/specs/temu-shopping-lists-entitlements-access-model.md`, version `1.0.5`, reviewed. This cloud sync spec depends on its suite-ledger and fail-closed access model.
 - Android app spec: `shipflow_data/workflow/specs/temu-shopping-lists-android-app.md`, version `1.0.0`, ready.
 - Technical app context: `shipflow_data/technical/apps/temu-shopping-lists-android-app.md`, version `1.0.2`, draft.
-- Local-cloud sync doctrine: `/home/claude/shipflow/skills/sf-local-cloud-sync/references/local-cloud-sync-doctrine.md`, version `1.0.0`, draft.
-- Sync UX/security checklist: `/home/claude/shipflow/skills/sf-local-cloud-sync/references/ux-security-checklist.md`, version `1.0.0`, draft.
+- Local-cloud sync doctrine: `/home/claude/shipflow/skills/600-sf-local-cloud-sync/references/local-cloud-sync-doctrine.md`, version `1.0.0`, draft.
+- Sync UX/security checklist: `/home/claude/shipflow/skills/600-sf-local-cloud-sync/references/ux-security-checklist.md`, version `1.0.0`, draft.
 - Convex Auth: official Convex Auth docs searched and reviewed on 2026-06-11 for the current SocialGlowz-style Auth.js/Convex pattern. Fresh-docs verdict: `fresh-docs checked`; the implementation still requires project-level provider/env proof before shipping cloud sync.
 - Convex Auth in Functions: `https://docs.convex.dev/auth/functions-auth`, accessed 2026-06-10. Fresh-docs verdict: `fresh-docs checked`; functions can read authenticated identity with `ctx.auth.getUserIdentity()`, and identity fields include guaranteed issuer/subject/token identifier.
 - Convex server/functions API: `https://docs.convex.dev/api/modules/server`, accessed 2026-06-10. Fresh-docs verdict: `fresh-docs checked`; public queries/mutations are client-accessible, mutations are transactional, and validators are required for secure argument/return validation.
@@ -497,14 +497,16 @@ Deferred decisions:
 | 2026-06-10 17:24:07 UTC | continue | GPT-5 Codex | Added a local sync status page and direct fail-closed Convex access tests | Partial: `/sync` renders local-only/pending state without cloud-active claims and Convex guard tests pass; generated Convex API, deployment proof, suite entitlement bridge, real writes, hydration/promotion, and device proof remain | /sf-start Continue premium cloud sync entitlement bridge, generated Convex API, and UI slices |
 | 2026-06-10 17:29:49 UTC | continue | GPT-5 Codex | Created the Convex cloud project, generated `convex/_generated`, and ran deployed fail-closed proof | Partial: Convex project and dev deployment exist, codegen works, deployed unauthenticated status query returns `missing_identity`; suite entitlement bridge, authenticated client wiring, real writes, hydration/promotion, and device proof remain | /sf-start Continue premium cloud sync entitlement bridge and authenticated client wiring |
 | 2026-06-11 10:46:49 UTC | 100-sf-spec | GPT-5 Codex | Updated the premium cloud sync chantier after SocialGlowz auth/onboarding was copied into Temu and after `600`/`601` verification requests | Spec refreshed: SocialGlowz-style identity setup and post-auth feedback are now explicit, identity-only sync denial remains required, and the next implementation slice is entitlement-aware sync handoff | /101-sf-ready Refresh premium cloud sync spec after SocialGlowz auth/onboarding adaptation |
+| 2026-06-11 11:10:31 UTC | 101-sf-ready | GPT-5 Codex | Reviewed refreshed cloud sync spec for user story fit, local-cloud data safety, entitlement separation, SocialGlowz auth/onboarding scope, proof path, dependencies, and execution tasks | Ready: next slice is entitlement-aware sync handoff; provider billing, durable entitlement bridge implementation, binary image storage, and real hydration/promotion proof remain out of this immediate slice | /102-sf-start Continue premium cloud sync entitlement-aware sync handoff |
+| 2026-06-11 11:15:29 UTC | 001-sf-build | GPT-5 Codex | Implemented the ready entitlement-aware post-auth sync handoff slice in main-thread degraded mode, including blocked/error popup states and handoff tests | Partial: identity-only auth now stays local and shows cloud sync blocked until entitlement context is supplied; active entitlement handoff is supported by injected server context; durable suite bridge, real hydration/promotion, and device proof remain | /102-sf-start Continue premium cloud sync suite entitlement bridge and guarded hydration |
 
 ## Current Chantier Flow
 
 - sf-spec: drafted, then refreshed 2026-06-11 for SocialGlowz auth/onboarding and local-cloud sync contract
-- sf-ready: ready before 2026-06-11 refresh; needs refresh review
-- sf-start: partial local sync-core, store enqueue integration, Convex deployment/codegen, fail-closed Convex scaffold, local sync status UI, SocialGlowz-style Convex Auth identity plumbing, and post-auth preparation feedback implemented
+- sf-ready: refreshed and ready on 2026-06-11
+- sf-start: partial local sync-core, store enqueue integration, Convex deployment/codegen, fail-closed Convex scaffold, local sync status UI, SocialGlowz-style Convex Auth identity plumbing, post-auth feedback, and entitlement-aware post-auth sync handoff implemented
 - sf-verify: not launched
 - sf-end: not launched
 - sf-ship: not launched
 
-Next command: `/101-sf-ready Refresh premium cloud sync spec after SocialGlowz auth/onboarding adaptation`
+Next command: `/102-sf-start Continue premium cloud sync suite entitlement bridge and guarded hydration`

@@ -11,8 +11,9 @@ import {
 import {
   advancePostAuthSyncStage,
   beginPostAuthSyncFeedback,
+  showPostAuthBlockedFeedback,
+  showPostAuthErrorFeedback,
   showPostAuthReadyFeedback,
-  resetPostAuthSyncFeedback,
 } from "@/lib/postAuthSyncFeedback";
 import type {
   CloudSyncQueuedOperation,
@@ -54,6 +55,31 @@ export interface CloudSyncAccessContext {
   entitlement?: EntitlementSnapshot | null;
   accountMarker?: SyncAccountMarker | null;
   sourceDeviceId?: SyncSourceDeviceId | null;
+}
+
+export type PostAuthSyncHandoffBlockedReason =
+  | Extract<CloudSyncReplayDecision, { granted: false }>["reason"]
+  | "entitlement_bridge_unavailable";
+
+export type PostAuthSyncHandoffResult =
+  | {
+      status: "ready";
+      jobs: CloudSyncQueuedOperation[];
+    }
+  | {
+      status: "blocked";
+      reason: PostAuthSyncHandoffBlockedReason;
+      jobs: [];
+    }
+  | {
+      status: "error";
+      reason: "handoff_failed";
+      jobs: [];
+    };
+
+export interface PostAuthSyncHandoffOptions extends CloudSyncAccessContext {
+  email?: string;
+  flow?: "signIn" | "signUp";
 }
 
 export function setSyncEnabled(
@@ -136,7 +162,7 @@ export function getStoredCloudAccountEmail(): string {
 export async function finalizePasswordSignIn(options?: {
   email?: string;
   flow?: "signIn" | "signUp";
-}): Promise<void> {
+} & CloudSyncAccessContext): Promise<PostAuthSyncHandoffResult> {
   beginPostAuthSyncFeedback();
 
   if (options?.email) {
@@ -145,11 +171,25 @@ export async function finalizePasswordSignIn(options?: {
 
   try {
     await advancePostAuthSyncStage("dataReceived");
+    await advancePostAuthSyncStage("pending");
+
+    const handoff = startEntitlementAwareSyncHandoff(options);
+    if (handoff.status === "blocked") {
+      showPostAuthBlockedFeedback(describePostAuthBlockedReason(handoff.reason));
+      return handoff;
+    }
+
     await advancePostAuthSyncStage("dataApplied");
     showPostAuthReadyFeedback();
+    return handoff;
   } catch (error) {
-    resetPostAuthSyncFeedback();
-    throw error;
+    const message = error instanceof Error ? error.message : "Erreur inconnue.";
+    showPostAuthErrorFeedback(message);
+    return {
+      status: "error",
+      reason: "handoff_failed",
+      jobs: [],
+    };
   }
 }
 
@@ -209,6 +249,64 @@ export function getCloudSyncDeviceId(): SyncSourceDeviceId {
   const generated = `device-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
   localStorage.setItem(DEVICE_ID_KEY, generated);
   return generated;
+}
+
+function startEntitlementAwareSyncHandoff(
+  options: PostAuthSyncHandoffOptions | undefined,
+): PostAuthSyncHandoffResult {
+  if (!options?.globalUserId && !options?.entitlement && !options?.accountMarker) {
+    setSyncEnabled(false);
+    return {
+      status: "blocked",
+      reason: "entitlement_bridge_unavailable",
+      jobs: [],
+    };
+  }
+
+  const decision = setSyncEnabledForSession(true, {
+    globalUserId: options.globalUserId,
+    entitlement: options.entitlement,
+    accountMarker: options.accountMarker,
+    sourceDeviceId: options.sourceDeviceId,
+  });
+
+  if (!decision.granted) {
+    return {
+      status: "blocked",
+      reason: decision.reason,
+      jobs: [],
+    };
+  }
+
+  return {
+    status: "ready",
+    jobs: decision.jobs,
+  };
+}
+
+function describePostAuthBlockedReason(
+  reason: PostAuthSyncHandoffBlockedReason,
+): string {
+  switch (reason) {
+    case "entitlement_bridge_unavailable":
+      return "Le compte est connecté, mais la vérification premium côté backend n'est pas encore disponible. Les données restent locales.";
+    case "missing_identity":
+      return "Le compte n'a pas renvoyé d'identité serveur vérifiable. Les données restent locales.";
+    case "missing_entitlement":
+      return "Aucun entitlement premium actif n'a été confirmé pour ce compte. Les données restent locales.";
+    case "wrong_product":
+      return "L'entitlement reçu ne correspond pas à Temu Shopping Lists. Les données restent locales.";
+    case "inactive_entitlement":
+      return "L'entitlement premium n'est pas actif. Les données restent locales.";
+    case "missing_account_marker":
+      return "Le compte cloud n'a pas encore de marqueur serveur exploitable. Les données restent locales.";
+    case "account_mismatch":
+      return "Les données locales en attente appartiennent à un autre compte. La synchronisation est bloquée.";
+    default: {
+      const exhaustive: never = reason;
+      return exhaustive;
+    }
+  }
 }
 
 function buildIdempotencyKey(

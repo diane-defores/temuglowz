@@ -35,6 +35,7 @@ export default defineSchema({
       v.literal("shopping_list"),
       v.literal("shopping_list_item"),
       v.literal("product_snapshot"),
+      v.literal("product_observation"),
     ),
     recordKey: v.string(),
     operationType: v.union(v.literal("upsert"), v.literal("delete")),
@@ -85,6 +86,7 @@ export default defineSchema({
       v.literal("shopping_list"),
       v.literal("shopping_list_item"),
       v.literal("product_snapshot"),
+      v.literal("product_observation"),
     ),
     recordKey: v.string(),
     reason: v.union(

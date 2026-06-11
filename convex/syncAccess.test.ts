@@ -4,6 +4,11 @@ import { ConvexError } from "convex/values";
 import { requireCloudSyncAccess } from "./syncAccess";
 
 describe("requireCloudSyncAccess", () => {
+  const identity = {
+    subject: "user-1",
+    tokenIdentifier: "issuer|user-1",
+  };
+
   it("denies missing identity", async () => {
     await expect(
       requireCloudSyncAccess({
@@ -22,10 +27,7 @@ describe("requireCloudSyncAccess", () => {
     await expect(
       requireCloudSyncAccess({
         auth: {
-          getUserIdentity: async () => ({
-            subject: "user-1",
-            tokenIdentifier: "issuer|user-1",
-          }),
+          getUserIdentity: async () => identity,
         },
       }),
     ).rejects.toMatchObject({
@@ -43,5 +45,52 @@ describe("requireCloudSyncAccess", () => {
         },
       }),
     ).rejects.toBeInstanceOf(ConvexError);
+  });
+
+  it("denies identity when bridge returns no active entitlement", async () => {
+    await expect(
+      requireCloudSyncAccess(
+        {
+          auth: {
+            getUserIdentity: async () => identity,
+          },
+        },
+        {
+          bridge: {
+            checkCloudSyncEntitlement: async () => ({
+              status: "denied",
+              reason: "missing_entitlement",
+            }),
+          },
+        },
+      ),
+    ).rejects.toMatchObject({
+      data: {
+        code: "missing_entitlement",
+      },
+    });
+  });
+
+  it("maps authenticated identity to server-owned access only after active bridge confirmation", async () => {
+    await expect(
+      requireCloudSyncAccess(
+        {
+          auth: {
+            getUserIdentity: async () => identity,
+          },
+        },
+        {
+          bridge: {
+            checkCloudSyncEntitlement: async (request) => ({
+              status: "granted",
+              suiteUserId: `suite:${request.subject}`,
+            }),
+          },
+        },
+      ),
+    ).resolves.toEqual({
+      ownerId: "suite:user-1",
+      productId: "temu_shopping_lists",
+    });
   });
 });

@@ -4,10 +4,13 @@ export type PostAuthSyncStage =
   | "idle"
   | "waitingServer"
   | "dataReceived"
+  | "pending"
   | "dataApplied"
-  | "ready";
+  | "ready"
+  | "blocked"
+  | "error";
 
-type PostAuthSyncMode = "blocking" | "success";
+type PostAuthSyncMode = "blocking" | "success" | "blocked" | "error";
 
 const READY_NOTICE_MS = 3000;
 const MIN_STAGE_MS = 650;
@@ -16,32 +19,39 @@ const state = reactive<{
   visible: boolean;
   mode: PostAuthSyncMode;
   stage: PostAuthSyncStage;
+  detail: string;
 }>({
   visible: false,
   mode: "blocking",
   stage: "idle",
+  detail: "",
 });
 
 let stageStartedAt = 0;
-let readyTimer: number | null = null;
+let readyTimer: ReturnType<typeof globalThis.setTimeout> | null = null;
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => {
-    window.setTimeout(resolve, ms);
+    globalThis.setTimeout(resolve, ms);
   });
 }
 
 function clearReadyTimer(): void {
   if (readyTimer !== null) {
-    window.clearTimeout(readyTimer);
+    globalThis.clearTimeout(readyTimer);
     readyTimer = null;
   }
 }
 
-function setStage(stage: PostAuthSyncStage, mode: PostAuthSyncMode): void {
+function setStage(
+  stage: PostAuthSyncStage,
+  mode: PostAuthSyncMode,
+  detail = "",
+): void {
   state.visible = true;
   state.mode = mode;
   state.stage = stage;
+  state.detail = detail;
   stageStartedAt = Date.now();
 }
 
@@ -64,7 +74,7 @@ export function beginPostAuthSyncFeedback(): void {
 }
 
 export async function advancePostAuthSyncStage(
-  stage: Exclude<PostAuthSyncStage, "idle" | "ready">,
+  stage: "dataReceived" | "pending" | "dataApplied",
 ): Promise<void> {
   if (!canAdvanceBlockingStage() || state.stage === stage) {
     return;
@@ -84,9 +94,19 @@ export async function advancePostAuthSyncStage(
 export function showPostAuthReadyFeedback(): void {
   clearReadyTimer();
   setStage("ready", "success");
-  readyTimer = window.setTimeout(() => {
+  readyTimer = globalThis.setTimeout(() => {
     resetPostAuthSyncFeedback();
   }, READY_NOTICE_MS);
+}
+
+export function showPostAuthBlockedFeedback(detail: string): void {
+  clearReadyTimer();
+  setStage("blocked", "blocked", detail);
+}
+
+export function showPostAuthErrorFeedback(detail: string): void {
+  clearReadyTimer();
+  setStage("error", "error", detail);
 }
 
 export function resetPostAuthSyncFeedback(): void {
@@ -94,5 +114,6 @@ export function resetPostAuthSyncFeedback(): void {
   state.visible = false;
   state.mode = "blocking";
   state.stage = "idle";
+  state.detail = "";
   stageStartedAt = 0;
 }
