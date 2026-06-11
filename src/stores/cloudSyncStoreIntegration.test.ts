@@ -11,6 +11,7 @@ import {
   listCloudSyncQueue,
 } from "@/lib/cloudSyncQueue";
 import { TEMU_SHOPPING_LISTS_PRODUCT_ID } from "@/lib/accessModel";
+import { useProductObservationsStore } from "@/stores/productObservations";
 import { useProductSnapshotsStore } from "@/stores/productSnapshots";
 import { useShoppingListsStore } from "@/stores/shoppingLists";
 import type { ProductSnapshot } from "@/types/domain";
@@ -55,6 +56,7 @@ function withStores() {
   const pinia = createPinia();
   setActivePinia(pinia);
   return {
+    observations: useProductObservationsStore(),
     shoppingLists: useShoppingListsStore(),
     snapshots: useProductSnapshotsStore(),
   };
@@ -92,10 +94,17 @@ describe("store mutations and cloud sync queue integration", () => {
   });
 
   it("keeps local-only store mutations out of the cloud sync queue", () => {
-    const { shoppingLists, snapshots } = withStores();
+    const { observations, shoppingLists, snapshots } = withStores();
     const listId = shoppingLists.createList("Cuisine");
     snapshots.upsertSnapshot(buildSnapshot("snap-1"));
     shoppingLists.addItem(listId, "snap-1");
+    observations.appendObservation({
+      snapshotId: "snap-1",
+      canonicalUrl: "https://www.temu.com/fr/product/snap-1.html",
+      source: "manual",
+      availability: "available",
+      observedAt: 10,
+    });
 
     expect(listCloudSyncQueue()).toHaveLength(0);
   });
@@ -108,10 +117,17 @@ describe("store mutations and cloud sync queue integration", () => {
       sourceDeviceId: "device-1",
     });
 
-    const { shoppingLists, snapshots } = withStores();
+    const { observations, shoppingLists, snapshots } = withStores();
     const listId = shoppingLists.createList("Cuisine");
     snapshots.upsertSnapshot(buildSnapshot("snap-1"));
     shoppingLists.addItem(listId, "snap-1");
+    observations.appendObservation({
+      snapshotId: "snap-1",
+      canonicalUrl: "https://www.temu.com/fr/product/snap-1.html",
+      source: "manual",
+      availability: "available",
+      observedAt: 10,
+    });
 
     expect(listCloudSyncQueue()).toEqual(
       expect.arrayContaining([
@@ -127,6 +143,10 @@ describe("store mutations and cloud sync queue integration", () => {
         }),
         expect.objectContaining({
           domain: "shopping_list_item",
+          operationType: "upsert",
+        }),
+        expect.objectContaining({
+          domain: "product_observation",
           operationType: "upsert",
         }),
       ]),

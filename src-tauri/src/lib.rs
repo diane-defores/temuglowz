@@ -168,6 +168,26 @@ fn temu_webview_set_sessions(
     }
 }
 
+#[tauri::command]
+fn temu_webview_set_shopping_lists(
+    app: AppHandle,
+    lists_json: String,
+) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        return app
+            .temu_webview()
+            .set_shopping_lists(lists_json)
+            .map_err(|error| error.to_string());
+    }
+
+    #[cfg(not(mobile))]
+    {
+        let _ = (app, lists_json);
+        Ok(())
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     Builder::default()
@@ -184,6 +204,7 @@ pub fn run() {
             temu_webview_set_dark_mode,
             temu_webview_set_text_zoom,
             temu_webview_set_sessions,
+            temu_webview_set_shopping_lists,
         ])
         .run(tauri::generate_context!())
         .expect("tauri run failed");

@@ -1,0 +1,22 @@
+.temu-shell button,
+.temu-shell input {
+  font: inherit;
+}
+
+.temu-shell button,
+.temu-shell a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.temu-shell input,
+.temu-shell textarea,
+.temu-shell [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.temu-shell button,
+.temu-shell [role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+}

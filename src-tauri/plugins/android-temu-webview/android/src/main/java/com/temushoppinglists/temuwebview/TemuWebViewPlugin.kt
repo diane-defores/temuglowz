@@ -7,6 +7,8 @@ import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.util.Log
 import android.view.Gravity
+import android.view.HapticFeedbackConstants
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.CookieManager
@@ -17,6 +19,7 @@ import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
+import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.webkit.WebSettingsCompat
@@ -36,6 +39,8 @@ private const val TAG = "TemuWebView"
 private const val TEXT_ZOOM_MIN = 50
 private const val TEXT_ZOOM_MAX = 200
 private const val TEXT_ZOOM_DEFAULT = 100
+private const val TEXT_ZOOM_STEP = 5
+private const val TEXT_ZOOM_RANGE_STEPS = (TEXT_ZOOM_MAX - TEXT_ZOOM_MIN) / TEXT_ZOOM_STEP
 private const val MAX_WARM_HOSTS = 3
 private const val TEMU_HOME_URL = "https://www.temu.com/"
 private const val WEBKIT_PROFILE_PREFIX = "temu_"
@@ -70,7 +75,17 @@ class SessionsArgs {
     var activeSessionId: String = ""
 }
 
+@InvokeArg
+class ShoppingListsArgs {
+    var listsJson: String = "[]"
+}
+
 private data class SessionItem(
+    val id: String,
+    val name: String,
+)
+
+private data class ShoppingListItem(
     val id: String,
     val name: String,
 )
@@ -96,6 +111,17 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
     private var disableMultiProfileMode = false
     private val sessionHosts = linkedMapOf<String, SessionHost>()
     private val sessionItems = linkedMapOf<String, SessionItem>()
+    private val shoppingListItems = linkedMapOf<String, ShoppingListItem>()
+    private var popupMenuOverlayView: FrameLayout? = null
+    private var popupMenuView: LinearLayout? = null
+    private val primeIconsTypeface: Typeface by lazy {
+        try {
+            Typeface.createFromAsset(activity.assets, "primeicons.ttf")
+        } catch (error: Exception) {
+            Log.w(TAG, "PrimeIcons asset unavailable; falling back to default font", error)
+            Typeface.DEFAULT
+        }
+    }
 
     override fun load(webView: WebView) {
         mainWebView = webView
@@ -230,6 +256,27 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
         }
     }
 
+    @Command
+    fun setShoppingLists(invoke: Invoke) {
+        val args = invoke.parseArgs(ShoppingListsArgs::class.java)
+        activity.runOnUiThread {
+            shoppingListItems.clear()
+            try {
+                val parsed = JSONArray(args.listsJson)
+                for (index in 0 until parsed.length()) {
+                    val item = parsed.optJSONObject(index) ?: continue
+                    val id = item.optString("id").trim()
+                    val name = item.optString("name").trim()
+                    if (id.isBlank() || name.isBlank()) continue
+                    shoppingListItems[id] = ShoppingListItem(id = id, name = name)
+                }
+            } catch (error: Exception) {
+                Log.w(TAG, "Failed to parse shopping lists", error)
+            }
+            invoke.resolve(JSObject().put("ok", true).put("listCount", shoppingListItems.size))
+        }
+    }
+
     private fun createHost(sessionId: String, name: String, initialUrl: String): SessionHost {
         val density = activity.resources.displayMetrics.density
         val navBarHeight = activity.window.decorView.rootWindowInsets?.systemWindowInsetBottom ?: 0
@@ -356,7 +403,7 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
     private fun buildBottomBar(sessionId: String, density: Float, navBarHeight: Int): LinearLayout {
         val bar = LinearLayout(activity)
         bar.orientation = LinearLayout.VERTICAL
-        bar.setBackgroundColor(if (isDarkMode) Color.parseColor("#111111") else Color.WHITE)
+        bar.setBackgroundColor(bottomBarColor())
         bar.setPadding(0, 0, 0, navBarHeight)
 
         val row = LinearLayout(activity)
@@ -367,28 +414,59 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
             (56 * density).toInt(),
         )
 
-        row.addView(button("Accueil", density) { hideActiveHost() })
-        row.addView(button("Retour", density) { activeHost()?.webView?.let { if (it.canGoBack()) it.goBack() } })
-        row.addView(button("Avant", density) { activeHost()?.webView?.let { if (it.canGoForward()) it.goForward() } })
-        row.addView(button("Recharger", density) { activeHost()?.webView?.reload() })
-        row.addView(button("Enregistrer", density) { requestCaptureFromBottomBar() })
+        row.addView(buildHomeButton(density))
+        row.addView(buildDivider(density))
 
         val scrollView = HorizontalScrollView(activity)
         scrollView.isHorizontalScrollBarEnabled = false
+        scrollView.isSmoothScrollingEnabled = true
         scrollView.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
         val sessionRow = LinearLayout(activity)
         sessionRow.orientation = LinearLayout.HORIZONTAL
+        sessionRow.gravity = Gravity.CENTER_VERTICAL
         sessionRow.tag = "session-row"
         scrollView.addView(sessionRow)
         row.addView(scrollView)
 
-        row.addView(button("Sombre", density) { toggleDarkModeFromNative() })
-        row.addView(button("A-", density) { setNativeTextZoom(textZoomLevel - 10) })
-        row.addView(button("A+", density) { setNativeTextZoom(textZoomLevel + 10) })
-
         bar.addView(row)
         rebuildSessionButtonsForBar(bar, sessionId, density)
         return bar
+    }
+
+    private fun buildHomeButton(density: Float): TextView {
+        val btn = TextView(activity)
+        btn.text = "\ue941"
+        btn.typeface = primeIconsTypeface
+        btn.tag = "home-button"
+        btn.textSize = 18f
+        btn.gravity = Gravity.CENTER
+        btn.setTextColor(bottomBarIconColor())
+        btn.background = null
+        val size = (48 * density).toInt()
+        btn.layoutParams = LinearLayout.LayoutParams(size, size)
+        btn.isClickable = true
+        btn.isFocusable = true
+        btn.isLongClickable = true
+        btn.setOnClickListener {
+            btn.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            togglePopupMenu(density)
+        }
+        btn.setOnLongClickListener {
+            btn.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+            dismissPopupMenu()
+            hideActiveHost()
+            true
+        }
+        return btn
+    }
+
+    private fun buildDivider(density: Float): View {
+        val divider = View(activity)
+        divider.setBackgroundColor(if (isDarkMode) Color.parseColor("#27272A") else Color.parseColor("#DEE2E6"))
+        val params = LinearLayout.LayoutParams((1 * density).toInt(), (24 * density).toInt())
+        params.setMargins((4 * density).toInt(), 0, (4 * density).toInt(), 0)
+        divider.layoutParams = params
+        return divider
     }
 
     private fun button(label: String, density: Float, action: () -> Unit): TextView {
@@ -450,7 +528,246 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
         return shape
     }
 
+    private fun togglePopupMenu(density: Float) {
+        if (popupMenuView != null) {
+            dismissPopupMenu()
+            return
+        }
+        showPopupMenu(density)
+    }
+
+    private fun dismissPopupMenu() {
+        popupMenuOverlayView?.let { overlay ->
+            (overlay.parent as? ViewGroup)?.removeView(overlay)
+        }
+        popupMenuOverlayView = null
+        popupMenuView = null
+    }
+
+    private fun showPopupMenu(density: Float) {
+        val host = activeHost() ?: return
+        val root = host.root
+        val bar = host.bottomBar
+
+        val overlay = FrameLayout(activity)
+        overlay.layoutParams = FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+        )
+        overlay.isClickable = true
+        overlay.isFocusable = true
+        overlay.setOnClickListener { dismissPopupMenu() }
+
+        val menu = LinearLayout(activity)
+        menu.orientation = LinearLayout.VERTICAL
+        val menuBg = GradientDrawable()
+        menuBg.setColor(if (isDarkMode) Color.parseColor("#1C1C1E") else Color.WHITE)
+        menuBg.cornerRadius = 16 * density
+        menu.background = menuBg
+        menu.elevation = 8 * density
+        val pad = (8 * density).toInt()
+        menu.setPadding(pad, pad, pad, pad)
+
+        val menuWidth = (232 * density).toInt()
+        val menuParams = FrameLayout.LayoutParams(menuWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
+        menuParams.gravity = Gravity.BOTTOM or Gravity.START
+        menuParams.leftMargin = (8 * density).toInt()
+        menuParams.bottomMargin = bar.layoutParams.height + (8 * density).toInt()
+        menu.layoutParams = menuParams
+        menu.isClickable = true
+        menu.isFocusable = true
+        menu.setOnClickListener { }
+
+        menu.addView(buildPopupMenuItem(density, "←", "Retour", Typeface.DEFAULT) {
+            host.webView.let { if (it.canGoBack()) it.goBack() }
+            dismissPopupMenu()
+        })
+        menu.addView(buildPopupMenuItem(density, "→", "Avant", Typeface.DEFAULT) {
+            host.webView.let { if (it.canGoForward()) it.goForward() }
+            dismissPopupMenu()
+        })
+        menu.addView(buildPopupMenuItem(density, "↻", "Recharger", Typeface.DEFAULT) {
+            host.webView.reload()
+            dismissPopupMenu()
+        })
+        menu.addView(buildPopupMenuItem(density, "◎", "Observer ce produit", Typeface.DEFAULT) {
+            requestObservationFromBottomBar()
+            dismissPopupMenu()
+            Toast.makeText(activity, "Observation à compléter", Toast.LENGTH_SHORT).show()
+        })
+        if (shoppingListItems.isEmpty()) {
+            menu.addView(buildPopupMenuItem(density, "+", "Enregistrer", Typeface.DEFAULT) {
+                requestCaptureFromBottomBar()
+                dismissPopupMenu()
+            })
+        } else {
+            menu.addView(buildMenuDivider(density))
+            shoppingListItems.values.take(6).forEach { list ->
+                menu.addView(buildPopupMenuItem(density, "+", "Ajouter à ${list.name.take(24)}", Typeface.DEFAULT) {
+                    requestShoppingListActionFromBottomBar("add", list.id)
+                    dismissPopupMenu()
+                    Toast.makeText(activity, "Ajout en cours", Toast.LENGTH_SHORT).show()
+                })
+            }
+            shoppingListItems.values.take(6).forEach { list ->
+                menu.addView(buildPopupMenuItem(density, "−", "Retirer de ${list.name.take(24)}", Typeface.DEFAULT) {
+                    requestShoppingListActionFromBottomBar("remove", list.id)
+                    dismissPopupMenu()
+                    Toast.makeText(activity, "Suppression en cours", Toast.LENGTH_SHORT).show()
+                })
+            }
+        }
+        menu.addView(buildMenuDivider(density))
+
+        val darkLabel = if (isDarkMode) "Mode clair" else "Mode sombre"
+        val darkIcon = if (isDarkMode) "\ue9c8" else "\ue9c7"
+        menu.addView(buildPopupMenuItem(density, darkIcon, darkLabel, primeIconsTypeface) {
+            toggleDarkModeFromNative()
+            dismissPopupMenu()
+        })
+        menu.addView(buildTextZoomControl(density))
+
+        overlay.addView(menu)
+        root.addView(overlay)
+        popupMenuOverlayView = overlay
+        popupMenuView = menu
+    }
+
+    private fun buildMenuDivider(density: Float): View {
+        val divider = View(activity)
+        divider.setBackgroundColor(if (isDarkMode) Color.parseColor("#2C2C2E") else Color.parseColor("#E5E5EA"))
+        val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (1 * density).toInt())
+        val margin = (8 * density).toInt()
+        params.setMargins(margin, (4 * density).toInt(), margin, (4 * density).toInt())
+        divider.layoutParams = params
+        return divider
+    }
+
+    private fun buildTextZoomControl(density: Float): LinearLayout {
+        val wrap = LinearLayout(activity)
+        wrap.orientation = LinearLayout.VERTICAL
+        val padH = (12 * density).toInt()
+        val padTop = (8 * density).toInt()
+        val padBottom = (10 * density).toInt()
+        wrap.setPadding(padH, padTop, padH, padBottom)
+
+        val textColor = if (isDarkMode) Color.parseColor("#E0E0E0") else Color.parseColor("#1C1C1E")
+        val secondaryColor = if (isDarkMode) Color.parseColor("#9A9AB0") else Color.parseColor("#6C757D")
+
+        val topRow = LinearLayout(activity)
+        topRow.orientation = LinearLayout.HORIZONTAL
+        topRow.gravity = Gravity.CENTER_VERTICAL
+
+        val label = TextView(activity)
+        label.text = "Taille du texte Temu"
+        label.textSize = 14f
+        label.setTextColor(textColor)
+        label.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        label.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+
+        val value = TextView(activity)
+        value.text = "${textZoomLevel}%"
+        value.textSize = 12f
+        value.setTextColor(secondaryColor)
+        value.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+
+        topRow.addView(label)
+        topRow.addView(value)
+        wrap.addView(topRow)
+
+        val slider = SeekBar(activity)
+        slider.max = TEXT_ZOOM_RANGE_STEPS
+        slider.progress = ((normalizeTextZoom(textZoomLevel) - TEXT_ZOOM_MIN) / TEXT_ZOOM_STEP)
+            .coerceIn(0, TEXT_ZOOM_RANGE_STEPS)
+        slider.layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+        )
+        slider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                val level = normalizeTextZoom(TEXT_ZOOM_MIN + (progress * TEXT_ZOOM_STEP))
+                value.text = "$level%"
+                if (!fromUser || level == textZoomLevel) return
+                setNativeTextZoom(level)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+        wrap.addView(slider)
+
+        return wrap
+    }
+
+    private fun buildPopupMenuItem(
+        density: Float,
+        iconChar: String,
+        label: String,
+        iconTypeface: Typeface,
+        onClick: () -> Unit,
+    ): LinearLayout {
+        val row = LinearLayout(activity)
+        row.orientation = LinearLayout.HORIZONTAL
+        row.gravity = Gravity.CENTER_VERTICAL
+        val rowPadH = (12 * density).toInt()
+        val rowPadV = (11 * density).toInt()
+        row.setPadding(rowPadH, rowPadV, rowPadH, rowPadV)
+        row.isClickable = true
+        row.isFocusable = true
+
+        val rippleBg = GradientDrawable()
+        rippleBg.cornerRadius = 10 * density
+        rippleBg.setColor(Color.TRANSPARENT)
+        row.background = rippleBg
+        row.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    rippleBg.setColor(if (isDarkMode) Color.parseColor("#2C2C2E") else Color.parseColor("#F2F2F7"))
+                    v.invalidate()
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    rippleBg.setColor(Color.TRANSPARENT)
+                    v.invalidate()
+                }
+            }
+            false
+        }
+
+        val textColor = if (isDarkMode) Color.parseColor("#E0E0E0") else Color.parseColor("#1C1C1E")
+
+        val icon = TextView(activity)
+        icon.text = iconChar
+        icon.typeface = iconTypeface
+        icon.textSize = 16f
+        icon.gravity = Gravity.CENTER
+        icon.setTextColor(textColor)
+        val iconSize = (28 * density).toInt()
+        icon.layoutParams = LinearLayout.LayoutParams(iconSize, iconSize)
+        row.addView(icon)
+
+        val spacer = View(activity)
+        spacer.layoutParams = LinearLayout.LayoutParams((10 * density).toInt(), 1)
+        row.addView(spacer)
+
+        val text = TextView(activity)
+        text.text = label
+        text.textSize = 14f
+        text.setTextColor(textColor)
+        text.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        text.layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+        )
+        row.addView(text)
+
+        row.setOnClickListener { onClick() }
+        return row
+    }
+
     private fun showHost(host: SessionHost) {
+        dismissPopupMenu()
         activeHost()?.let {
             if (it.id != host.id) hideHost(it)
         }
@@ -464,6 +781,7 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
     }
 
     private fun hideActiveHost() {
+        dismissPopupMenu()
         activeHost()?.let { hideHost(it) }
         dispatchToVue("temu-webview-hidden", JSONObject())
     }
@@ -479,6 +797,7 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
 
     private fun destroyHost(sessionId: String) {
         val host = sessionHosts.remove(sessionId) ?: return
+        if (activeSessionId == sessionId) dismissPopupMenu()
         host.root.removeView(host.webView)
         (host.root.parent as? ViewGroup)?.removeView(host.root)
         host.webView.stopLoading()
@@ -503,6 +822,35 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
         )
     }
 
+    private fun requestShoppingListActionFromBottomBar(action: String, listId: String) {
+        val host = activeHost()
+        val url = host?.currentUrl ?: host?.webView?.url
+        dispatchToVue(
+            "temu-webview-capture-requested",
+            JSONObject()
+                .put("sessionId", host?.id)
+                .put("url", url)
+                .put("available", host != null)
+                .put("degraded", isProfileDegraded())
+                .put("action", action)
+                .put("listId", listId)
+        )
+    }
+
+    private fun requestObservationFromBottomBar() {
+        val host = activeHost()
+        val url = host?.currentUrl ?: host?.webView?.url
+        dispatchToVue(
+            "temu-webview-capture-requested",
+            JSONObject()
+                .put("sessionId", host?.id)
+                .put("url", url)
+                .put("available", host != null)
+                .put("degraded", isProfileDegraded())
+                .put("action", "observe")
+        )
+    }
+
     private fun toggleDarkModeFromNative() {
         isDarkMode = !isDarkMode
         sessionHosts.values.forEach { applyHostPreferences(it) }
@@ -518,9 +866,28 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
     private fun applyHostPreferences(host: SessionHost) {
         applyTextZoom(host.webView)
         applyDarkMode(host.webView)
-        host.bottomBar.setBackgroundColor(if (isDarkMode) Color.parseColor("#111111") else Color.WHITE)
+        applyDarkModeToBottomBar(host.bottomBar)
         updateBottomBarState(host)
     }
+
+    private fun applyDarkModeToBottomBar(bar: LinearLayout) {
+        bar.setBackgroundColor(bottomBarColor())
+        val row = bar.getChildAt(0) as? LinearLayout ?: return
+        for (index in 0 until row.childCount) {
+            val child = row.getChildAt(index)
+            if (child is TextView && child.tag == "home-button") {
+                child.setTextColor(bottomBarIconColor())
+            } else if (child is View && child !is ViewGroup && child !is TextView) {
+                child.setBackgroundColor(if (isDarkMode) Color.parseColor("#27272A") else Color.parseColor("#DEE2E6"))
+            }
+        }
+    }
+
+    private fun bottomBarColor(): Int =
+        if (isDarkMode) Color.parseColor("#09090B") else Color.WHITE
+
+    private fun bottomBarIconColor(): Int =
+        if (isDarkMode) Color.parseColor("#E0E0E0") else Color.parseColor("#495057")
 
     private fun applyTextZoom(webView: WebView) {
         webView.settings.textZoom = normalizeTextZoom(textZoomLevel)

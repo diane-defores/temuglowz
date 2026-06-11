@@ -1,10 +1,10 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "1.0.8"
+artifact_version: "1.0.10"
 project: "temu"
 created: "2026-06-10"
-updated: "2026-06-10"
+updated: "2026-06-11"
 status: draft
 source_skill: sf-build
 scope: "temu-shopping-lists-android-app"
@@ -34,6 +34,8 @@ evidence:
   - "Entitlement guardrail slice added on 2026-06-10 with access allowlists, fail-closed access contract, checklist, and support runbook skeleton."
   - "Development mode decision 2026-06-10: local checks cover TS/Vue/Convex/unit/web only; native Android/Tauri/WebView proof is CI-first on GitHub Actions Blacksmith."
   - "Debug APK distribution is via GitHub prerelease assets while Actions artifact quota is constrained."
+  - "Ready spec temu-socialglow-ui-copy-migration.md defines a copy-first UI migration from SocialGlow/Social News and hides profile management in v1."
+  - "Implemented first-slice price/availability observations with manual entry, WebView URL capture handoff, bounded local history, and in-app reminder due state."
 next_review: "2026-07-10"
 next_step: "/sf-verify Temu shopping lists Android app"
 ---
@@ -48,10 +50,12 @@ Document the implemented app surfaces for the local-first Temu shopping-list arc
 
 - `src/`: Vue app, routes, pages, Pinia stores, URL/import parsing, validation, backup serialization, and browser-facing share bridge.
 - `src/lib/accessModel.ts`: product id, plan/source/status allowlists and fail-closed protected access contract.
+- `src/stores/productObservations.ts`: bounded last-observed price/availability records and in-app reminder due state.
 - `src-tauri/`: Tauri configuration, Rust commands, Android generated project, manifest share target, and Android share-intent contract files.
 - `convex/schema.ts`: optional future cloud-sync schema scaffold.
 - `README.md`: developer setup, scope, and non-affiliation notes.
 - `shipflow_data/workflow/test-checklists/temu-shopping-lists-android.md`: manual Android proof checklist.
+- `shipflow_data/workflow/test-checklists/temu-socialglow-ui-copy-migration.md`: pending manual checklist for the SocialGlow-derived UI migration.
 - `shipflow_data/workflow/test-checklists/temu-shopping-lists-entitlements.md`: entitlement proof checklist.
 - `shipflow_data/technical/support/entitlements-runbook.md`: support runbook skeleton before real grants/codes.
 
@@ -74,9 +78,13 @@ Document the implemented app surfaces for the local-first Temu shopping-list arc
 - Saved snapshots remain local-first and readable after reload without cloud sync.
 - The app must not store Temu cookies, session state, account data, or browser profiles.
 - The app must not include scraping, stealth WebView, anti-bot bypass, or automated cart import code.
+- Product observations are user-initiated or manually entered; no background Temu fetch or live monitoring claim is allowed.
+- A missing observation is not an availability claim and must not be displayed as sold out.
 - Convex is optional scaffolding only until sync functions and merge tests are implemented.
 - The product target is Android Tauri with native WebView; a public web app must not be assumed from the browser test surface.
 - Android runtime share payload delivery is not verified until a compatible Android toolchain/device test passes.
+- The SocialGlow-derived UI migration is copy-first: copy the proven shell, then adapt it to Temu shopping-session concepts.
+- Visible profile management is hidden for v1; copied profile-related code may remain only when internal and non-visible.
 
 ## Access And Entitlements
 
@@ -120,6 +128,11 @@ and visible states for local-only, blocked, pending, syncing, synced, retrying,
 conflict, account mismatch, and error. "Saved locally" and "synced to cloud"
 must remain distinct in UI and docs.
 
+Price/availability observation records use sync domain `product_observation`
+and are treated as personal shopping-intent data tied to saved snapshots. They
+may enter the local sync queue only after the existing sync session gate is
+active. Reminder preferences remain in-app state in the first slice.
+
 Current implementation status:
 
 - Local stores can enqueue typed sync operations only after an active sync
@@ -135,6 +148,38 @@ Current implementation status:
 - Real cloud writes, hydration, promotion, conflict UI, and reinstall recovery
   remain unshipped until the suite entitlement bridge and Convex deployment
   proof exist.
+
+## UI Shell Migration
+
+The implemented spec `shipflow_data/workflow/specs/temu-socialglow-ui-copy-migration.md`
+changes the UI direction from incremental dashboard polish to a copy-first
+adaptation of the existing SocialGlow/Social News shell. The current target is
+a shopping-session launcher and native WebView workflow with SocialGlow-level
+navigation quality, Temu session names, dark mode and text-size controls, and
+no visible profile management in v1.
+
+The Vue shell, Android bottom-bar menu, and route wiring are integrated
+locally. GitHub Actions APK proof and real Android device smoke remain tracked
+by `shipflow_data/workflow/test-checklists/temu-socialglow-ui-copy-migration.md`.
+
+## Product Observations
+
+The implemented first slice adds a local-first observation layer for saved
+products. Product detail shows "Dernière observation", "Dernier prix observé",
+last-observed availability, timestamp, source/status, bounded history, and a
+manual form for updating the observation. List cards show a compact
+last-observed badge and highlight in-app reminder due state.
+
+The Android WebView bottom-bar menu includes `Observer ce produit`. It captures
+the current product URL, links it to an already saved snapshot when possible,
+creates a `manual_required` observation shell, and routes to product detail for
+manual completion. If the product is not saved yet, it routes to the existing
+import review flow. This path intentionally does not parse Temu DOM
+price/stock and does not request Android notification permission.
+
+Observation history is capped to 50 retained records per product. Backup export
+includes retained observations while old backups without observations remain
+valid.
 
 ## Validation
 
@@ -170,6 +215,8 @@ Current known limits:
 - Check store tests before changing list or snapshot persistence.
 - Check Android manifest and share bridge together before claiming Android Sharesheet support.
 - Check README and manual checklist when changing product scope or Android setup.
+- Check the SocialGlow UI copy-migration checklist before claiming Android proof for the copied shell.
+- Check the price/availability observation checklist before claiming WebView observation or reminder proof.
 - Check `CLAUDE.md` development mode before choosing local, CI, or device proof.
 - Run the policy scan for forbidden scraping/stealth/cookie/session code before verification.
 

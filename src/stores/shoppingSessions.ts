@@ -12,6 +12,17 @@ import type {
 
 type DegradedMode = boolean;
 
+export interface ShoppingSessionSummary {
+  id: string;
+  name: string;
+  displayName: string;
+}
+
+export interface ShoppingSessionBridgeSettings {
+  darkMode: boolean;
+  textZoom: number;
+}
+
 interface ShoppingSessionsState {
   sessions: Record<string, ShoppingSession>;
   activeSessionId: string | null;
@@ -48,6 +59,15 @@ function sortByDisplayOrderDesc(a: ShoppingSession, b: ShoppingSession): number 
   return b.displayOrder - a.displayOrder;
 }
 
+function normalizeTextZoomLevel(level: number): number {
+  const rounded = Math.round(level / TEXT_ZOOM_STEP) * TEXT_ZOOM_STEP;
+  if (!Number.isFinite(rounded)) {
+    return DEFAULT_TEXT_ZOOM;
+  }
+
+  return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, rounded));
+}
+
 function normalizeSessionName(existingNames: string[], rawName: string): string {
   const trimmed = trimName(rawName);
   if (!trimmed) {
@@ -71,6 +91,15 @@ function nextAutoName(sessions: Record<string, ShoppingSession>): string {
   }
 
   return `${DEFAULT_SESSION_NAME_PREFIX} ${Object.keys(sessions).length + 1}`;
+}
+
+function toSessionSummary(session: ShoppingSession): ShoppingSessionSummary {
+  const displayName = trimName(session.name) || DEFAULT_SESSION_NAME_PREFIX;
+  return {
+    id: session.id,
+    name: displayName,
+    displayName,
+  };
 }
 
 function parseStartUrl(raw: string): string {
@@ -115,6 +144,17 @@ export const useShoppingSessionsStore = defineStore("shoppingSessions", {
   getters: {
     sessionsByOrder: (state): ShoppingSession[] =>
       Object.values(state.sessions).sort(sortByDisplayOrderDesc),
+
+    sessionSummaries(): ShoppingSessionSummary[] {
+      return this.sessionsByOrder.map(toSessionSummary);
+    },
+
+    bridgeSettings(state): ShoppingSessionBridgeSettings {
+      return {
+        darkMode: Boolean(state.settings.darkMode),
+        textZoom: normalizeTextZoomLevel(state.settings.textZoom),
+      };
+    },
 
     activeSession(state): ShoppingSession | undefined {
       if (!state.activeSessionId) {
@@ -271,16 +311,7 @@ export const useShoppingSessionsStore = defineStore("shoppingSessions", {
     },
 
     setTextZoom(level: number): void {
-      const rounded = Math.round(level / TEXT_ZOOM_STEP) * TEXT_ZOOM_STEP;
-      if (!Number.isFinite(rounded)) {
-        throw new Error("text zoom must be numeric");
-      }
-
-      if (rounded < MIN_ZOOM || rounded > MAX_ZOOM) {
-        throw new Error("text zoom must be between 50 and 200");
-      }
-
-      this.settings.textZoom = rounded;
+      this.settings.textZoom = normalizeTextZoomLevel(level);
       if (this.activeSessionId) {
         this.sessions[this.activeSessionId]!.updatedAt = now();
       }

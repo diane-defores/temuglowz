@@ -7,6 +7,7 @@ import {
   queueCloudSyncUpsert,
 } from "@/lib/cloudSync";
 import { validateProductSnapshotInput } from "@/lib/validators";
+import { useProductObservationsStore } from "@/stores/productObservations";
 import type {
   ProductPriceSnapshot,
   ProductSnapshot,
@@ -102,6 +103,7 @@ export const useProductSnapshotsStore = defineStore("productSnapshots", {
       const keep = new Set(referencedIds);
       for (const id of Object.keys(this.snapshots)) {
         if (!keep.has(id)) {
+          useProductObservationsStore().deleteBySnapshot(id);
           queueCloudSyncDelete("product_snapshot", id);
           delete this.snapshots[id];
         }
@@ -109,6 +111,7 @@ export const useProductSnapshotsStore = defineStore("productSnapshots", {
     },
 
     deleteSnapshot(id: string): void {
+      useProductObservationsStore().deleteBySnapshot(id);
       queueCloudSyncDelete("product_snapshot", id);
       delete this.snapshots[id];
     },

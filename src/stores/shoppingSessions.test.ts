@@ -131,4 +131,42 @@ describe("shopping sessions store", () => {
     expect(reloaded.settings.textZoom).toBe(150);
     expect(reloaded.hasSessions).toBe(true);
   });
+
+  it("exposes stable session summaries for the native session switcher", () => {
+    const { store } = withPersistedStore();
+    const cuisine = store.createSession("  Cuisine  ");
+    const voiture = store.createSession("Voiture");
+
+    store.setActiveSession(cuisine);
+
+    expect(store.sessionSummaries).toEqual([
+      {
+        id: cuisine,
+        name: "Cuisine",
+        displayName: "Cuisine",
+      },
+      {
+        id: voiture,
+        name: "Voiture",
+        displayName: "Voiture",
+      },
+    ]);
+  });
+
+  it("keeps dark mode and text zoom canonical for copied shell controls", () => {
+    const { store } = withPersistedStore();
+
+    store.setDarkMode(1 as unknown as boolean);
+    store.setTextZoom(147);
+    expect(store.bridgeSettings).toEqual({
+      darkMode: true,
+      textZoom: 145,
+    });
+
+    store.setTextZoom(999);
+    expect(store.settings.textZoom).toBe(200);
+
+    store.setTextZoom(Number.NaN);
+    expect(store.settings.textZoom).toBe(100);
+  });
 });

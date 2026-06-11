@@ -200,4 +200,5 @@ export const SUPPORTED_SYNC_DOMAINS: SyncDomain[] = [
   "shopping_list",
   "shopping_list_item",
   "product_snapshot",
+  "product_observation",
 ];

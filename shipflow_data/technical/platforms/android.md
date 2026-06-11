@@ -1,10 +1,10 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "1.0.2"
+artifact_version: "1.0.4"
 project: "temu"
 created: "2026-06-10"
-updated: "2026-06-10"
+updated: "2026-06-11"
 status: draft
 source_skill: sf-build
 scope: "android-tauri-share-target"
@@ -32,6 +32,8 @@ evidence:
   - "Local Android native builds are not authoritative on this aarch64 workspace because the installed NDK is linux-x86_64."
   - "GitHub Actions Blacksmith run 27301921202 built the Android debug APK successfully for commit cde00d0 on 2026-06-10."
   - "Workflow changed after quota proof to publish debug APK prereleases directly and avoid Actions artifact quota annotations."
+  - "Ready spec temu-socialglow-ui-copy-migration.md requires SocialGlow-style native bottom-bar menu behavior without visible profile controls."
+  - "WebView bottom-bar menu now includes an explicit user-triggered product observation action that captures only the current URL."
 next_review: "2026-07-10"
 next_step: "/sf-verify Temu shopping lists Android app"
 ---
@@ -51,6 +53,7 @@ Track the native Android surface for receiving user-initiated Temu product links
 - `src-tauri/src/lib.rs`: Tauri commands consumed by the frontend share bridge.
 - `src/lib/shareBridge.ts`: frontend consumption path for pending share payloads.
 - `.github/workflows/dev-builds.yml`: GitHub Actions debug APK build, Blacksmith runner selection, build caches, and prerelease APK publishing.
+- `src-tauri/plugins/android-temu-webview/`: Android native WebView plugin targeted for the SocialGlow-style bottom-bar menu migration.
 
 ## Entrypoints
 
@@ -65,6 +68,9 @@ Track the native Android surface for receiving user-initiated Temu product links
 - The app must accept manual URL paste even when native share delivery is unavailable.
 - Regenerating `src-tauri/gen/android` must preserve the `ACTION_SEND` filter.
 - Full Android support cannot be claimed until a real device/emulator test proves payload delivery into import review.
+- The SocialGlow-derived bottom-bar menu must keep dark mode and text-size controls, use shopping-session labels, and hide profile controls in v1.
+- The WebView observation action must be explicit and user-triggered; it must capture only the current URL and must not parse Temu DOM price/stock.
+- Android OS notification delivery is out of scope for first-slice observation reminders; in-app due badges are the allowed proof surface.
 
 ## Validation
 
@@ -116,12 +122,40 @@ Known environment gap:
 - Current workspace host is `aarch64`, but the detected Android NDK clang path is `prebuilt/linux-x86_64`, causing an exec format linker failure during local `pnpm tauri:android:build`.
 - Do not spend implementation time trying to prove Android locally in this workspace unless the SDK/NDK architecture is fixed first. Use CI Blacksmith and the debug APK prerelease instead.
 
+## Bottom-Bar Menu Migration
+
+The SocialGlow UI copy-migration spec targets the Android WebView plugin for a
+native bottom-bar menu adapted from SocialGlow/Social News. The intended menu
+behavior is shopping-session switching by session name, dark mode control, and
+text-size control. Profile controls are not part of the visible v1 Android UI.
+
+This is currently a migration requirement, not completed Android proof. Update
+this section after the native plugin source is merged, the Blacksmith APK build
+passes for that commit, and a real-device smoke test covers the bottom-bar menu.
+
+## Product Observation Action
+
+The bottom-bar menu includes `Observer ce produit`. The native plugin emits the
+same frontend capture event with `action=observe`, the active session id, and
+the current URL. Frontend code owns URL validation, saved-snapshot lookup,
+manual observation shell creation, and routing. The plugin must not inspect,
+scrape, parse, log, or export Temu page content beyond the current URL.
+
+Manual proof must cover:
+
+- valid saved product URL creates a `manual_required` observation and opens product detail;
+- valid unsaved product URL routes to import review first;
+- non-product URL stays recoverable and creates no observation;
+- no Android notification permission is requested for reminder due badges.
+
 ## Reader Checklist
 
 - Confirm `AndroidManifest.xml` still has exactly the intended text share filter.
 - Confirm GitHub Actions uses the Blacksmith runner and keeps Android NDK, Rust, pnpm, and Gradle cache hits healthy.
 - Confirm GitHub Actions publishes the debug APK prerelease asset.
 - Confirm native Android/WebView build proof comes from CI unless a compatible local SDK/NDK is explicitly available.
+- Confirm the SocialGlow-style bottom-bar menu has no visible profile controls before marking Android proof for the UI copy migration complete.
+- Confirm `Observer ce produit` stays URL-only and user-triggered before marking observation proof complete.
 - Confirm no Android code logs private payloads, cookies, addresses, order history, or payment data.
 - Confirm manual URL fallback remains available.
 - Confirm runtime share payload delivery before marking Android proof as passed.

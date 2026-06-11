@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { RouterLink } from "vue-router";
+import { useProductObservationsStore } from "@/stores/productObservations";
 import { useProductSnapshotsStore } from "@/stores/productSnapshots";
 import { useShoppingListsStore } from "@/stores/shoppingLists";
 import { serializeShoppingBackup } from "@/lib/backup";
 
 const shoppingListsStore = useShoppingListsStore();
+const observationsStore = useProductObservationsStore();
 const productStore = useProductSnapshotsStore();
 
 shoppingListsStore.initializeDefaults();
@@ -52,6 +54,7 @@ function exportBackup() {
     lists: shoppingListsStore.listEntries,
     items: Object.values(shoppingListsStore.items),
     snapshots: Object.values(productStore.snapshots),
+    observations: Object.values(observationsStore.observations),
   });
 
   const blob = new Blob([JSON.stringify(payload, null, 2)], {

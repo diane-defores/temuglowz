@@ -2,13 +2,16 @@
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import { useProductObservationsStore } from "@/stores/productObservations";
 import { useProductSnapshotsStore } from "@/stores/productSnapshots";
 import { useShoppingListsStore } from "@/stores/shoppingLists";
+import type { AvailabilityState } from "@/types/domain";
 
 const route = useRoute();
 const router = useRouter();
 
 const listId = route.params.listId as string;
+const observationsStore = useProductObservationsStore();
 const shoppingStore = useShoppingListsStore();
 const productStore = useProductSnapshotsStore();
 
@@ -16,6 +19,26 @@ const list = computed(() => shoppingStore.getList(listId));
 const items = computed(() => shoppingStore.getListItems(listId));
 
 const totalItems = computed(() => items.value.length);
+
+function availabilityLabel(value: AvailabilityState): string {
+  const labels: Record<AvailabilityState, string> = {
+    unknown: "À vérifier",
+    available: "Disponible",
+    low_stock: "Bientôt épuisé",
+    sold_out: "Épuisé",
+    removed: "Retiré",
+    link_broken: "Lien cassé",
+  };
+  return labels[value];
+}
+
+function latestObservationLabel(snapshotId: string): string {
+  const observation = observationsStore.latestBySnapshot(snapshotId);
+  if (!observation) {
+    return "Aucune observation";
+  }
+  return `Dernier état observé : ${availabilityLabel(observation.availability)}`;
+}
 
 function openProduct(snapshotId: string) {
   router.push({
@@ -73,6 +96,12 @@ function removeQuantity(itemId: string) {
         <template v-if="productStore.getSnapshot(item.snapshotId)">
           <h3>{{ productStore.getSnapshot(item.snapshotId)?.title }}</h3>
           <p class="muted">{{ productStore.getSnapshot(item.snapshotId)?.canonicalUrl }}</p>
+          <p
+            class="observation-badge"
+            :class="{ due: observationsStore.isReminderDue(item.snapshotId) }"
+          >
+            {{ latestObservationLabel(item.snapshotId) }}
+          </p>
         </template>
         <p v-else class="danger">Produit introuvable</p>
 
@@ -97,4 +126,3 @@ function removeQuantity(itemId: string) {
     <button type="button" @click="goBack">Retour</button>
   </section>
 </template>
-

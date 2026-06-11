@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 
 import { serializeShoppingBackup, parseShoppingBackup } from "@/lib/backup";
+import { useProductObservationsStore } from "@/stores/productObservations";
 import { useProductSnapshotsStore } from "@/stores/productSnapshots";
 import { useShoppingListsStore } from "@/stores/shoppingLists";
 
@@ -10,6 +11,7 @@ function withStores() {
   const pinia = createPinia();
   setActivePinia(pinia);
   return {
+    observations: useProductObservationsStore(),
     shoppingLists: useShoppingListsStore(),
     snapshots: useProductSnapshotsStore(),
   };
@@ -110,16 +112,24 @@ describe("Shopping list stores and offline backup export", () => {
   });
 
   it("exports and reimports backup payload", () => {
-    const { shoppingLists, snapshots } = withStores();
+    const { observations, shoppingLists, snapshots } = withStores();
     const listId = shoppingLists.createList("Maison");
     const snapshot = buildSnapshot("https://www.temu.com/fr/product/222.html");
     snapshots.snapshots[snapshot.id] = snapshot;
     shoppingLists.addItem(listId, snapshot.id);
+    observations.appendObservation({
+      snapshotId: snapshot.id,
+      canonicalUrl: snapshot.canonicalUrl,
+      source: "manual",
+      availability: "available",
+      observedAt: 10,
+    });
 
     const payload = serializeShoppingBackup({
       lists: shoppingLists.listEntries,
       items: Object.values(shoppingLists.items),
       snapshots: Object.values(snapshots.snapshots),
+      observations: Object.values(observations.observations),
     });
     const json = JSON.stringify(payload);
     const parsed = parseShoppingBackup(json);
@@ -127,5 +137,49 @@ describe("Shopping list stores and offline backup export", () => {
     expect(parsed.lists).toEqual(expect.arrayContaining(payload.lists));
     expect(parsed.items).toEqual(expect.arrayContaining(payload.items));
     expect(parsed.snapshots).toEqual(expect.arrayContaining(payload.snapshots));
+    expect(parsed.observations).toEqual(expect.arrayContaining(payload.observations ?? []));
+  });
+
+  it("keeps old backup payloads valid when observations are absent", () => {
+    const oldPayload = {
+      version: "1.0.0",
+      createdAt: 1,
+      lists: [],
+      items: [],
+      snapshots: [],
+    };
+
+    const parsed = parseShoppingBackup(JSON.stringify(oldPayload));
+
+    expect(parsed.observations).toBeUndefined();
+  });
+
+  it("rejects malformed observation records in backup payloads", () => {
+    const malformedPayload = {
+      version: "1.0.0",
+      createdAt: 1,
+      lists: [],
+      items: [],
+      snapshots: [],
+      observations: [
+        {
+          id: "obs-1",
+          snapshotId: "",
+          canonicalUrl: "notaurl",
+          source: "crawler",
+          status: "ok",
+          confidence: "unknown",
+          observedAt: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          availability: "available",
+          note: "",
+        },
+      ],
+    };
+
+    expect(() => parseShoppingBackup(JSON.stringify(malformedPayload))).toThrow(
+      "invalid backup observation record",
+    );
   });
 });

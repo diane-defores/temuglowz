@@ -1,4 +1,9 @@
-import type { ProductSnapshot, ShoppingList, ShoppingListItem } from "@/types/domain";
+import type {
+  ProductObservation,
+  ProductSnapshot,
+  ShoppingList,
+  ShoppingListItem,
+} from "@/types/domain";
 
 export const SYNC_PRODUCT_ID = "temu_shopping_lists";
 
@@ -6,6 +11,7 @@ export const SYNC_DOMAINS = [
   "shopping_list",
   "shopping_list_item",
   "product_snapshot",
+  "product_observation",
 ] as const;
 
 export type SyncDomain = (typeof SYNC_DOMAINS)[number];
@@ -42,6 +48,7 @@ export interface SyncDomainPayloadMap {
   shopping_list: ShoppingList;
   shopping_list_item: ShoppingListItem;
   product_snapshot: ProductSnapshot;
+  product_observation: ProductObservation;
 }
 
 export type SyncDomainPayload = SyncDomainPayloadMap[SyncDomain];

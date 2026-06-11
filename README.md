@@ -11,10 +11,14 @@ This project is a Vue 3 + Vite + TypeScript + Tauri 2 scaffold for saving Temu p
 - Export serialization for backup payloads
 - Android share bridge placeholders (manifest/config/Kotlin contract), without stealth
 - Optional in-app Temu shopping sessions with app-owned WebView controls
+- Last-observed price/availability records for saved products, created only by explicit user action or manual edit
 
 ## Out of scope
 
 - Temu cart import promises
+- Live Temu price/stock monitoring or background refresh
+- Automated parsing of Temu page price/stock in the first observation slice
+- Android system notification delivery for product reminders in the first observation slice
 - Any anti-fingerprint / stealth WebView behavior
 - Cookies, session dumps, or credentials storage
 - Claims of partnership, certification, or authorization by Temu
@@ -110,11 +114,30 @@ shopping sessions, open Temu in native WebViews, use the app bottom bar for
 navigation/readability controls, and capture the current product URL into the
 existing import/list flow.
 
+The primary app shell is now a copy-first adaptation from the existing
+SocialGlow/Social News app shell. It keeps the SocialGlow-style navigation
+quality while using Temu shopping-session labels and hiding profile management
+in v1. Android APK and real-device proof are tracked in the SocialGlow UI
+copy-migration checklist.
+
 This is an independent user tool. It does not imply a partnership with Temu,
 does not automate cart scraping, and does not sync or export Temu cookies,
 localStorage, IndexedDB, passwords, or account sessions. Saved product/list data
 can sync through the premium sync path only after the existing entitlement and
 identity gates allow it.
+
+## Last-observed price and availability
+
+Saved products can keep a bounded personal observation history: last observed
+price, last observed availability, timestamp, source, confidence/status, and
+optional in-app reminder due state. Observations are local-first user data and
+are capped to the retained records stored by the app.
+
+The Android WebView menu can start `Observer ce produit` from the current Temu
+product URL, but the first slice captures only the URL and opens the manual
+observation flow. It does not scrape, crawl, or parse Temu DOM price/stock, and
+it does not claim real-time availability. A missing observation is shown as
+unknown/to review, never as sold out.
 
 ## Data policy
 
@@ -123,7 +146,7 @@ identity gates allow it.
 - Stored data is not a full browser profile and does not contain Temu cookies/session data.
 - Cloud sync, premium gates, quotas, billing, activation codes, and paid WebView beta access are not production-enabled in this MVP.
 - Temu Shopping Lists uses the suite-owned entitlement model with `product_id=temu_shopping_lists`; this repository must not create a durable product-local entitlement ledger.
-- Premium cloud sync scaffolding is URL-first and fail-closed: local stores can enqueue typed sync operations, but backend writes remain blocked until suite identity, entitlement bridge, and Convex deployment proof exist.
+- Premium cloud sync scaffolding is URL-first and fail-closed: local stores can enqueue typed sync operations for lists, items, snapshots, and product observations, but backend writes remain blocked until suite identity, entitlement bridge, and Convex deployment proof exist.
 
 ## Test checklist
 
@@ -131,5 +154,7 @@ See:
 
 - `shipflow_data/workflow/test-checklists/temu-shopping-lists-android.md`
 - `shipflow_data/workflow/test-checklists/temu-shopping-webview-sessions.md`
+- `shipflow_data/workflow/test-checklists/temu-price-availability-observations.md`
+- `shipflow_data/workflow/test-checklists/temu-socialglow-ui-copy-migration.md`
 - `shipflow_data/workflow/test-checklists/temu-shopping-lists-entitlements.md`
 - `shipflow_data/workflow/specs/temu-shopping-lists-android-app.md`

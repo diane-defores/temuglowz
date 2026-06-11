@@ -2,7 +2,12 @@ import { normalizeTemuProductUrl } from "@/utils/url";
 import type { WebviewCaptureResult } from "@/types/domain";
 
 type TemuSessionId = string;
-type SessionSummary = {
+export type SessionSummary = {
+  id: string;
+  name?: string;
+  displayName?: string;
+};
+export type ShoppingListSummary = {
   id: string;
   name: string;
 };
@@ -28,6 +33,10 @@ interface NativeCapturePayload {
   error?: string | null;
 }
 const DEFAULT_ZOOM = 100;
+const MIN_ZOOM = 50;
+const MAX_ZOOM = 200;
+const ZOOM_STEP = 5;
+const DEFAULT_SESSION_NAME = "Shopping";
 
 function hasTauriRuntime(): boolean {
   if (typeof window === "undefined") {
@@ -62,6 +71,60 @@ function withError(reason: string): BridgeCommandResult {
     degraded: true,
     error: reason,
   };
+}
+
+function normalizeTextZoomLevel(level: number = DEFAULT_ZOOM): number {
+  const rounded = Math.round(level / ZOOM_STEP) * ZOOM_STEP;
+  if (!Number.isFinite(rounded)) {
+    return DEFAULT_ZOOM;
+  }
+
+  return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, rounded));
+}
+
+function normalizeDisplayName(summary: Pick<SessionSummary, "name" | "displayName">): string {
+  const raw = summary.displayName || summary.name || DEFAULT_SESSION_NAME;
+  return raw.trim().replace(/\s+/g, " ") || DEFAULT_SESSION_NAME;
+}
+
+function normalizeSessionSummaries(sessions: SessionSummary[]): Array<{
+  id: string;
+  name: string;
+  displayName: string;
+}> {
+  return sessions
+    .map((session) => {
+      const id = session.id.trim();
+      if (!id) {
+        return null;
+      }
+
+      const displayName = normalizeDisplayName(session);
+      return {
+        id,
+        name: displayName,
+        displayName,
+      };
+    })
+    .filter((session): session is {
+      id: string;
+      name: string;
+      displayName: string;
+    } => session !== null);
+}
+
+function normalizeShoppingListSummaries(lists: ShoppingListSummary[]): ShoppingListSummary[] {
+  return lists
+    .map((list) => {
+      const id = list.id.trim();
+      const name = list.name.trim().replace(/\s+/g, " ").slice(0, 64);
+      if (!id || !name) {
+        return null;
+      }
+
+      return { id, name };
+    })
+    .filter((list): list is ShoppingListSummary => list !== null);
 }
 
 async function safeInvoke<T>(
@@ -125,12 +188,14 @@ export async function openSession(
   darkMode: boolean,
   textZoom: number,
 ): Promise<BridgeCommandResult> {
+  const displayName = normalizeDisplayName({ name });
   const payload = await safeInvoke("temu_webview_open_session", {
     sessionId,
     url,
-    name,
-    darkMode,
-    textZoom,
+    name: displayName,
+    displayName,
+    darkMode: Boolean(darkMode),
+    textZoom: normalizeTextZoomLevel(textZoom),
   });
 
   return {
@@ -177,9 +242,23 @@ export async function syncSessions(params: {
   sessions: SessionSummary[];
   activeSessionId: TemuSessionId | null;
 }): Promise<BridgeCommandResult> {
+  const sessions = normalizeSessionSummaries(params.sessions);
   const payload = await safeInvoke("temu_webview_set_sessions", {
-    sessionsJson: JSON.stringify(params.sessions),
+    sessionsJson: JSON.stringify(sessions),
     activeSessionId: params.activeSessionId ?? "",
+  });
+
+  return {
+    ok: payload.ok,
+    degraded: payload.degraded,
+    unavailable: payload.unavailable,
+    error: payload.error,
+  };
+}
+
+export async function syncShoppingLists(lists: ShoppingListSummary[]): Promise<BridgeCommandResult> {
+  const payload = await safeInvoke("temu_webview_set_shopping_lists", {
+    listsJson: JSON.stringify(normalizeShoppingListSummaries(lists)),
   });
 
   return {
@@ -205,7 +284,7 @@ export async function setDarkMode(enabled: boolean): Promise<BridgeCommandResult
 
 export async function setTextZoom(level: number = DEFAULT_ZOOM): Promise<BridgeCommandResult> {
   const payload = await safeInvoke("temu_webview_set_text_zoom", {
-    level: Math.round(level),
+    level: normalizeTextZoomLevel(level),
   });
 
   return {

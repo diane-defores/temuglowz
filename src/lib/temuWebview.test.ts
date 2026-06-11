@@ -1,6 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { captureCurrentUrl, closeSession, hideWebview, openSession, setDarkMode, setTextZoom, syncSessions, setActiveSession } from "@/lib/temuWebview";
+import {
+  captureCurrentUrl,
+  closeSession,
+  hideWebview,
+  openSession,
+  setActiveSession,
+  setDarkMode,
+  setTextZoom,
+  syncSessions,
+  syncShoppingLists,
+} from "@/lib/temuWebview";
 
 const invoke = vi.fn();
 
@@ -48,6 +58,7 @@ describe("temu webview bridge", () => {
       sessionId: "session-1",
       url: "https://www.temu.com/",
       name: "Shopping 1",
+      displayName: "Shopping 1",
       darkMode: true,
       textZoom: 125,
     });
@@ -66,15 +77,74 @@ describe("temu webview bridge", () => {
 
     await syncSessions({ sessions: [{ id: "s1", name: "Shopping 1" }], activeSessionId: "s1" });
     expect(invoke).toHaveBeenCalledWith("temu_webview_set_sessions", {
-      sessionsJson: JSON.stringify([{ id: "s1", name: "Shopping 1" }]),
+      sessionsJson: JSON.stringify([{ id: "s1", name: "Shopping 1", displayName: "Shopping 1" }]),
       activeSessionId: "s1",
     });
 
     await setActiveSession("s1", [{ id: "s1", name: "Shopping 1" }]);
     expect(invoke).toHaveBeenCalledWith("temu_webview_set_sessions", {
-      sessionsJson: JSON.stringify([{ id: "s1", name: "Shopping 1" }]),
+      sessionsJson: JSON.stringify([{ id: "s1", name: "Shopping 1", displayName: "Shopping 1" }]),
       activeSessionId: "s1",
     });
+  });
+
+  it("serializes session switcher labels with stable ids and display names", async () => {
+    setTauriAvailable();
+    invoke.mockResolvedValue(undefined);
+
+    await syncSessions({
+      sessions: [
+        { id: "s1", name: "  Cuisine  " },
+        { id: "s2", name: "", displayName: "Voiture" },
+        { id: "  ", name: "Ignored" },
+      ],
+      activeSessionId: "s2",
+    });
+
+    expect(invoke).toHaveBeenCalledWith("temu_webview_set_sessions", {
+      sessionsJson: JSON.stringify([
+        { id: "s1", name: "Cuisine", displayName: "Cuisine" },
+        { id: "s2", name: "Voiture", displayName: "Voiture" },
+      ]),
+      activeSessionId: "s2",
+    });
+  });
+
+  it("serializes shopping list labels for native quick-add actions", async () => {
+    setTauriAvailable();
+    invoke.mockResolvedValue(undefined);
+
+    await syncShoppingLists([
+      { id: "list-1", name: "  Cuisine  " },
+      { id: "list-2", name: "Voiture   accessoires" },
+      { id: "", name: "Ignored" },
+      { id: "list-3", name: "" },
+    ]);
+
+    expect(invoke).toHaveBeenCalledWith("temu_webview_set_shopping_lists", {
+      listsJson: JSON.stringify([
+        { id: "list-1", name: "Cuisine" },
+        { id: "list-2", name: "Voiture accessoires" },
+      ]),
+    });
+  });
+
+  it("canonicalizes open-session label and text zoom settings before native handoff", async () => {
+    setTauriAvailable();
+    invoke.mockResolvedValue(undefined);
+
+    await openSession("session-1", "https://www.temu.com/", "  Cuisine  ", true, 147);
+    expect(invoke).toHaveBeenCalledWith("temu_webview_open_session", {
+      sessionId: "session-1",
+      url: "https://www.temu.com/",
+      name: "Cuisine",
+      displayName: "Cuisine",
+      darkMode: true,
+      textZoom: 145,
+    });
+
+    await setTextZoom(999);
+    expect(invoke).toHaveBeenCalledWith("temu_webview_set_text_zoom", { level: 200 });
   });
 
   it("returns a capture failure for non-product URLs and never throws", async () => {

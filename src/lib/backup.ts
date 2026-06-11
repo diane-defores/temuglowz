@@ -1,4 +1,11 @@
-import type { ExportPayload, ShoppingList, ShoppingListItem, ProductSnapshot } from "@/types/domain";
+import type {
+  ExportPayload,
+  ProductObservation,
+  ProductSnapshot,
+  ShoppingList,
+  ShoppingListItem,
+} from "@/types/domain";
+import { validateProductObservationInput } from "@/lib/validators";
 
 const BACKUP_VERSION = "1.0.0";
 
@@ -6,6 +13,7 @@ export function serializeShoppingBackup(payload: {
   lists: ShoppingList[];
   items: ShoppingListItem[];
   snapshots: ProductSnapshot[];
+  observations?: ProductObservation[];
 }): ExportPayload {
   return {
     version: BACKUP_VERSION,
@@ -13,6 +21,7 @@ export function serializeShoppingBackup(payload: {
     lists: payload.lists,
     items: payload.items,
     snapshots: payload.snapshots,
+    observations: payload.observations ?? [],
   };
 }
 
@@ -31,6 +40,17 @@ export function parseShoppingBackup(raw: string): ExportPayload {
     throw new Error("invalid backup payload");
   }
 
+  if (parsed.observations !== undefined && !Array.isArray(parsed.observations)) {
+    throw new Error("invalid backup observations");
+  }
+
+  if (
+    parsed.observations?.some((observation) =>
+      !validateProductObservationInput(observation).valid,
+    )
+  ) {
+    throw new Error("invalid backup observation record");
+  }
+
   return parsed;
 }
-

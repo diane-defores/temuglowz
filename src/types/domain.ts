@@ -1,6 +1,7 @@
 export type AvailabilityState =
   | "unknown"
   | "available"
+  | "low_stock"
   | "sold_out"
   | "removed"
   | "link_broken";
@@ -51,6 +52,39 @@ export interface ProductSnapshot {
   availability: AvailabilityState;
   metadataStatus: SnapshotMetadataStatus;
   capturedAt: number;
+  updatedAt: number;
+}
+
+export type ProductObservationSource = "manual" | "webview" | "partner_api";
+
+export type ProductObservationStatus = "ok" | "manual_required" | "incomplete";
+
+export type ProductObservationConfidence =
+  | "user_observed"
+  | "needs_review"
+  | "unknown";
+
+export interface ProductObservation {
+  id: string;
+  snapshotId: string;
+  productId?: string;
+  canonicalUrl: string;
+  source: ProductObservationSource;
+  status: ProductObservationStatus;
+  confidence: ProductObservationConfidence;
+  observedAt: number;
+  createdAt: number;
+  updatedAt: number;
+  availability: AvailabilityState;
+  price?: ProductPriceSnapshot;
+  note: string;
+}
+
+export interface ProductObservationReminder {
+  snapshotId: string;
+  enabled: boolean;
+  intervalDays: number;
+  nextCheckAt: number | null;
   updatedAt: number;
 }
 
@@ -110,4 +144,5 @@ export interface ExportPayload {
   lists: ShoppingList[];
   items: ShoppingListItem[];
   snapshots: ProductSnapshot[];
+  observations?: ProductObservation[];
 }

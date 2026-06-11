@@ -38,6 +38,12 @@ struct SessionsRequest {
     active_session_id: String,
 }
 
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ShoppingListsRequest {
+    lists_json: String,
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CaptureResponse {
@@ -117,6 +123,12 @@ impl<R: Runtime> TemuWebview<R> {
                     active_session_id,
                 },
             )
+            .map_err(|e| Error::PluginInvoke(e.to_string()))
+    }
+
+    pub fn set_shopping_lists(&self, lists_json: String) -> Result<()> {
+        self.0
+            .run_mobile_plugin("setShoppingLists", ShoppingListsRequest { lists_json })
             .map_err(|e| Error::PluginInvoke(e.to_string()))
     }
 }

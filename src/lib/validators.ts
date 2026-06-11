@@ -1,7 +1,11 @@
 import type {
   AvailabilityState,
+  ProductObservation,
   ProductPriceSnapshot,
   ProductSnapshot,
+  ProductObservationConfidence,
+  ProductObservationSource,
+  ProductObservationStatus,
   SnapshotMetadataStatus,
 } from "@/types/domain";
 
@@ -11,6 +15,34 @@ const MAX_IMAGES = 6;
 const MAX_PRICE_AMOUNT = 100_000_000;
 const MAX_OPTION_KEY_LENGTH = 40;
 const MAX_OPTION_VALUE_LENGTH = 80;
+const MAX_OBSERVATION_NOTE = 500;
+
+const VALID_AVAILABILITY_STATES = [
+  "unknown",
+  "available",
+  "low_stock",
+  "sold_out",
+  "removed",
+  "link_broken",
+] as const satisfies readonly AvailabilityState[];
+
+const VALID_OBSERVATION_SOURCES = [
+  "manual",
+  "webview",
+  "partner_api",
+] as const satisfies readonly ProductObservationSource[];
+
+const VALID_OBSERVATION_STATUSES = [
+  "ok",
+  "manual_required",
+  "incomplete",
+] as const satisfies readonly ProductObservationStatus[];
+
+const VALID_OBSERVATION_CONFIDENCE = [
+  "user_observed",
+  "needs_review",
+  "unknown",
+] as const satisfies readonly ProductObservationConfidence[];
 
 type SnapshotInput = {
   title: unknown;
@@ -24,6 +56,37 @@ type SnapshotInput = {
   price?: ProductPriceSnapshot | null;
   availability?: AvailabilityState;
   metadataStatus?: SnapshotMetadataStatus;
+};
+
+type ProductObservationInput = Omit<
+  Partial<ProductObservation>,
+  | "id"
+  | "snapshotId"
+  | "productId"
+  | "canonicalUrl"
+  | "source"
+  | "status"
+  | "confidence"
+  | "observedAt"
+  | "createdAt"
+  | "updatedAt"
+  | "availability"
+  | "price"
+  | "note"
+> & {
+  id?: unknown;
+  snapshotId?: unknown;
+  productId?: unknown;
+  canonicalUrl?: unknown;
+  source?: unknown;
+  status?: unknown;
+  confidence?: unknown;
+  observedAt?: unknown;
+  createdAt?: unknown;
+  updatedAt?: unknown;
+  availability?: unknown;
+  price?: ProductPriceSnapshot | null;
+  note?: unknown;
 };
 
 function isFiniteNumber(value: unknown): value is number {
@@ -119,7 +182,11 @@ export function validateProductSnapshotInput(
     errors.push("quantity");
   }
 
-  if (input.notes !== undefined && !isSafeText(input.notes, MAX_NOTE)) {
+  if (
+    input.notes !== undefined
+    && input.notes !== ""
+    && !isSafeText(input.notes, MAX_NOTE)
+  ) {
     errors.push("notes");
   }
 
@@ -143,13 +210,7 @@ export function validateProductSnapshotInput(
 
   if (
     input.availability !== undefined
-    && ![
-      "unknown",
-      "available",
-      "sold_out",
-      "removed",
-      "link_broken",
-    ].includes(input.availability)
+    && !(VALID_AVAILABILITY_STATES as readonly string[]).includes(input.availability)
   ) {
     errors.push("availability");
   }
@@ -163,6 +224,85 @@ export function validateProductSnapshotInput(
     ].includes(input.metadataStatus)
   ) {
     errors.push("metadataStatus");
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+export function validateProductObservationInput(
+  input: ProductObservationInput,
+): SnapshotValidationResult {
+  const errors: string[] = [];
+
+  if (!isSafeText(input.id, 80)) {
+    errors.push("id");
+  }
+
+  if (!isSafeText(input.snapshotId, 80)) {
+    errors.push("snapshotId");
+  }
+
+  if (input.productId !== undefined && !isSafeText(input.productId, 120)) {
+    errors.push("productId");
+  }
+
+  if (!isUrlString(input.canonicalUrl)) {
+    errors.push("canonicalUrl");
+  }
+
+  if (
+    typeof input.source !== "string"
+    || !(VALID_OBSERVATION_SOURCES as readonly string[]).includes(input.source)
+  ) {
+    errors.push("source");
+  }
+
+  if (
+    typeof input.status !== "string"
+    || !(VALID_OBSERVATION_STATUSES as readonly string[]).includes(input.status)
+  ) {
+    errors.push("status");
+  }
+
+  if (
+    typeof input.confidence !== "string"
+    || !(VALID_OBSERVATION_CONFIDENCE as readonly string[]).includes(input.confidence)
+  ) {
+    errors.push("confidence");
+  }
+
+  if (!isFiniteNumber(input.observedAt) || input.observedAt <= 0) {
+    errors.push("observedAt");
+  }
+
+  if (!isFiniteNumber(input.createdAt) || input.createdAt <= 0) {
+    errors.push("createdAt");
+  }
+
+  if (!isFiniteNumber(input.updatedAt) || input.updatedAt <= 0) {
+    errors.push("updatedAt");
+  }
+
+  if (
+    typeof input.availability !== "string"
+    || !(VALID_AVAILABILITY_STATES as readonly string[]).includes(input.availability)
+  ) {
+    errors.push("availability");
+  }
+
+  if (input.price !== undefined && input.price !== null && !isPrice(input.price)) {
+    errors.push("price");
+  }
+
+  if (
+    input.note !== undefined
+    && input.note !== ""
+    && !isSafeText(input.note, MAX_OBSERVATION_NOTE)
+  ) {
+    errors.push("note");
   }
 
   return {

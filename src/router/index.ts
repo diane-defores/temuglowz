@@ -3,6 +3,11 @@ import type { RouteRecordRaw } from "vue-router";
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
+    name: "shopping-shell",
+    component: () => import("@/ui/temu-shell/App.vue"),
+  },
+  {
+    path: "/lists",
     name: "lists",
     component: () => import("@/pages/ListsPage.vue"),
   },
@@ -19,8 +24,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: "/shopping",
-    name: "shopping-dashboard",
-    component: () => import("@/pages/ShoppingDashboardPage.vue"),
+    redirect: { name: "shopping-shell" },
   },
   {
     path: "/import/review",
