@@ -1,12 +1,12 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "1.0.10"
+artifact_version: "1.0.11"
 project: "temu"
 created: "2026-06-10"
 created_at: "2026-06-10 11:35:09 UTC"
 updated: "2026-06-11"
-updated_at: "2026-06-11 12:31:16 UTC"
+updated_at: "2026-06-11 13:09:26 UTC"
 status: ready
 source_skill: 100-sf-spec
 source_model: "GPT-5 Codex"
@@ -88,7 +88,7 @@ evidence:
   - "User decision 2026-06-11: Temu auth and sync onboarding should copy SocialGlowz patterns, including the progressive post-auth sync feedback pop-up."
   - "Implementation slice 2026-06-11 added Convex Auth client/server wiring, SocialGlowz-style account forms, and post-auth sync feedback while preserving entitlement fail-closed behavior."
   - "Implementation slice 2026-06-11 added a WinFlowz Temu bridge API route plus Convex action-backed Temu sync functions that call the suite bridge before reading or writing product sync records."
-next_step: "/005-sf-ship Temu suite bridge changes, then /405-sf-prod verify hosted bridge env and end-to-end sync"
+next_step: "/109-sf-auth-debug authenticated Temu cloud sync smoke with hosted WinFlowz bridge"
 ---
 
 # Title
@@ -505,15 +505,16 @@ Deferred decisions:
 | 2026-06-11 11:15:29 UTC | 001-sf-build | GPT-5 Codex | Implemented the ready entitlement-aware post-auth sync handoff slice in main-thread degraded mode, including blocked/error popup states and handoff tests | Partial: identity-only auth now stays local and shows cloud sync blocked until entitlement context is supplied; active entitlement handoff is supported by injected server context; durable suite bridge, real hydration/promotion, and device proof remain | /102-sf-start Continue premium cloud sync suite entitlement bridge and guarded hydration |
 | 2026-06-11 11:22:32 UTC | 102-sf-start | GPT-5 Codex | Implemented suite-entitlement bridge contract, authorized Convex sync list/push functions, backend-aware handoff, and guarded hydration application | Implemented: local code now derives sync owner from backend access, keeps default bridge fail-closed, applies valid cloud records without wiping local data, and acks only confirmed queued operations; provider bridge configuration, hosted/auth proof, and device proof remain for verification | /103-sf-verify Premium cloud sync backend bridge and guarded hydration |
 | 2026-06-11 12:31:16 UTC | 102-sf-start | GPT-5 Codex | Added the real Temu Shopping Lists suite bridge path by extending WinFlowz suite bridge allowlists/API, adding a Temu bridge route, and converting Temu Convex public sync reads/writes to backend-verified actions that delegate storage to internal functions | Implemented locally and generated Temu Convex bindings; remaining work is ship/deploy/config: set matching hosted bridge secrets/URLs, deploy WinFlowz + Temu Convex changes, and run authenticated end-to-end sync proof | /005-sf-ship Temu suite bridge changes, then /405-sf-prod verify hosted bridge env and end-to-end sync |
+| 2026-06-11 13:09:26 UTC | 001-sf-build | GPT-5 Codex | Orchestrated ship/deploy of the Temu suite bridge slice: pushed Temu and WinFlowz commits, configured Temu Convex bridge env, deployed WinFlowz Convex functions, deployed WinFlowz Vercel production, and verified the live bridge route rejects missing secrets | Shipped/deployed with proof: Temu Dev Builds CI passed and published debug APK for commit `14057d3`; WinFlowz Convex prod deployed to `elegant-mule-677`; Vercel prod deployment `dpl_EZjRngG2sACJguAJGyq8A1uZ8B1n` is READY and aliased to `www.winflowz.com`; remaining proof is authenticated E2E sync with a real signed-in Temu user and active entitlement | /109-sf-auth-debug authenticated Temu cloud sync smoke with hosted WinFlowz bridge |
 
 ## Current Chantier Flow
 
 - sf-spec: drafted, then refreshed 2026-06-11 for SocialGlowz auth/onboarding and local-cloud sync contract
 - sf-ready: refreshed and ready on 2026-06-11
 - sf-start: local sync-core, store enqueue integration, Convex deployment/codegen, fail-closed Convex scaffold, local sync status UI, SocialGlowz-style Convex Auth identity plumbing, post-auth feedback, entitlement-aware post-auth sync handoff, backend bridge contract, authorized sync list/push functions, guarded hydration, and real WinFlowz Temu suite bridge path implemented
-- sf-ship: next
-- sf-prod: after ship/deploy for hosted bridge env and E2E proof
+- sf-verify: local and hosted smoke proof passed for code/route/security guard; authenticated user sync proof remains
+- sf-ship: Temu commit `14057d3` pushed; WinFlowz commits `932a3f6`, `1b4d5d5`, and `e5128bd` pushed
+- sf-prod: WinFlowz Convex prod and Vercel prod deployed; Temu Convex dev bridge env configured
 - sf-end: not launched
-- sf-ship: not launched
 
-Next command: `/005-sf-ship Temu suite bridge changes, then /405-sf-prod verify hosted bridge env and end-to-end sync`
+Next command: `/109-sf-auth-debug authenticated Temu cloud sync smoke with hosted WinFlowz bridge`
