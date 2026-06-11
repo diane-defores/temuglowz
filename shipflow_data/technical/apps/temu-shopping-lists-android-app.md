@@ -162,6 +162,23 @@ The Vue shell, Android bottom-bar menu, and route wiring are integrated
 locally. GitHub Actions APK proof and real Android device smoke remain tracked
 by `shipflow_data/workflow/test-checklists/temu-socialglow-ui-copy-migration.md`.
 
+## Design System Authority
+
+The canonical app design system is declared in
+`shipflow_data/technical/design-system-authority.md`. The authoritative visual
+source is `src/ui/temu-shell/style.css`, with
+`src/ui/temu-shell/components/MobileSettingsSheet.vue` as the reference
+component surface. The Settings page is the canonical SocialGlow-inspired
+design for cards, section labels, account controls, status pills, actions,
+dark mode, and compact mobile density.
+
+The first route migration aligned `src/pages/ListDetailPage.vue`,
+`src/pages/ManualImportPage.vue`, and `src/pages/SyncPage.vue` with canonical
+page primitives. These pages should no longer rely on legacy `.panel`,
+`.item-card`, `.notice`, `.sync-onboarding-card`, or global blue button
+styling. Future route work should extend the shared `temu-shell` primitives
+instead of adding page-local visual literals.
+
 ## Product Observations
 
 The implemented first slice adds a local-first observation layer for saved
@@ -216,6 +233,7 @@ Current known limits:
 - Check Android manifest and share bridge together before claiming Android Sharesheet support.
 - Check README and manual checklist when changing product scope or Android setup.
 - Check the SocialGlow UI copy-migration checklist before claiming Android proof for the copied shell.
+- Check `shipflow_data/technical/design-system-authority.md` before changing page styling, route templates, spacing, color, shadow, motion, or canonical component primitives.
 - Check the price/availability observation checklist before claiming WebView observation or reminder proof.
 - Check `CLAUDE.md` development mode before choosing local, CI, or device proof.
 - Run the policy scan for forbidden scraping/stealth/cookie/session code before verification.

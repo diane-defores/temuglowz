@@ -1,6 +1,7 @@
 import "./styles.css";
+import "@/ui/temu-shell/style.css";
 
-import { createApp } from "vue";
+import { createApp, watch } from "vue";
 import PrimeVue from "primevue/config";
 import { createRouter, createWebHashHistory } from "vue-router";
 
@@ -8,6 +9,7 @@ import { pinia } from "@/utils/pinia";
 import App from "@/App.vue";
 import { useImportDraftsStore } from "@/stores/importDrafts";
 import { useShoppingListsStore } from "@/stores/shoppingLists";
+import { useShoppingSessionsStore } from "@/stores/shoppingSessions";
 import { consumeShareDraft } from "@/lib/shareBridge";
 import {
   markAuthBootstrapError,
@@ -33,6 +35,15 @@ app.use(router);
 
 const shoppingStore = useShoppingListsStore(pinia);
 shoppingStore.initializeDefaults();
+
+const sessionsStore = useShoppingSessionsStore(pinia);
+watch(
+  () => sessionsStore.settings.darkMode,
+  (enabled) => {
+    document.documentElement.classList.toggle("dark", Boolean(enabled));
+  },
+  { immediate: true },
+);
 
 const convexUrl = import.meta.env.VITE_CONVEX_URL;
 if (convexUrl) {

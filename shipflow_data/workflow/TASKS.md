@@ -34,3 +34,4 @@
 
 ## Audit Findings
 <!-- Populated by /sf-audit with traffic-first task records when findings become tasks. -->
+🟢 [temu] task: Align list detail, manual import, and sync pages with Settings design system | status: done | area: design-system | id: TASK-2026-06-11-503-001 | next: closed locally; ship blocked by unrelated dirty cloud-sync files | notes: implemented canonical page primitives, migrated ListDetailPage/ManualImportPage/SyncPage, added design-system authority, and captured desktop/mobile proof under shipflow_data/workflow/verification/temu-canonical-page-design-system-alignment

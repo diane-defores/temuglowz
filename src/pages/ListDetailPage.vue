@@ -92,109 +92,136 @@ function removeQuantity(itemId: string) {
 </script>
 
 <template>
-  <section
-    v-if="list"
-    class="panel"
-  >
-    <div
-      class="row"
-      style="justify-content: space-between"
-    >
-      <h2>{{ list.name }}</h2>
-      <button
-        type="button"
-        @click="goBack"
-      >
-        Retour
-      </button>
-    </div>
-
-    <p class="muted">
-      {{ totalItems }} produit(s) archivé(s)
-    </p>
-
-    <div class="card-list">
-      <article
-        v-for="item in items"
-        :key="item.id"
-        class="item-card"
-      >
-        <template v-if="productStore.getSnapshot(item.snapshotId)">
-          <h3>{{ productStore.getSnapshot(item.snapshotId)?.title }}</h3>
-          <p class="muted">
-            {{ productStore.getSnapshot(item.snapshotId)?.canonicalUrl }}
-          </p>
-          <p
-            class="observation-badge"
-            :class="{ due: observationsStore.isReminderDue(item.snapshotId) }"
-          >
-            {{ latestObservationLabel(item.snapshotId) }}
-          </p>
-        </template>
-        <p
-          v-else
-          class="danger"
-        >
-          Produit introuvable
-        </p>
-
-        <p class="muted">
-          {{ item.note || "Sans note" }}
-        </p>
-        <div
-          class="row"
-          style="justify-content: space-between"
-        >
-          <div>Quantité: {{ item.quantity }}</div>
-          <div class="actions">
-            <button
-              type="button"
-              :disabled="item.quantity <= 1"
-              @click="removeQuantity(item.id)"
-            >
-              -
-            </button>
-            <button
-              type="button"
-              @click="addQuantity(item.id)"
-            >
-              +
-            </button>
-            <button
-              type="button"
-              @click="openProduct(item.snapshotId)"
-            >
-              Voir
-            </button>
-            <button
-              type="button"
-              @click="remove(item.id)"
-            >
-              Supprimer
-            </button>
+  <main class="canonical-page">
+    <div class="canonical-page-inner canonical-page-inner--wide">
+      <template v-if="list">
+        <header class="canonical-page-header">
+          <div class="canonical-title-block">
+            <span class="canonical-kicker">Liste shopping</span>
+            <h1 class="canonical-title">{{ list.name }}</h1>
+            <p class="canonical-subtitle">
+              {{ totalItems }} produit(s) archivé(s)
+            </p>
           </div>
+          <button
+            class="canonical-button canonical-button--ghost"
+            type="button"
+            @click="goBack"
+          >
+            <i class="pi pi-arrow-left" />
+            <span>Retour</span>
+          </button>
+        </header>
+
+        <section
+          v-if="items.length"
+          class="canonical-list"
+          aria-label="Produits de la liste"
+        >
+          <article
+            v-for="item in items"
+            :key="item.id"
+            class="canonical-card canonical-item-card"
+            :class="{ 'canonical-card--danger': !productStore.getSnapshot(item.snapshotId) }"
+          >
+            <template v-if="productStore.getSnapshot(item.snapshotId)">
+              <div class="canonical-split-row">
+                <div class="canonical-title-block">
+                  <h2 class="canonical-card-title">
+                    {{ productStore.getSnapshot(item.snapshotId)?.title }}
+                  </h2>
+                  <p class="canonical-url">
+                    {{ productStore.getSnapshot(item.snapshotId)?.canonicalUrl }}
+                  </p>
+                </div>
+                <span
+                  class="canonical-status-pill"
+                  :class="{ 'canonical-status-pill--warning': observationsStore.isReminderDue(item.snapshotId) }"
+                >
+                  {{ latestObservationLabel(item.snapshotId) }}
+                </span>
+              </div>
+            </template>
+            <p
+              v-else
+              class="canonical-error"
+            >
+              Produit introuvable
+            </p>
+
+            <p class="canonical-muted">
+              {{ item.note || "Sans note" }}
+            </p>
+            <div class="canonical-split-row">
+              <span class="canonical-quantity">Quantité : {{ item.quantity }}</span>
+              <div class="canonical-actions">
+                <button
+                  class="canonical-button canonical-button--icon"
+                  type="button"
+                  :disabled="item.quantity <= 1"
+                  aria-label="Réduire la quantité"
+                  @click="removeQuantity(item.id)"
+                >
+                  <i class="pi pi-minus" />
+                </button>
+                <button
+                  class="canonical-button canonical-button--icon canonical-button--primary"
+                  type="button"
+                  aria-label="Augmenter la quantité"
+                  @click="addQuantity(item.id)"
+                >
+                  <i class="pi pi-plus" />
+                </button>
+                <button
+                  class="canonical-button canonical-button--ghost"
+                  type="button"
+                  @click="openProduct(item.snapshotId)"
+                >
+                  <i class="pi pi-eye" />
+                  <span>Voir</span>
+                </button>
+                <button
+                  class="canonical-button canonical-button--danger"
+                  type="button"
+                  @click="remove(item.id)"
+                >
+                  <i class="pi pi-trash" />
+                  <span>Supprimer</span>
+                </button>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section
+          v-else
+          class="canonical-empty"
+        >
+          <i class="pi pi-shopping-bag" />
+          <p class="canonical-muted">Aucun produit pour le moment.</p>
+        </section>
+      </template>
+
+      <section
+        v-else
+        class="canonical-card canonical-card--danger"
+      >
+        <div class="canonical-title-block">
+          <span class="canonical-kicker">Liste shopping</span>
+          <h1 class="canonical-title">Liste introuvable</h1>
+          <p class="canonical-muted">
+            Cette liste n'est plus disponible sur cet appareil.
+          </p>
         </div>
-      </article>
+        <button
+          class="canonical-button canonical-button--ghost"
+          type="button"
+          @click="goBack"
+        >
+          <i class="pi pi-arrow-left" />
+          <span>Retour</span>
+        </button>
+      </section>
     </div>
-
-    <p
-      v-if="items.length === 0"
-      class="muted"
-    >
-      Aucun produit pour le moment.
-    </p>
-  </section>
-
-  <section
-    v-else
-    class="panel"
-  >
-    <p>Liste introuvable.</p>
-    <button
-      type="button"
-      @click="goBack"
-    >
-      Retour
-    </button>
-  </section>
+  </main>
 </template>

@@ -29,24 +29,62 @@ function quickFillSample() {
 </script>
 
 <template>
-  <section class="panel">
-    <h2>Import manuel</h2>
-    <p class="muted">Coller un lien produit Temu et l'application créera un snapshot local.</p>
-    <textarea
-      v-model="manualUrl"
-      class="full-width"
-      rows="3"
-      placeholder="https://www.temu.com/..."
-    ></textarea>
+  <main class="canonical-page">
+    <div class="canonical-page-inner">
+      <header class="canonical-page-header">
+        <div class="canonical-title-block">
+          <span class="canonical-kicker">Import produit</span>
+          <h1 class="canonical-title">Import manuel</h1>
+          <p class="canonical-subtitle">
+            Collez un lien produit Temu et l'application créera un snapshot local.
+          </p>
+        </div>
+      </header>
 
-    <div class="actions">
-      <button type="button" :disabled="!manualUrl.trim()" @click="parseManualUrl">
-        Valider l’URL
-      </button>
-      <button type="button" @click="quickFillSample">Exemple</button>
+      <section class="canonical-card canonical-card--accent">
+        <label class="canonical-field">
+          <span>Lien produit Temu</span>
+          <textarea
+            v-model="manualUrl"
+            class="canonical-textarea"
+            rows="3"
+            placeholder="https://www.temu.com/..."
+          />
+        </label>
+
+        <div class="canonical-actions">
+          <button
+            class="canonical-button canonical-button--primary"
+            type="button"
+            :disabled="!manualUrl.trim()"
+            @click="parseManualUrl"
+          >
+            <i class="pi pi-check" />
+            <span>Valider l'URL</span>
+          </button>
+          <button
+            class="canonical-button canonical-button--ghost"
+            type="button"
+            @click="quickFillSample"
+          >
+            <i class="pi pi-link" />
+            <span>Exemple</span>
+          </button>
+        </div>
+
+        <p
+          v-if="message"
+          class="canonical-success"
+        >
+          {{ message }}
+        </p>
+        <p
+          v-if="error"
+          class="canonical-error"
+        >
+          {{ error }}
+        </p>
+      </section>
     </div>
-
-  <p class="muted" v-if="message">{{ message }}</p>
-  <p class="danger" v-if="error">{{ error }}</p>
-  </section>
+  </main>
 </template>

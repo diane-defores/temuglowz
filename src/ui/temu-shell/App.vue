@@ -61,7 +61,6 @@ import {
 } from "@/lib/temuWebview";
 import type { ShoppingSession } from "@/types/domain";
 
-import "./style.css";
 import "./assets/main.css";
 
 import AppHeader from "./components/AppHeader.vue";

@@ -112,129 +112,163 @@ async function signOut(): Promise<void> {
 </script>
 
 <template>
-  <section class="panel">
-    <div class="row sync-header">
-      <div>
-        <h2>Synchronisation</h2>
-        <p class="muted">
-          État actuel : <strong>{{ statusLabel }}</strong>
-        </p>
-      </div>
-      <span class="status-pill" :class="{ blocked: !isSyncEnabled }">
-        {{ pendingCount }} opération(s)
-      </span>
-    </div>
-
-    <div class="notice">
-      <strong>Cloud premium non activé.</strong>
-      <span>
-        L'auth est maintenant reprise du modèle SocialGlowz. Les écritures cloud
-        réelles restent bloquées tant que l'entitlement premium
-        <code>temu_shopping_lists</code> n'est pas vérifié côté backend.
-      </span>
-    </div>
-
-    <section class="sync-onboarding-card">
-      <div class="row sync-job-row">
-        <div>
-          <h3>Compte de synchronisation</h3>
-          <p class="muted">
-            État identité : <strong>{{ identityLabel }}</strong>
+  <main class="canonical-page">
+    <div class="canonical-page-inner">
+      <header class="canonical-page-header">
+        <div class="canonical-title-block">
+          <span class="canonical-kicker">Compte cloud</span>
+          <h1 class="canonical-title">Synchronisation</h1>
+          <p class="canonical-subtitle">
+            État actuel : <strong>{{ statusLabel }}</strong>
           </p>
         </div>
         <span
-          class="status-pill"
-          :class="{ blocked: !isAuthenticated }"
+          class="canonical-status-pill"
+          :class="isSyncEnabled ? 'canonical-status-pill--success' : 'canonical-status-pill--danger'"
         >
-          {{ isAuthenticated ? "Connecté" : "Local" }}
+          {{ pendingCount }} opération(s)
+        </span>
+      </header>
+
+      <div class="canonical-alert">
+        <strong>Cloud premium non activé.</strong>
+        <span>
+          L'auth est maintenant reprise du modèle SocialGlowz. Les écritures cloud
+          réelles restent bloquées tant que l'entitlement premium
+          <code class="canonical-code">temu_shopping_lists</code> n'est pas vérifié côté backend.
         </span>
       </div>
 
-      <form
-        v-if="!isAuthenticated"
-        class="sync-auth-form"
-        @submit.prevent="submitAccount('signIn')"
-      >
-        <label>
-          <span>Email</span>
-          <input
-            v-model="accountEmail"
-            autocomplete="email"
-            inputmode="email"
-            placeholder="email@example.com"
-            type="email"
-          />
-        </label>
-        <label>
-          <span>Mot de passe</span>
-          <input
-            v-model="accountPassword"
-            autocomplete="current-password"
-            type="password"
-          />
-        </label>
-        <p
-          v-if="accountError"
-          class="danger"
-        >
-          {{ accountError }}
-        </p>
-        <div class="actions">
-          <button
-            type="submit"
-            :disabled="accountBusy || !canSubmitAccount"
+      <section class="canonical-card canonical-card--accent">
+        <div class="canonical-split-row">
+          <div class="canonical-title-block">
+            <span class="canonical-section-label">Identité</span>
+            <h2 class="canonical-card-title">Compte de synchronisation</h2>
+            <p class="canonical-muted">
+              État identité : <strong>{{ identityLabel }}</strong>
+            </p>
+          </div>
+          <span
+            class="canonical-status-pill"
+            :class="isAuthenticated ? 'canonical-status-pill--success' : 'canonical-status-pill--danger'"
           >
-            Connexion
-          </button>
+            {{ isAuthenticated ? "Connecté" : "Local" }}
+          </span>
+        </div>
+
+        <form
+          v-if="!isAuthenticated"
+          class="canonical-form"
+          @submit.prevent="submitAccount('signIn')"
+        >
+          <label class="canonical-field">
+            <span>Email</span>
+            <input
+              v-model="accountEmail"
+              class="canonical-input"
+              autocomplete="email"
+              inputmode="email"
+              placeholder="email@example.com"
+              type="email"
+            />
+          </label>
+          <label class="canonical-field">
+            <span>Mot de passe</span>
+            <input
+              v-model="accountPassword"
+              class="canonical-input"
+              autocomplete="current-password"
+              type="password"
+            />
+          </label>
+          <p
+            v-if="accountError"
+            class="canonical-error"
+          >
+            {{ accountError }}
+          </p>
+          <div class="canonical-actions">
+            <button
+              class="canonical-button canonical-button--primary"
+              type="submit"
+              :disabled="accountBusy || !canSubmitAccount"
+            >
+              <i class="pi pi-sign-in" />
+              <span>Connexion</span>
+            </button>
+            <button
+              class="canonical-button canonical-button--ghost"
+              type="button"
+              :disabled="accountBusy || !canSubmitAccount"
+              @click="submitAccount('signUp')"
+            >
+              <i class="pi pi-user-plus" />
+              <span>Créer le compte</span>
+            </button>
+          </div>
+        </form>
+
+        <div
+          v-else
+          class="canonical-actions"
+        >
           <button
+            class="canonical-button canonical-button--ghost"
             type="button"
-            :disabled="accountBusy || !canSubmitAccount"
-            @click="submitAccount('signUp')"
+            :disabled="accountBusy"
+            @click="signOut"
           >
-            Créer le compte
+            <i class="pi pi-sign-out" />
+            <span>Déconnexion</span>
           </button>
         </div>
-      </form>
+      </section>
 
-      <div
-        v-else
-        class="actions"
-      >
-        <button
-          type="button"
-          :disabled="accountBusy"
-          @click="signOut"
-        >
-          Déconnexion
-        </button>
-      </div>
-    </section>
-
-    <div v-if="hasPending" class="card-list">
-      <article
-        v-for="job in queuedJobs"
-        :key="job.idempotencyKey"
-        class="item-card"
-      >
-        <div class="row sync-job-row">
-          <strong>{{ job.domain }}</strong>
-          <span>{{ job.operationType }}</span>
-          <span class="muted">{{ job.recordKey }}</span>
+      <section class="canonical-card">
+        <div class="canonical-split-row">
+          <div class="canonical-title-block">
+            <span class="canonical-section-label">File locale</span>
+            <h2 class="canonical-card-title">Opérations en attente</h2>
+          </div>
+          <button
+            class="canonical-button canonical-button--danger"
+            type="button"
+            :disabled="!hasPending"
+            @click="clearPendingQueue"
+          >
+            <i class="pi pi-trash" />
+            <span>Vider</span>
+          </button>
         </div>
-        <p class="muted">
-          Tentatives: {{ job.attempts }} · Appareil: {{ job.sourceDeviceId }}
-        </p>
-      </article>
-    </div>
 
-    <p v-else class="muted">
-      Aucune opération locale en attente.
-    </p>
+        <div
+          v-if="hasPending"
+          class="canonical-list"
+        >
+          <article
+            v-for="job in queuedJobs"
+            :key="job.idempotencyKey"
+            class="canonical-card canonical-card--flat canonical-queue-row"
+          >
+            <div class="canonical-split-row">
+              <strong>{{ job.domain }}</strong>
+              <span class="canonical-status-pill">{{ job.operationType }}</span>
+            </div>
+            <p class="canonical-muted">{{ job.recordKey }}</p>
+            <p class="canonical-muted">
+              Tentatives : {{ job.attempts }} · Appareil : {{ job.sourceDeviceId }}
+            </p>
+          </article>
+        </div>
 
-    <div class="actions">
-      <button type="button" :disabled="!hasPending" @click="clearPendingQueue">
-        Vider la file locale
-      </button>
+        <div
+          v-else
+          class="canonical-empty"
+        >
+          <i class="pi pi-cloud" />
+          <p class="canonical-muted">Aucune opération locale en attente.</p>
+        </div>
+      </section>
     </div>
-  </section>
+  </main>
 </template>

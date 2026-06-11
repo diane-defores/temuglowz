@@ -1,12 +1,12 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "1.1.0"
+artifact_version: "1.2.0"
 project: "temu"
 created: "2026-06-11"
 created_at: "2026-06-11 10:53:34 UTC"
 updated: "2026-06-11"
-updated_at: "2026-06-11 10:59:46 UTC"
+updated_at: "2026-06-11 11:37:29 UTC"
 status: implemented
 source_skill: 100-sf-spec
 source_model: "GPT-5 Codex"
@@ -230,6 +230,7 @@ Implemented on 2026-06-11:
 - `src/ui/temu-shell/components/AppSidebar.vue` now exposes a dedicated `Listes shopping` section with list links and a create-list shortcut above sessions.
 - `src/ui/temu-shell/components/AppHeader.vue` now describes the app as lists and sessions instead of sessions only.
 - `src/ui/temu-shell/style.css` now supports compact home sections, list cards, utility actions, and sidebar list counts.
+- Follow-up polish on 2026-06-11 restored a softer premium visual treatment while preserving the compact hierarchy: warmer page background, gradient list icons, softer cards, quieter empty-state action, and refined utility buttons.
 
 Validation evidence:
 
@@ -237,6 +238,7 @@ Validation evidence:
 - `pnpm build`
 - `pnpm typecheck:full`
 - `pnpm lint:check`
+- `git diff --check`
 - Desktop screenshot: `shipflow_data/workflow/verification/temu-home-shopping-lists-redesign/desktop.png`
 - Mobile screenshot: `shipflow_data/workflow/verification/temu-home-shopping-lists-redesign/mobile.png`
 
@@ -260,6 +262,8 @@ None.
 | 2026-06-11 10:53:34 UTC | 101-sf-ready | GPT-5 Codex | Validated scope as local Vue shell UI, checked required sections, proof path, security impact, and open questions. | ready | /102-sf-start Remasteriser l'accueil autour des listes shopping |
 | 2026-06-11 10:59:46 UTC | 006-sf-design | GPT-5 Codex | Implemented compact home redesign, promoted shopping lists in home/sidebar, and ran local UI proof. | implemented | /104-sf-end Remasteriser l'accueil autour des listes shopping |
 | 2026-06-11 10:59:46 UTC | 103-sf-verify | GPT-5 Codex | Verified local checks and browser screenshots for desktop/mobile shell hierarchy. | verified | /104-sf-end Remasteriser l'accueil autour des listes shopping |
+| 2026-06-11 11:37:29 UTC | 006-sf-design | GPT-5 Codex | Applied visual polish after user feedback: restored softer depth and more coherent card/action styling while preserving compact list-first IA. | implemented | /103-sf-verify Remasteriser l'accueil autour des listes shopping |
+| 2026-06-11 11:37:29 UTC | 103-sf-verify | GPT-5 Codex | Re-ran local checks, build, diff whitespace check, and desktop/mobile browser screenshots for the polished home UI. | verified | /104-sf-end Remasteriser l'accueil autour des listes shopping |
 
 ## Current Chantier Flow
 
