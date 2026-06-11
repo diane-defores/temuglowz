@@ -11,7 +11,7 @@
       </button>
       <div>
         <h1 class="app-title">Listes shopping Temu</h1>
-        <p class="app-kicker">Sessions shopping</p>
+        <p class="app-kicker">Listes et sessions shopping</p>
       </div>
     </div>
 
@@ -21,8 +21,8 @@
         <input
           class="search-input"
           type="search"
-          placeholder="Rechercher une session"
-          aria-label="Rechercher une session"
+          placeholder="Rechercher une liste ou une session"
+          aria-label="Rechercher une liste ou une session"
         />
       </div>
     </div>
