@@ -8,6 +8,9 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
+import type * as authHelpers from "../authHelpers.js";
+import type * as http from "../http.js";
 import type * as sync from "../sync.js";
 import type * as syncAccess from "../syncAccess.js";
 import type * as syncConstants from "../syncConstants.js";
@@ -19,6 +22,9 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
+  authHelpers: typeof authHelpers;
+  http: typeof http;
   sync: typeof sync;
   syncAccess: typeof syncAccess;
   syncConstants: typeof syncConstants;

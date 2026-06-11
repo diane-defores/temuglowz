@@ -23,10 +23,18 @@ import type {
   SyncSourceDeviceId,
 } from "@/types/sync";
 import {
+  ackCloudSyncJob,
   enqueueCloudSyncJob,
   listCloudSyncQueue,
 } from "@/lib/cloudSyncQueue";
+import {
+  getCloudSyncStatus,
+  listCloudSyncRecords,
+  pushCloudSyncOperation,
+} from "@/lib/cloudSyncBackend";
+import { applyCloudSyncRecords } from "@/lib/cloudSyncHydration";
 import { computeSyncChecksum } from "@/lib/syncMerge";
+import { TEMU_SHOPPING_LISTS_PRODUCT_ID } from "@/lib/accessModel";
 
 const syncEnabled = ref(false);
 const DEVICE_ID_KEY = "temu:cloud-sync-device-id";
@@ -80,6 +88,7 @@ export type PostAuthSyncHandoffResult =
 export interface PostAuthSyncHandoffOptions extends CloudSyncAccessContext {
   email?: string;
   flow?: "signIn" | "signUp";
+  environment?: SyncAccountMarker["environment"];
 }
 
 export function setSyncEnabled(
@@ -173,7 +182,7 @@ export async function finalizePasswordSignIn(options?: {
     await advancePostAuthSyncStage("dataReceived");
     await advancePostAuthSyncStage("pending");
 
-    const handoff = startEntitlementAwareSyncHandoff(options);
+    const handoff = await startEntitlementAwareSyncHandoff(options);
     if (handoff.status === "blocked") {
       showPostAuthBlockedFeedback(describePostAuthBlockedReason(handoff.reason));
       return handoff;
@@ -251,16 +260,11 @@ export function getCloudSyncDeviceId(): SyncSourceDeviceId {
   return generated;
 }
 
-function startEntitlementAwareSyncHandoff(
+async function startEntitlementAwareSyncHandoff(
   options: PostAuthSyncHandoffOptions | undefined,
-): PostAuthSyncHandoffResult {
+): Promise<PostAuthSyncHandoffResult> {
   if (!options?.globalUserId && !options?.entitlement && !options?.accountMarker) {
-    setSyncEnabled(false);
-    return {
-      status: "blocked",
-      reason: "entitlement_bridge_unavailable",
-      jobs: [],
-    };
+    return startBackendVerifiedSyncHandoff(options);
   }
 
   const decision = setSyncEnabledForSession(true, {
@@ -282,6 +286,83 @@ function startEntitlementAwareSyncHandoff(
     status: "ready",
     jobs: decision.jobs,
   };
+}
+
+async function startBackendVerifiedSyncHandoff(
+  options: PostAuthSyncHandoffOptions | undefined,
+): Promise<PostAuthSyncHandoffResult> {
+  const environment = options?.environment ?? "local";
+  try {
+    const status = await getCloudSyncStatus(environment);
+    const accountMarker: SyncAccountMarker = {
+      accountId: status.ownerId,
+      productId: status.productId,
+      environment: status.environment,
+    };
+    const entitlement: EntitlementSnapshot = {
+      productId: TEMU_SHOPPING_LISTS_PRODUCT_ID,
+      planId: "sync",
+      status: "active",
+      source: "manual",
+      checkedAt: Date.now(),
+    };
+
+    const hydration = await listCloudSyncRecords({ environment });
+    if (
+      hydration.ownerId !== status.ownerId
+      || hydration.productId !== status.productId
+      || hydration.environment !== status.environment
+    ) {
+      setSyncEnabled(false);
+      return {
+        status: "blocked",
+        reason: "account_mismatch",
+        jobs: [],
+      };
+    }
+
+    applyCloudSyncRecords(hydration.records);
+    const decision = setSyncEnabledForSession(true, {
+      globalUserId: status.ownerId,
+      entitlement,
+      accountMarker,
+      sourceDeviceId: getCloudSyncDeviceId(),
+    });
+
+    if (!decision.granted) {
+      return {
+        status: "blocked",
+        reason: decision.reason,
+        jobs: [],
+      };
+    }
+
+    for (const job of decision.jobs) {
+      const result = await pushCloudSyncOperation({
+        environment,
+        operation: job,
+      });
+      if (
+        result.status === "inserted"
+        || result.status === "updated"
+        || result.status === "duplicate"
+      ) {
+        ackCloudSyncJob(job.idempotencyKey);
+      }
+    }
+
+    return {
+      status: "ready",
+      jobs: decision.jobs,
+    };
+  } catch {
+    setSyncEnabled(false);
+    return {
+      status: "blocked",
+      reason: "entitlement_bridge_unavailable",
+      jobs: [],
+    };
+  }
 }
 
 function describePostAuthBlockedReason(

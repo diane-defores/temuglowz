@@ -1,5 +1,21 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("@/lib/cloudSyncBackend", () => ({
+  getCloudSyncStatus: vi.fn(async () => {
+    throw new Error("bridge unavailable");
+  }),
+  listCloudSyncRecords: vi.fn(async () => ({
+    productId: "temu_shopping_lists",
+    environment: "local",
+    ownerId: "global-user-1",
+    records: [],
+  })),
+  pushCloudSyncOperation: vi.fn(async () => ({
+    status: "inserted",
+    serverUpdatedAt: 1,
+  })),
+}));
+
 import type { EntitlementSnapshot } from "@/lib/accessModel";
 import {
   isSyncEnabled,
