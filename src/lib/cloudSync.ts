@@ -8,6 +8,12 @@ import {
   canUseProtectedFeature,
   evaluateProtectedAccess,
 } from "@/lib/accessModel";
+import {
+  advancePostAuthSyncStage,
+  beginPostAuthSyncFeedback,
+  showPostAuthReadyFeedback,
+  resetPostAuthSyncFeedback,
+} from "@/lib/postAuthSyncFeedback";
 import type {
   CloudSyncQueuedOperation,
   SyncDomain,
@@ -23,6 +29,7 @@ import { computeSyncChecksum } from "@/lib/syncMerge";
 
 const syncEnabled = ref(false);
 const DEVICE_ID_KEY = "temu:cloud-sync-device-id";
+const ACCOUNT_EMAIL_KEY = "temu:cloud-sync-account-email";
 let activeAccountMarker: SyncAccountMarker | null = null;
 let activeSourceDeviceId: SyncSourceDeviceId | null = null;
 
@@ -120,6 +127,30 @@ export function listReplayableCloudSyncJobs(
 
 export function queueExportForSync(): void {
   return;
+}
+
+export function getStoredCloudAccountEmail(): string {
+  return localStorage.getItem(ACCOUNT_EMAIL_KEY) ?? "";
+}
+
+export async function finalizePasswordSignIn(options?: {
+  email?: string;
+  flow?: "signIn" | "signUp";
+}): Promise<void> {
+  beginPostAuthSyncFeedback();
+
+  if (options?.email) {
+    localStorage.setItem(ACCOUNT_EMAIL_KEY, options.email);
+  }
+
+  try {
+    await advancePostAuthSyncStage("dataReceived");
+    await advancePostAuthSyncStage("dataApplied");
+    showPostAuthReadyFeedback();
+  } catch (error) {
+    resetPostAuthSyncFeedback();
+    throw error;
+  }
 }
 
 export function isCloudSyncQueueingActive(): boolean {

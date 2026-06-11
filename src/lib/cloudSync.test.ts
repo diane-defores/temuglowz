@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import type { EntitlementSnapshot } from "@/lib/accessModel";
 import {
+  isSyncEnabled,
   listReplayableCloudSyncJobs,
+  setSyncEnabled,
   setSyncEnabledForSession,
 } from "@/lib/cloudSync";
 import {
@@ -73,6 +75,7 @@ describe("cloud sync access-aware replay", () => {
       writable: true,
     });
     clearCloudSyncQueue();
+    setSyncEnabled(false);
   });
 
   it("blocks replay without identity or entitlement", () => {
@@ -97,6 +100,20 @@ describe("cloud sync access-aware replay", () => {
       reason: "missing_entitlement",
       jobs: [],
     });
+  });
+
+  it("does not enable cloud sync from identity alone", () => {
+    const decision = setSyncEnabledForSession(true, {
+      globalUserId: ACCOUNT.accountId,
+      accountMarker: ACCOUNT,
+    });
+
+    expect(decision).toEqual({
+      granted: false,
+      reason: "missing_entitlement",
+      jobs: [],
+    });
+    expect(isSyncEnabled.value).toBe(false);
   });
 
   it("filters queued jobs to the active account marker before replay", () => {

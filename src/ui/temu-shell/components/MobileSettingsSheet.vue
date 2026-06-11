@@ -53,6 +53,82 @@
               </div>
             </div>
 
+            <p class="settings-section-label">Compte cloud</p>
+            <div class="settings-account-card">
+              <p class="settings-account-hint">
+                Le compte sert uniquement à identifier la synchronisation premium. Les listes locales restent disponibles sans connexion.
+              </p>
+
+              <div
+                v-if="!isSignedIn"
+                class="settings-auth-form"
+              >
+                <label class="settings-auth-field">
+                  <span>Email</span>
+                  <input
+                    v-model="accountEmail"
+                    autocomplete="email"
+                    inputmode="email"
+                    placeholder="email@example.com"
+                    type="email"
+                  />
+                </label>
+                <label class="settings-auth-field">
+                  <span>Mot de passe</span>
+                  <input
+                    v-model="accountPassword"
+                    autocomplete="current-password"
+                    type="password"
+                  />
+                </label>
+                <p
+                  v-if="accountError"
+                  class="settings-auth-error"
+                >
+                  {{ accountError }}
+                </p>
+                <div class="settings-account-actions-row">
+                  <span class="settings-account-status">{{ authStatusLabel }}</span>
+                  <div class="settings-auth-actions">
+                    <button
+                      class="settings-sync-toggle"
+                      type="button"
+                      :disabled="accountBusy || !canSubmitAccount"
+                      @click="handleAccountAuth('signIn')"
+                    >
+                      <i class="pi pi-sign-in" />
+                      <span>Connexion</span>
+                    </button>
+                    <button
+                      class="settings-sync-toggle"
+                      type="button"
+                      :disabled="accountBusy || !canSubmitAccount"
+                      @click="handleAccountAuth('signUp')"
+                    >
+                      <i class="pi pi-user-plus" />
+                      <span>Créer</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                v-else
+                class="settings-account-actions-row"
+              >
+                <span class="settings-account-status connected">Connecté</span>
+                <button
+                  class="settings-sync-toggle"
+                  type="button"
+                  :disabled="accountBusy"
+                  @click="handleAccountSignOut"
+                >
+                  <i class="pi pi-sign-out" />
+                  <span>Déconnexion</span>
+                </button>
+              </div>
+            </div>
+
             <p class="settings-section-label">Préférences</p>
 
             <div class="settings-toggle-row">
@@ -136,6 +212,19 @@ import { computed, ref, watch } from "vue";
 
 import { useShoppingSessionsStore } from "@/stores/shoppingSessions";
 import { buildDiagnosticsReport, buildIdentityHeader } from "@/lib/buildDiagnostics";
+import {
+  authBootstrapError,
+  isAuthenticated,
+  isAuthLoading,
+  isConvexConfigured,
+  signIn,
+  signOut as convexSignOut,
+} from "@/lib/convexAuth";
+import { finalizePasswordSignIn, getStoredCloudAccountEmail } from "@/lib/cloudSync";
+import {
+  beginPostAuthSyncFeedback,
+  resetPostAuthSyncFeedback,
+} from "@/lib/postAuthSyncFeedback";
 import { setDarkMode, setTextZoom } from "@/lib/temuWebview";
 import {
   TEXT_ZOOM_MAX,
@@ -155,12 +244,85 @@ const emit = defineEmits<{
 const sessionsStore = useShoppingSessionsStore();
 const textZoomLevel = ref(normalizeTextZoomLevel(sessionsStore.settings.textZoom));
 const diagnosticsCopied = ref(false);
+const accountEmail = ref(getStoredCloudAccountEmail());
+const accountPassword = ref("");
+const accountBusy = ref(false);
+const accountError = ref("");
+const isSignedIn = isAuthenticated;
 
 const sessionCountLabel = computed(() => {
   const count = sessionsStore.sessionsByOrder.length;
   return count === 1 ? "1 session" : `${count} sessions`;
 });
 const buildIdentityLabel = computed(() => buildIdentityHeader()[0].replace("commit/build: ", ""));
+const authStatusLabel = computed(() => {
+  if (isAuthLoading.value) {
+    return "Connexion...";
+  }
+  if (!isConvexConfigured.value) {
+    return "Non configuré";
+  }
+  if (authBootstrapError.value) {
+    return "Indisponible";
+  }
+  return "Local";
+});
+const canSubmitAccount = computed(() => {
+  return (
+    isConvexConfigured.value
+    && !isAuthLoading.value
+    && accountEmail.value.trim().length > 3
+    && accountPassword.value.length >= 8
+  );
+});
+
+function getAccountErrorMessage(error: unknown, flow: "signIn" | "signUp"): string {
+  const message = error instanceof Error ? error.message : "";
+  if (flow === "signUp" && /already exists/i.test(message)) {
+    return "Ce compte existe déjà.";
+  }
+  if (flow === "signIn" && /invalid/i.test(message)) {
+    return "Identifiants invalides.";
+  }
+  return message || "Connexion impossible pour le moment.";
+}
+
+async function handleAccountAuth(flow: "signIn" | "signUp"): Promise<void> {
+  accountError.value = "";
+  accountBusy.value = true;
+  try {
+    const normalizedEmail = accountEmail.value.trim().toLowerCase();
+    accountEmail.value = normalizedEmail;
+    beginPostAuthSyncFeedback();
+    await signIn("password", {
+      email: normalizedEmail,
+      password: accountPassword.value,
+      flow,
+    });
+    accountPassword.value = "";
+    await finalizePasswordSignIn({
+      email: normalizedEmail,
+      flow,
+    });
+  } catch (error) {
+    resetPostAuthSyncFeedback();
+    accountError.value = getAccountErrorMessage(error, flow);
+  } finally {
+    accountBusy.value = false;
+  }
+}
+
+async function handleAccountSignOut(): Promise<void> {
+  accountBusy.value = true;
+  accountError.value = "";
+  try {
+    await convexSignOut();
+  } catch (error) {
+    accountError.value = error instanceof Error ? error.message : "Déconnexion impossible.";
+  } finally {
+    accountBusy.value = false;
+  }
+}
 
 function closeSheet(): void {
   emit("update:modelValue", false);
@@ -184,6 +346,10 @@ async function copyDiagnostics(): Promise<void> {
     sessions_count: String(sessionsStore.sessionsByOrder.length),
     dark_mode: String(sessionsStore.settings.darkMode),
     text_zoom: String(textZoomLevel.value),
+    auth_configured: String(isConvexConfigured.value),
+    auth_authenticated: String(isAuthenticated.value),
+    auth_loading: String(isAuthLoading.value),
+    auth_error: authBootstrapError.value ?? "none",
   });
 
   try {

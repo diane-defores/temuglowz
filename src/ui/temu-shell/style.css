@@ -637,6 +637,44 @@ html.dark {
   line-height: 1.45;
 }
 
+.settings-auth-form {
+  margin-top: 0.85rem;
+}
+
+.settings-auth-field {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+  color: var(--text-color-secondary);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.settings-auth-field input {
+  min-height: 2.35rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  padding: 0 0.75rem;
+  color: var(--text-color);
+  background: var(--surface-ground);
+  font: inherit;
+}
+
+.settings-auth-error {
+  margin: 0.65rem 0 0;
+  color: #b42318;
+  font-size: 0.78rem;
+  font-weight: 760;
+  line-height: 1.35;
+}
+
+.settings-auth-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
 .settings-account-actions-row,
 .settings-toggle-row {
   display: flex;
@@ -666,6 +704,11 @@ html.dark {
   background: transparent;
   border: 0;
   cursor: pointer;
+}
+
+.settings-sync-toggle:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .settings-toggle-label {

@@ -31,6 +31,8 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@auth/core": "^0.37.4",
+    "@convex-dev/auth": "^0.0.92",
     "@tauri-apps/api": "^2.3.0",
     "convex": "^1.41.0",
     "pinia": "^2.3.1",

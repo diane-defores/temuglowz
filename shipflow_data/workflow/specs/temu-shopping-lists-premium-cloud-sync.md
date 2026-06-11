@@ -1,14 +1,14 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "1.0.5"
+artifact_version: "1.0.6"
 project: "temu"
 created: "2026-06-10"
 created_at: "2026-06-10 11:35:09 UTC"
-updated: "2026-06-10"
-updated_at: "2026-06-10 17:29:49 UTC"
+updated: "2026-06-11"
+updated_at: "2026-06-11 10:46:49 UTC"
 status: active
-source_skill: sf-spec
+source_skill: 100-sf-spec
 source_model: "GPT-5 Codex"
 scope: "Premium multi-device cloud sync for Temu Shopping Lists"
 owner: "Diane"
@@ -23,10 +23,18 @@ linked_systems:
   - "src/types/domain.ts"
   - "src/lib/cloudSync.ts"
   - "src/lib/cloudSyncQueue.ts"
+  - "src/lib/convex.ts"
+  - "src/lib/convexAuth.ts"
+  - "src/lib/postAuthSyncFeedback.ts"
   - "src/lib/syncMerge.ts"
   - "src/types/sync.ts"
   - "src/lib/accessModel.ts"
+  - "src/components/PostAuthSyncFeedback.vue"
+  - "src/ui/temu-shell/components/MobileSettingsSheet.vue"
   - "convex/schema.ts"
+  - "convex/auth.ts"
+  - "convex/auth.config.ts"
+  - "convex/http.ts"
   - "convex/_generated/api.d.ts"
   - "convex/sync.ts"
   - "convex/syncAccess.ts"
@@ -45,12 +53,15 @@ depends_on:
   - artifact: "shipflow_data/technical/apps/temu-shopping-lists-android-app.md"
     artifact_version: "1.0.2"
     required_status: draft
-  - artifact: "/home/claude/shipflow/skills/sf-local-cloud-sync/references/local-cloud-sync-doctrine.md"
+  - artifact: "/home/claude/shipflow/skills/600-sf-local-cloud-sync/references/local-cloud-sync-doctrine.md"
     artifact_version: "1.0.0"
     required_status: draft
-  - artifact: "/home/claude/shipflow/skills/sf-local-cloud-sync/references/ux-security-checklist.md"
+  - artifact: "/home/claude/shipflow/skills/600-sf-local-cloud-sync/references/ux-security-checklist.md"
     artifact_version: "1.0.0"
     required_status: draft
+  - artifact: "Convex Auth docs"
+    artifact_version: "accessed 2026-06-11"
+    required_status: reviewed
   - artifact: "Convex Auth in Functions docs"
     artifact_version: "accessed 2026-06-10"
     required_status: reviewed
@@ -72,7 +83,9 @@ evidence:
   - "Existing Convex schema is explicitly sync scaffolding and not an authorization model."
   - "Entitlement guardrails already define product_id=temu_shopping_lists, protected feature cloud_sync, and fail-closed access decisions."
   - "Official Convex docs checked on 2026-06-10 for auth in functions, public function access control, validators, schemas, mutations/queries, and file storage follow-up."
-next_step: "/sf-start Continue premium cloud sync backend, store, and UI slices"
+  - "User decision 2026-06-11: Temu auth and sync onboarding should copy SocialGlowz patterns, including the progressive post-auth sync feedback pop-up."
+  - "Implementation slice 2026-06-11 added Convex Auth client/server wiring, SocialGlowz-style account forms, and post-auth sync feedback while preserving entitlement fail-closed behavior."
+next_step: "/101-sf-ready Refresh premium cloud sync spec after SocialGlowz auth/onboarding adaptation"
 ---
 
 # Title
@@ -81,7 +94,7 @@ Premium Multi-Device Cloud Sync For Temu Shopping Lists
 
 ## Status
 
-Ready for `/sf-start`. This spec is intentionally high-risk because it touches user data, auth, premium entitlements, multi-device merge behavior, and cloud persistence. The first implementation slice should be complete for URL-backed product/list sync, but must not claim copied image storage, price-history tracking, billing-provider setup, or Temu account/browser-session sync.
+Active chantier, updated by `/100-sf-spec` after the SocialGlowz auth/onboarding port. Re-run `/101-sf-ready` before the next implementation slice because the spec now explicitly covers the account onboarding and post-auth sync feedback path. This spec is intentionally high-risk because it touches user data, auth, premium entitlements, multi-device merge behavior, and cloud persistence. The first implementation slice should be complete for URL-backed product/list sync, but must not claim copied image storage, price-history tracking, billing-provider setup, or Temu account/browser-session sync.
 
 ## User Story
 
@@ -95,13 +108,14 @@ Observable result: local lists, list items, saved product snapshots, canonical T
 
 ## Minimal Behavior Contract
 
-The app remains local-first by default. When a user enables premium cloud sync, the client must require suite authentication and active `temu_shopping_lists` entitlement for `cloud_sync`, then promote or hydrate data through backend functions that recompute identity, account association, product namespace, entitlement, payload validity, and ownership server-side. The client may queue local operations offline, but queued operations are not proof of access and must be replayed only after fresh auth and entitlement checks. The system must merge safe disjoint changes, preserve local data on every auth/sync failure, expose conflicts instead of silently overwriting unsafe records, propagate deletes through tombstones, and never sync Temu cookies, credentials, session data, payment payloads, raw clipboard content, or copied binary images in the first slice.
+The app remains local-first by default. Account creation/sign-in follows the SocialGlowz Convex Auth pattern for identity and visible post-auth preparation feedback, but identity alone must never enable cloud sync. When a user enables premium cloud sync, the client must require suite authentication and active `temu_shopping_lists` entitlement for `cloud_sync`, then promote or hydrate data through backend functions that recompute identity, account association, product namespace, entitlement, payload validity, and ownership server-side. The client may queue local operations offline, but queued operations are not proof of access and must be replayed only after fresh auth and entitlement checks. The system must merge safe disjoint changes, preserve local data on every auth/sync failure, expose conflicts instead of silently overwriting unsafe records, propagate deletes through tombstones, and never sync Temu cookies, credentials, session data, payment payloads, raw clipboard content, or copied binary images in the first slice.
 
 Easy-to-miss edge case: an empty cloud snapshot after signing into an existing account is not proof that anonymous local data belongs to that account; the user must explicitly confirm first promotion unless local metadata already remembers that same account.
 
 ## Success Behavior
 
 - Given the user stays local-only, when they create lists and save product snapshots, then all existing local behavior continues without sign-in or entitlement.
+- Given the user signs in or creates an account, when post-auth feedback is shown, then the UI may report identity/preparation states but must not claim cloud data was applied or synced before entitlement and durable remote sync succeed.
 - Given a signed-in user has active `temu_shopping_lists` entitlement for `cloud_sync`, when they enable sync for the first time after account creation and the cloud is empty, then local data is promoted after an explicit confirmation and marked synced only after durable remote writes succeed.
 - Given a signed-in user has active entitlement on a clean install, when cloud data exists, then the app hydrates local stores without asking the user to manually import a backup.
 - Given local and cloud have the same record key and checksum, when sync runs, then the record is marked synced without rewriting both sides.
@@ -141,6 +155,7 @@ First slice: sync lists, list items, product snapshots, canonical/original Temu 
 ## Scope In
 
 - Premium cloud sync for `product_id=temu_shopping_lists` and protected feature `cloud_sync`.
+- SocialGlowz-style Convex Auth identity setup, account forms, and post-auth sync preparation feedback.
 - Multi-device sync for:
   - shopping lists;
   - shopping list items;
@@ -157,11 +172,12 @@ First slice: sync lists, list items, product snapshots, canonical/original Temu 
 - Backend Convex schema and functions for authorized queries/mutations.
 - Suite entitlement bridge contract for checking active `cloud_sync` access.
 - Sync UI states for local-only, premium blocked, pending, syncing, synced, retrying, conflict, account mismatch, and error.
+- Post-auth feedback states for identity connection, local preparation, entitlement-blocked cloud sync, and ready/local continuation.
 - Documentation and test checklist for backup/sync/reinstall claims.
 
 ## Scope Out
 
-- Billing provider implementation, checkout UI, app-store billing, activation codes, or manual support grants.
+- Billing provider implementation, checkout UI, app-store billing, activation codes, manual support grants, or the durable entitlement bridge implementation owned by the entitlement chantier.
 - Creating a product-local durable entitlement ledger.
 - Binary image storage, image mirroring, image downloads, CDN storage, or Convex file storage upload in the first slice.
 - Price and availability history timelines beyond the current snapshot fields.
@@ -175,6 +191,7 @@ First slice: sync lists, list items, product snapshots, canonical/original Temu 
 
 - Local data must never be silently wiped by sign-in, sign-out, failed sync, failed entitlement check, empty cloud, or account mismatch.
 - Authentication proves identity only; active suite entitlement grants product sync access.
+- The SocialGlowz auth port must remain identity-only; it may store session tokens and remembered account email, but it must not write product entitlement truth.
 - Client-supplied `userId`, `globalUserId`, `productId`, plan, entitlement, role, quota, or account email must not authorize cloud access.
 - Backend functions must validate auth, product namespace, ownership, entitlement, operation shape, and payload size on every cloud read/write.
 - Public Convex functions must use validators and access control; sensitive helper mutations/queries should be internal where possible.
@@ -205,6 +222,7 @@ Required scenario IDs:
 - `TC-SYNC-AUTO-001`: Local-only data remains readable without auth or entitlement.
 - `TC-SYNC-AUTO-002`: Enabling sync without identity is denied and local data is preserved.
 - `TC-SYNC-AUTO-003`: Enabling sync with identity but no active entitlement is denied and local data is preserved.
+- `TC-SYNC-AUTO-003A`: Signing in or creating an account without active entitlement shows identity/preparation feedback but leaves `syncEnabled=false`.
 - `TC-SYNC-AUTO-004`: Client-supplied user/account/entitlement fields cannot grant cloud access.
 - `TC-SYNC-AUTO-005`: First promotion after new-account signup writes all local domains remotely and marks synced only after durable success.
 - `TC-SYNC-AUTO-006`: Existing-account sign-in with local data and empty cloud requires explicit import/seed confirmation.
@@ -236,6 +254,7 @@ Required results:
 - Technical app context: `shipflow_data/technical/apps/temu-shopping-lists-android-app.md`, version `1.0.2`, draft.
 - Local-cloud sync doctrine: `/home/claude/shipflow/skills/sf-local-cloud-sync/references/local-cloud-sync-doctrine.md`, version `1.0.0`, draft.
 - Sync UX/security checklist: `/home/claude/shipflow/skills/sf-local-cloud-sync/references/ux-security-checklist.md`, version `1.0.0`, draft.
+- Convex Auth: official Convex Auth docs searched and reviewed on 2026-06-11 for the current SocialGlowz-style Auth.js/Convex pattern. Fresh-docs verdict: `fresh-docs checked`; the implementation still requires project-level provider/env proof before shipping cloud sync.
 - Convex Auth in Functions: `https://docs.convex.dev/auth/functions-auth`, accessed 2026-06-10. Fresh-docs verdict: `fresh-docs checked`; functions can read authenticated identity with `ctx.auth.getUserIdentity()`, and identity fields include guaranteed issuer/subject/token identifier.
 - Convex server/functions API: `https://docs.convex.dev/api/modules/server`, accessed 2026-06-10. Fresh-docs verdict: `fresh-docs checked`; public queries/mutations are client-accessible, mutations are transactional, and validators are required for secure argument/return validation.
 - Convex best practices: `https://docs.convex.dev/understanding/best-practices/`, accessed 2026-06-10. Fresh-docs verdict: `fresh-docs checked`; public functions need access control and must not use spoofable arguments such as email for authorization.
@@ -263,6 +282,8 @@ Required results:
 - `src/stores/productSnapshots.ts`: snapshot writes/deletes must enqueue typed sync operations and keep URL-only media behavior clear.
 - `src/lib/cloudSyncQueue.ts`: current unknown-payload local queue must become a typed durable operation queue with idempotency, account marker, retry metadata, and corruption handling.
 - `src/lib/cloudSync.ts`: current placeholder must become a sync state machine, not only a boolean flag.
+- `src/lib/convexAuth.ts`, `convex/auth.ts`, `convex/http.ts`: SocialGlowz-style identity plumbing exists and must stay separated from product access. Future work must not treat `isAuthenticated` as premium authorization.
+- `src/lib/postAuthSyncFeedback.ts`, `src/components/PostAuthSyncFeedback.vue`: post-auth feedback exists and must report only identity/preparation until remote sync writes/hydration are proven.
 - `src/lib/accessModel.ts`: existing protected feature `cloud_sync` remains the local/UI contract; backend must recompute access server-side.
 - `convex/schema.ts`: current `userId` scaffold must be replaced or adapted to server-owned account/owner ids, sync metadata, tombstones, indexes, and environment scoping.
 - New Convex modules likely needed: `convex/sync.ts`, `convex/syncAccess.ts`, `convex/users.ts`, and generated API references after Convex codegen.
@@ -339,6 +360,11 @@ No public pricing, checkout, app-store billing, or marketing copy should be upda
   - Action: Use `ctx.auth.getUserIdentity()` to identify the caller, map to server-owned suite/global user id, query or verify active suite entitlement for `cloud_sync`, and fail closed on missing identity/access.
   - Validate with: mocked Convex function tests or integration harness for missing auth, missing entitlement, inactive entitlement, and active entitlement.
 
+- [ ] Task 7A: Replace post-auth preparation placeholder with real entitlement-aware sync handoff.
+  - Files: `src/lib/cloudSync.ts`, `src/lib/postAuthSyncFeedback.ts`, `src/components/PostAuthSyncFeedback.vue`, `src/pages/SyncPage.vue`, `src/ui/temu-shell/components/MobileSettingsSheet.vue`.
+  - Action: After sign-in, re-check suite entitlement, derive server-owned account association, then either start hydration/promotion or show premium-blocked/account-mismatch state. The pop-up must show `waiting`, `received`, `applied`, `pending`, `blocked`, or `error` based on real sync outcomes, not just auth success.
+  - Validate with: tests proving identity-only denial, entitlement-blocked feedback, active-entitlement handoff, backend unavailable fallback, and no local wipe.
+
 - [ ] Task 8: Implement authorized cloud sync functions.
   - Files: new `convex/sync.ts` and generated API updates.
   - Action: Add validated queries/mutations for sync state, hydration, promotion, pushing operations, conflict/tombstone resolution, and acknowledgements. Every public function must validate args/returns and call the access bridge.
@@ -368,6 +394,7 @@ No public pricing, checkout, app-store billing, or marketing copy should be upda
 
 - [ ] AC1: Local-only lists and snapshots continue to work without account, premium entitlement, or network.
 - [ ] AC2: Cloud sync cannot be enabled or used unless backend identity and active `temu_shopping_lists` entitlement for `cloud_sync` are verified.
+- [ ] AC2A: SocialGlowz-style account sign-in/create flow never grants product sync access by itself and never stores durable entitlement truth locally.
 - [ ] AC3: No cloud function authorizes by client-supplied `userId`, email, product id, entitlement, or local cache.
 - [ ] AC4: First promotion requires explicit user confirmation except when local metadata already remembers the same account.
 - [ ] AC5: Clean install/new-device hydration restores cloud data after auth and entitlement checks.
@@ -445,6 +472,7 @@ No public pricing, checkout, app-store billing, or marketing copy should be upda
 - Current local snapshot model already includes `imageUrl` and `galleryImageUrls`; this first sync slice may sync those URL strings as metadata. It must not fetch or persist image bytes.
 - Current snapshot model includes one optional `price` object; historical price/availability timelines are deferred and should not block the first sync slice.
 - Fresh-docs checked on 2026-06-10 for Convex auth, functions, schemas, and file storage. Re-run the documentation freshness gate before implementing provider bridge details, Convex API changes, file storage, or auth provider integration.
+- Fresh-docs rechecked on 2026-06-11 for Convex Auth direction after the SocialGlowz copy/adapt decision. Re-run the documentation freshness gate before changing provider config, auth callback semantics, suite bridge API, or deployment auth settings.
 
 ## Open Questions
 
@@ -468,14 +496,15 @@ Deferred decisions:
 | 2026-06-10 17:12:21 UTC | continue | GPT-5 Codex | Bootstrapped Convex dependency, backend typecheck, sync schema, and fail-closed public sync functions | Partial: backend scaffolding typechecks and fails closed; generated Convex API, deployment proof, suite entitlement bridge, real writes, hydration/promotion, UI, and device proof remain | /sf-start Continue premium cloud sync entitlement bridge, generated Convex API, and UI slices |
 | 2026-06-10 17:24:07 UTC | continue | GPT-5 Codex | Added a local sync status page and direct fail-closed Convex access tests | Partial: `/sync` renders local-only/pending state without cloud-active claims and Convex guard tests pass; generated Convex API, deployment proof, suite entitlement bridge, real writes, hydration/promotion, and device proof remain | /sf-start Continue premium cloud sync entitlement bridge, generated Convex API, and UI slices |
 | 2026-06-10 17:29:49 UTC | continue | GPT-5 Codex | Created the Convex cloud project, generated `convex/_generated`, and ran deployed fail-closed proof | Partial: Convex project and dev deployment exist, codegen works, deployed unauthenticated status query returns `missing_identity`; suite entitlement bridge, authenticated client wiring, real writes, hydration/promotion, and device proof remain | /sf-start Continue premium cloud sync entitlement bridge and authenticated client wiring |
+| 2026-06-11 10:46:49 UTC | 100-sf-spec | GPT-5 Codex | Updated the premium cloud sync chantier after SocialGlowz auth/onboarding was copied into Temu and after `600`/`601` verification requests | Spec refreshed: SocialGlowz-style identity setup and post-auth feedback are now explicit, identity-only sync denial remains required, and the next implementation slice is entitlement-aware sync handoff | /101-sf-ready Refresh premium cloud sync spec after SocialGlowz auth/onboarding adaptation |
 
 ## Current Chantier Flow
 
-- sf-spec: drafted
-- sf-ready: ready
-- sf-start: partial local sync-core, store enqueue integration, Convex deployment/codegen, fail-closed Convex scaffold, and local sync status UI implemented
+- sf-spec: drafted, then refreshed 2026-06-11 for SocialGlowz auth/onboarding and local-cloud sync contract
+- sf-ready: ready before 2026-06-11 refresh; needs refresh review
+- sf-start: partial local sync-core, store enqueue integration, Convex deployment/codegen, fail-closed Convex scaffold, local sync status UI, SocialGlowz-style Convex Auth identity plumbing, and post-auth preparation feedback implemented
 - sf-verify: not launched
 - sf-end: not launched
 - sf-ship: not launched
 
-Next command: `/sf-start Continue premium cloud sync entitlement bridge and authenticated client wiring`
+Next command: `/101-sf-ready Refresh premium cloud sync spec after SocialGlowz auth/onboarding adaptation`

@@ -81,6 +81,44 @@ body {
   background: #fffbeb;
 }
 
+.sync-onboarding-card {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #eff6ff;
+}
+
+.sync-onboarding-card h3 {
+  margin: 0 0 0.25rem;
+}
+
+.sync-auth-form {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 28rem;
+}
+
+.sync-auth-form label {
+  display: grid;
+  gap: 0.35rem;
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.sync-auth-form input {
+  min-height: 2.5rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 0 0.75rem;
+  color: #0f172a;
+  background: #ffffff;
+  font: inherit;
+}
+
 .status-pill {
   display: inline-flex;
   align-items: center;
@@ -329,4 +367,64 @@ button:disabled {
     bottom: 0.75rem;
     width: calc(100vw - 1.5rem);
   }
+}
+
+.post-auth-sync-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.42);
+}
+
+.post-auth-sync-card {
+  width: min(24rem, 100%);
+  border: 1px solid var(--surface-border, #d8dee9);
+  border-radius: 16px;
+  padding: 1.25rem;
+  color: var(--text-color, #172033);
+  background: var(--surface-card, #ffffff);
+  box-shadow: 0 22px 70px rgba(15, 23, 42, 0.22);
+  text-align: center;
+}
+
+.post-auth-sync-card h2 {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.post-auth-sync-card p {
+  margin: 0;
+  color: var(--text-color-secondary, #667085);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.post-auth-sync-icon {
+  display: inline-flex;
+  width: 2.8rem;
+  height: 2.8rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--primary-color-strong, #174ea6);
+  background: var(--surface-ground, #eef3fb);
+}
+
+.post-auth-sync-card.success .post-auth-sync-icon {
+  color: #027a48;
+  background: #ecfdf3;
+}
+
+.post-auth-sync-enter-active,
+.post-auth-sync-leave-active {
+  transition: opacity 180ms ease;
+}
+
+.post-auth-sync-enter-from,
+.post-auth-sync-leave-to {
+  opacity: 0;
 }

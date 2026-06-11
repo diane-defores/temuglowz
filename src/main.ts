@@ -9,6 +9,12 @@ import App from "@/App.vue";
 import { useImportDraftsStore } from "@/stores/importDrafts";
 import { useShoppingListsStore } from "@/stores/shoppingLists";
 import { consumeShareDraft } from "@/lib/shareBridge";
+import {
+  markAuthBootstrapError,
+  markConvexAuthUnavailable,
+  setupConvexAuth,
+} from "@/lib/convexAuth";
+import { getConvexClient } from "@/lib/convex";
 import routes from "@/router";
 
 import "primeicons/primeicons.css";
@@ -27,6 +33,20 @@ app.use(router);
 
 const shoppingStore = useShoppingListsStore(pinia);
 shoppingStore.initializeDefaults();
+
+const convexUrl = import.meta.env.VITE_CONVEX_URL;
+if (convexUrl) {
+  setupConvexAuth(getConvexClient(), convexUrl).catch((error: unknown) => {
+    const reason = error instanceof Error ? error.message : "unknown error";
+    markAuthBootstrapError(
+      `Account sync is unavailable (${reason}). Local lists still work.`,
+    );
+  });
+} else {
+  markConvexAuthUnavailable(
+    "Account sync is unavailable because VITE_CONVEX_URL is not set.",
+  );
+}
 
 app.mount("#app");
 

@@ -1,14 +1,26 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 export default defineSchema({
+  ...authTables,
+
   users: defineTable({
     anonymousId: v.optional(v.string()),
+    avatarUrl: v.optional(v.string()),
+    email: v.optional(v.string()),
+    emailVerificationTime: v.optional(v.number()),
     globalUserId: v.optional(v.string()),
+    isAnonymous: v.optional(v.boolean()),
+    name: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    phoneVerificationTime: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
     locale: v.optional(v.string()),
-  }).index("by_global_user", ["globalUserId"]),
+  })
+    .index("by_email", ["email"])
+    .index("by_global_user", ["globalUserId"]),
 
   syncRecords: defineTable({
     ownerId: v.string(),
