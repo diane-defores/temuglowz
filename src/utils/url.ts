@@ -1,4 +1,4 @@
-const ALLOWED_TEMU_HOSTS = ["temu.com", "temu.to"];
+const ALLOWED_TEMU_HOSTS = ["temu.com", "temu.to", "share.temu.com"];
 const TRACKING_PARAMS = new Set([
   "_ga",
   "utm_source",
@@ -40,6 +40,16 @@ function isAllowedTemuHost(host: string): boolean {
   );
 }
 
+function isTemuShortShareUrl(url: URL): boolean {
+  const hostname = url.hostname.toLowerCase();
+  if (hostname !== "share.temu.com") {
+    return false;
+  }
+
+  const pathSegments = url.pathname.split("/").filter(Boolean);
+  return pathSegments.length === 1 && /^[a-z0-9_-]{6,}$/i.test(pathSegments[0]);
+}
+
 function isLikelyProductPathname(pathname: string): boolean {
   const segments = pathname.split("/").map((segment) => segment.toLowerCase());
   if (
@@ -67,7 +77,7 @@ function parseUrlMaybe(value: string): URL | null {
 
   try {
     const url = new URL(value);
-    if (url.protocol !== "http:" && url.protocol !== "https:") {
+    if (url.protocol !== "https:") {
       return null;
     }
 
@@ -133,7 +143,7 @@ export function normalizeTemuProductUrl(raw: string): TemuParseResult | null {
     return null;
   }
 
-  if (!isLikelyProductPathname(parsed.pathname)) {
+  if (!isTemuShortShareUrl(parsed) && !isLikelyProductPathname(parsed.pathname)) {
     return null;
   }
 

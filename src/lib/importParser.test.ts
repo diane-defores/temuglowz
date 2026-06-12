@@ -27,6 +27,19 @@ describe("Shared import parser", () => {
     ).toBeNull();
   });
 
+  it("accepts a bare Temu short share URL for manual review", () => {
+    const parsed = parseSharedImportText("https://share.temu.com/E9mvCNlepCB");
+
+    expect(parsed).toEqual(
+      expect.objectContaining({
+        rawUrl: "https://share.temu.com/E9mvCNlepCB",
+        canonicalUrl: "https://share.temu.com/E9mvCNlepCB",
+        normalizedTitle: "",
+        status: "needs_review",
+      }),
+    );
+  });
+
   it("returns null for empty payload", () => {
     expect(parseSharedImportText("   ")).toBeNull();
   });

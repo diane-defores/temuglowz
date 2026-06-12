@@ -7,6 +7,7 @@ import {
   openSession,
   setActiveSession,
   setDarkMode,
+  setHideTemuClutter,
   setTextZoom,
   syncSessions,
   syncShoppingLists,
@@ -61,6 +62,7 @@ describe("temu webview bridge", () => {
       displayName: "Shopping 1",
       darkMode: true,
       textZoom: 125,
+      hideTemuClutter: true,
     });
 
     await hideWebview();
@@ -74,6 +76,9 @@ describe("temu webview bridge", () => {
 
     await setTextZoom(150);
     expect(invoke).toHaveBeenCalledWith("temu_webview_set_text_zoom", { level: 150 });
+
+    await setHideTemuClutter(false);
+    expect(invoke).toHaveBeenCalledWith("temu_webview_set_hide_temu_clutter", { enabled: false });
 
     await syncSessions({ sessions: [{ id: "s1", name: "Shopping 1" }], activeSessionId: "s1" });
     expect(invoke).toHaveBeenCalledWith("temu_webview_set_sessions", {
@@ -141,6 +146,7 @@ describe("temu webview bridge", () => {
       displayName: "Cuisine",
       darkMode: true,
       textZoom: 145,
+      hideTemuClutter: true,
     });
 
     await setTextZoom(999);

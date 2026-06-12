@@ -19,6 +19,7 @@ import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
@@ -45,6 +46,104 @@ private const val MAX_WARM_HOSTS = 3
 private const val TEMU_HOME_URL = "https://www.temu.com/"
 private const val WEBKIT_PROFILE_PREFIX = "temu_"
 
+private val TEMU_CLUTTER_CLEANUP_SCRIPT = """
+(function() {
+  'use strict';
+  if (window.__temuListsClutterCleanup) return;
+  window.__temuListsClutterCleanup = true;
+
+  function appendCleanupStyle() {
+    if (document.getElementById('__temuListsClutterStyle')) return;
+    var style = document.createElement('style');
+    style.id = '__temuListsClutterStyle';
+    style.textContent = [
+      'meta[name="apple-itunes-app"], meta[name="google-play-app"] { display: none !important; }',
+      '#smart-banner, .smartbanner, .smart-banner, #smartbanner, .smartbanner-container { display: none !important; }',
+      '[id*="app-download" i], [id*="appDownload" i], [id*="install-app" i], [id*="installApp" i] { display: none !important; }',
+      '[class*="app-download" i], [class*="appDownload" i], [class*="install-app" i], [class*="installApp" i] { display: none !important; }',
+      '[data-testid*="app" i][data-testid*="banner" i], [data-testid*="install" i], [data-testid*="download" i] { display: none !important; }'
+    ].join('\n');
+    (document.head || document.documentElement).appendChild(style);
+  }
+
+  function visible(el) {
+    if (!el) return false;
+    var r = el.getBoundingClientRect();
+    return r.width > 0 || r.height > 0 || !!el.offsetParent;
+  }
+
+  function textOf(el) {
+    return ((el.textContent || '') + ' ' + (el.getAttribute('aria-label') || '') + ' ' + (el.getAttribute('title') || '')).trim();
+  }
+
+  var DISMISS_RE = /^(not now|no thanks|maybe later|continue in browser|stay in browser|use web|close|dismiss|skip|pas maintenant|non merci|plus tard|continuer dans le navigateur|rester sur le site|utiliser le web|fermer|ignorer|passer|×|✕)$/i;
+  var APP_PROMO_RE = /(install|download|get|open).{0,24}(app|temu)|ouvrir.{0,24}(app|application)|installer.{0,24}(app|application|temu)|télécharger.{0,24}(app|application|temu)|continuer dans l.app|open in app|get the temu app/i;
+
+  function robustClick(el) {
+    if (!visible(el)) return false;
+    try {
+      var r = el.getBoundingClientRect();
+      var opts = { bubbles: true, cancelable: true, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, pointerId: 1, pointerType: 'touch' };
+      el.dispatchEvent(new PointerEvent('pointerdown', opts));
+      el.dispatchEvent(new PointerEvent('pointerup', opts));
+    } catch (e) {}
+    try { el.click(); return true; } catch (e) { return false; }
+  }
+
+  function removeSmartBannerMeta() {
+    document.querySelectorAll('meta[name="apple-itunes-app"], meta[name="google-play-app"]').forEach(function(el) {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    });
+  }
+
+  function hideInstallPromos() {
+    var areas = document.querySelectorAll('header, aside, section, div, [role="banner"], [role="dialog"]');
+    for (var i = 0; i < areas.length; i++) {
+      var el = areas[i];
+      if (!visible(el)) continue;
+      var r = el.getBoundingClientRect();
+      if (r.height > Math.max(180, window.innerHeight * 0.35)) continue;
+      var txt = textOf(el);
+      if (txt.length > 260) continue;
+      if (APP_PROMO_RE.test(txt)) {
+        el.style.setProperty('display', 'none', 'important');
+      }
+    }
+    var buttons = document.querySelectorAll('button, a[role="button"], [role="button"], a');
+    for (var j = 0; j < buttons.length; j++) {
+      var label = textOf(buttons[j]);
+      if (!DISMISS_RE.test(label)) continue;
+      var parent = buttons[j].closest('[id*="app" i], [class*="app" i], [id*="banner" i], [class*="banner" i], [id*="install" i], [class*="install" i], [id*="download" i], [class*="download" i], [role="dialog"]');
+      if (parent && APP_PROMO_RE.test(textOf(parent))) {
+        robustClick(buttons[j]);
+        break;
+      }
+    }
+  }
+
+  function runCleanup() {
+    appendCleanupStyle();
+    removeSmartBannerMeta();
+    hideInstallPromos();
+  }
+
+  runCleanup();
+  setTimeout(runCleanup, 600);
+  setTimeout(runCleanup, 1800);
+  setTimeout(runCleanup, 3500);
+  try {
+    new MutationObserver(function(mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        if (mutations[i].addedNodes && mutations[i].addedNodes.length) {
+          setTimeout(runCleanup, 250);
+          break;
+        }
+      }
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  } catch (e) {}
+})();
+""".trimIndent()
+
 @InvokeArg
 class OpenSessionArgs {
     var sessionId: String = ""
@@ -52,6 +151,7 @@ class OpenSessionArgs {
     var name: String = ""
     var darkMode: Boolean = false
     var textZoom: Int = TEXT_ZOOM_DEFAULT
+    var hideTemuClutter: Boolean = true
 }
 
 @InvokeArg
@@ -67,6 +167,11 @@ class DarkModeArgs {
 @InvokeArg
 class TextZoomArgs {
     var level: Int = TEXT_ZOOM_DEFAULT
+}
+
+@InvokeArg
+class HideTemuClutterArgs {
+    var enabled: Boolean = true
 }
 
 @InvokeArg
@@ -107,6 +212,7 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
     private var activeSessionId: String? = null
     private var isDarkMode = false
     private var textZoomLevel = TEXT_ZOOM_DEFAULT
+    private var hideTemuClutter = true
     private var multiProfileModeEnabled = false
     private var disableMultiProfileMode = false
     private val sessionHosts = linkedMapOf<String, SessionHost>()
@@ -148,6 +254,7 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
         activity.runOnUiThread {
             isDarkMode = args.darkMode
             textZoomLevel = normalizeTextZoom(args.textZoom)
+            hideTemuClutter = args.hideTemuClutter
             val name = args.name.trim().ifBlank { "Shopping" }
             sessionItems[sessionId] = SessionItem(sessionId, name)
 
@@ -244,6 +351,18 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
                 JSONObject().put("level", textZoomLevel)
             )
             invoke.resolve(JSObject())
+        }
+    }
+
+    @Command
+    fun setHideTemuClutter(invoke: Invoke) {
+        val args = invoke.parseArgs(HideTemuClutterArgs::class.java)
+        activity.runOnUiThread {
+            hideTemuClutter = args.enabled
+            if (hideTemuClutter) {
+                sessionHosts.values.forEach { applyTemuClutterCleanup(it.webView) }
+            }
+            invoke.resolve(JSObject().put("enabled", hideTemuClutter))
         }
     }
 
@@ -396,6 +515,7 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
                 }
                 applyDarkMode(view)
                 applyTextZoom(view)
+                applyTemuClutterCleanup(view)
             }
         }
         webView.webChromeClient = WebChromeClient()
@@ -604,18 +724,12 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
             })
         } else {
             menu.addView(buildMenuDivider(density))
-            shoppingListItems.values.take(6).forEach { list ->
-                menu.addView(buildPopupMenuItem(density, "+", "Ajouter à ${list.name.take(24)}", Typeface.DEFAULT) {
-                    requestShoppingListActionFromBottomBar("add", list.id)
-                    dismissPopupMenu()
-                })
-            }
-            shoppingListItems.values.take(6).forEach { list ->
-                menu.addView(buildPopupMenuItem(density, "−", "Retirer de ${list.name.take(24)}", Typeface.DEFAULT) {
-                    requestShoppingListActionFromBottomBar("remove", list.id)
-                    dismissPopupMenu()
-                })
-            }
+            menu.addView(buildPopupMenuItem(density, "+", "Ajouter dans une liste", Typeface.DEFAULT) {
+                showShoppingListPicker("add", density)
+            })
+            menu.addView(buildPopupMenuItem(density, "−", "Retirer d'une liste", Typeface.DEFAULT) {
+                showShoppingListPicker("remove", density)
+            })
         }
         menu.addView(buildMenuDivider(density))
 
@@ -633,6 +747,41 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
         popupMenuView = menu
     }
 
+    private fun showShoppingListPicker(action: String, density: Float) {
+        val menu = popupMenuView ?: return
+        menu.removeAllViews()
+
+        val title = if (action == "remove") "Retirer d'une liste" else "Ajouter dans une liste"
+        menu.addView(buildPopupMenuItem(density, "←", "Retour au menu", Typeface.DEFAULT) {
+            dismissPopupMenu()
+            showPopupMenu(density)
+        })
+        menu.addView(buildMenuDivider(density))
+        menu.addView(buildMenuTitle(density, title))
+
+        val scrollView = ScrollView(activity)
+        val maxHeight = (activity.resources.displayMetrics.heightPixels * 0.48f).toInt()
+        scrollView.layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            maxHeight.coerceAtLeast((220 * density).toInt()),
+        )
+
+        val listWrap = LinearLayout(activity)
+        listWrap.orientation = LinearLayout.VERTICAL
+        shoppingListItems.values.forEach { list ->
+            val icon = if (action == "remove") "−" else "+"
+            listWrap.addView(buildPopupMenuItem(density, icon, list.name.take(42), Typeface.DEFAULT) {
+                requestShoppingListActionFromBottomBar(action, list.id)
+                dismissPopupMenu()
+                val verb = if (action == "remove") "Retrait demandé" else "Ajout demandé"
+                Toast.makeText(activity, "$verb : ${list.name}", Toast.LENGTH_SHORT).show()
+            })
+        }
+
+        scrollView.addView(listWrap)
+        menu.addView(scrollView)
+    }
+
     private fun buildMenuDivider(density: Float): View {
         val divider = View(activity)
         divider.setBackgroundColor(if (isDarkMode) Color.parseColor("#2C2C2E") else Color.parseColor("#E5E5EA"))
@@ -641,6 +790,21 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
         params.setMargins(margin, (4 * density).toInt(), margin, (4 * density).toInt())
         divider.layoutParams = params
         return divider
+    }
+
+    private fun buildMenuTitle(density: Float, label: String): TextView {
+        val title = TextView(activity)
+        title.text = label
+        title.textSize = 12f
+        title.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        title.setTextColor(if (isDarkMode) Color.parseColor("#9A9AB0") else Color.parseColor("#6C757D"))
+        title.setPadding(
+            (12 * density).toInt(),
+            (6 * density).toInt(),
+            (12 * density).toInt(),
+            (4 * density).toInt(),
+        )
+        return title
     }
 
     private fun buildTextZoomControl(density: Float): LinearLayout {
@@ -916,6 +1080,11 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
         webView.settings.textZoom = normalizeTextZoom(textZoomLevel)
     }
 
+    private fun applyTemuClutterCleanup(webView: WebView) {
+        if (!hideTemuClutter) return
+        webView.evaluateJavascript(TEMU_CLUTTER_CLEANUP_SCRIPT, null)
+    }
+
     private fun applyDarkMode(webView: WebView) {
         try {
             if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
@@ -983,7 +1152,7 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
         return try {
             val uri = Uri.parse(raw)
             val scheme = uri.scheme?.lowercase() ?: return false
-            if (scheme != "https" && scheme != "http") return false
+            if (scheme != "https") return false
             val host = uri.host?.lowercase() ?: return false
             host == "temu.com" ||
                 host.endsWith(".temu.com") ||

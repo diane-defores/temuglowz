@@ -6,6 +6,7 @@ import { useProductObservationsStore } from "@/stores/productObservations";
 import { useNotificationsStore } from "@/stores/notifications";
 import { useProductSnapshotsStore } from "@/stores/productSnapshots";
 import { useShoppingListsStore } from "@/stores/shoppingLists";
+import { useShoppingSessionsStore } from "@/stores/shoppingSessions";
 import type { AvailabilityState } from "@/types/domain";
 
 const route = useRoute();
@@ -15,6 +16,7 @@ const listId = route.params.listId as string;
 const observationsStore = useProductObservationsStore();
 const notificationsStore = useNotificationsStore();
 const shoppingStore = useShoppingListsStore();
+const sessionsStore = useShoppingSessionsStore();
 const productStore = useProductSnapshotsStore();
 
 const list = computed(() => shoppingStore.getList(listId));
@@ -52,14 +54,16 @@ function latestObservationLabel(snapshotId: string): string {
 }
 
 function openProduct(snapshotId: string) {
-  if (!productStore.getSnapshot(snapshotId)) {
+  const snapshot = productStore.getSnapshot(snapshotId);
+  if (!snapshot) {
     notificationsStore.warning("Ce produit n'est plus disponible dans l'archive.");
     return;
   }
 
-  router.push({
-    name: "product-detail",
-    params: { snapshotId },
+  const sessionId = sessionsStore.createSession(snapshot.title, snapshot.canonicalUrl);
+  router.replace({
+    name: "shopping-shell",
+    query: { openSession: sessionId },
   });
 }
 
@@ -69,7 +73,7 @@ function remove(itemId: string) {
 }
 
 function goBack() {
-  router.push({ name: "shopping-shell" });
+  router.replace({ name: "shopping-shell" });
 }
 
 function renameCurrentList() {
@@ -98,7 +102,7 @@ function deleteCurrentList() {
   try {
     shoppingStore.deleteList(listId);
     notificationsStore.success("Liste supprimee.");
-    router.push({ name: "shopping-shell" });
+    router.replace({ name: "shopping-shell" });
   } catch (error) {
     notificationsStore.error(error instanceof Error ? error.message : "Impossible de supprimer cette liste.");
   }

@@ -21,6 +21,7 @@ export interface ShoppingSessionSummary {
 export interface ShoppingSessionBridgeSettings {
   darkMode: boolean;
   textZoom: number;
+  hideTemuClutter: boolean;
 }
 
 interface ShoppingSessionsState {
@@ -110,7 +111,7 @@ function parseStartUrl(raw: string): string {
 
   try {
     const parsed = new URL(clean);
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    if (parsed.protocol !== "https:") {
       return DEFAULT_START_URL;
     }
 
@@ -137,6 +138,7 @@ export const useShoppingSessionsStore = defineStore("shoppingSessions", {
     settings: {
       darkMode: false,
       textZoom: DEFAULT_TEXT_ZOOM,
+      hideTemuClutter: true,
     },
     degradedMode: false,
   }),
@@ -153,6 +155,7 @@ export const useShoppingSessionsStore = defineStore("shoppingSessions", {
       return {
         darkMode: Boolean(state.settings.darkMode),
         textZoom: normalizeTextZoomLevel(state.settings.textZoom),
+        hideTemuClutter: state.settings.hideTemuClutter !== false,
       };
     },
 
@@ -258,7 +261,7 @@ export const useShoppingSessionsStore = defineStore("shoppingSessions", {
 
       try {
         const parsed = new URL(clean);
-        if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+        if (parsed.protocol !== "https:") {
           throw new Error("invalid current URL");
         }
       } catch {
@@ -312,6 +315,13 @@ export const useShoppingSessionsStore = defineStore("shoppingSessions", {
 
     setTextZoom(level: number): void {
       this.settings.textZoom = normalizeTextZoomLevel(level);
+      if (this.activeSessionId) {
+        this.sessions[this.activeSessionId]!.updatedAt = now();
+      }
+    },
+
+    setHideTemuClutter(enabled: boolean): void {
+      this.settings.hideTemuClutter = Boolean(enabled);
       if (this.activeSessionId) {
         this.sessions[this.activeSessionId]!.updatedAt = now();
       }

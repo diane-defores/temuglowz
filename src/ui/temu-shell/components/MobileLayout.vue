@@ -45,56 +45,38 @@
             class="section-icon-action"
             type="button"
             aria-label="Créer une liste shopping"
-            @click="toggleListCreator"
+            @click="openCreateListDialog"
           >
             <i class="pi pi-plus" />
           </button>
         </div>
 
-        <form
-          v-if="showListCreator"
-          class="inline-create-form"
-          @submit.prevent="createList"
-        >
-          <input
-            v-model="newListName"
-            class="compact-name-input"
-            maxlength="64"
-            placeholder="Nom de la liste"
-            aria-label="Nom de la liste"
-          />
-          <button
-            class="compact-submit-btn"
-            type="submit"
-            :disabled="!newListName.trim()"
-          >
-            Créer
-          </button>
-        </form>
-        <p
-          v-if="listCreationError"
-          class="inline-error"
-        >
-          {{ listCreationError }}
-        </p>
-
         <div class="shopping-list-grid">
-          <RouterLink
+          <article
             v-for="list in shoppingLists"
             :key="list.id"
             class="shopping-list-card"
-            :to="{ name: 'list-detail', params: { listId: list.id } }"
           >
-            <span class="shopping-list-icon">
-              <i class="pi pi-list" />
-            </span>
-            <span class="shopping-list-copy">
-              <span class="shopping-list-name">{{ list.name }}</span>
-              <span class="shopping-list-meta">{{ itemCountForList(list.id) }} produit(s)</span>
-              <span class="shopping-list-last">{{ lastSaved(list.id) }}</span>
-            </span>
-            <i class="pi pi-chevron-right shopping-list-arrow" />
-          </RouterLink>
+            <RouterLink
+              class="shopping-list-main"
+              :to="{ name: 'list-detail', params: { listId: list.id } }"
+            >
+              <span class="shopping-list-icon">
+                <i class="pi pi-list" />
+              </span>
+              <span class="shopping-list-copy">
+                <span class="shopping-list-name">{{ list.name }}</span>
+                <span class="shopping-list-meta">{{ itemCountForList(list.id) }} produit(s)</span>
+                <span class="shopping-list-last">{{ lastSaved(list.id) }}</span>
+              </span>
+              <i class="pi pi-chevron-right shopping-list-arrow" />
+            </RouterLink>
+            <EntityActionsMenu
+              :label="`Actions pour ${list.name}`"
+              @rename="openRenameListDialog(list)"
+              @delete="deleteList(list)"
+            />
+          </article>
         </div>
       </section>
 
@@ -114,46 +96,47 @@
               Chaque session ouvre Temu dans sa propre WebView native.
             </p>
           </div>
-          <div class="section-heading-actions">
-            <span
-              v-if="sessionsStore.degradedMode"
-              class="degraded-pill"
-            >
-              WebView indisponible
-            </span>
-            <button
-              class="section-icon-action"
-              type="button"
-              aria-label="Créer une session shopping"
-              @click="createAndOpenSession"
-            >
-              <i class="pi pi-plus" />
-            </button>
-          </div>
+          <button
+            class="section-icon-action"
+            type="button"
+            aria-label="Créer une session shopping"
+            @click="openCreateSessionDialog"
+          >
+            <i class="pi pi-plus" />
+          </button>
         </div>
 
         <div
           v-if="sessions.length"
           class="session-grid"
         >
-          <button
+          <article
             v-for="session in sessions"
             :key="session.id"
             class="session-launch-tile session-tile"
             :class="{ active: session.id === sessionsStore.activeSessionId }"
-            type="button"
             :style="{ background: tileBg(session) }"
-            @click="$emit('open-session', session)"
           >
-            <span
-              class="session-icon-wrap"
-              :style="{ background: sessionAccent(session) }"
+            <button
+              class="session-launch-main"
+              type="button"
+              @click="$emit('open-session', session)"
             >
-              <i class="pi pi-shopping-cart" />
-            </span>
-            <span class="session-name">{{ session.name }}</span>
-            <span class="session-meta">{{ formatSessionMeta(session) }}</span>
-          </button>
+              <span
+                class="session-icon-wrap"
+                :style="{ background: sessionAccent(session) }"
+              >
+                <i class="pi pi-shopping-cart" />
+              </span>
+              <span class="session-name">{{ session.name }}</span>
+              <span class="session-meta">{{ formatSessionMeta(session) }}</span>
+            </button>
+            <EntityActionsMenu
+              :label="`Actions pour ${session.name}`"
+              @rename="openRenameSessionDialog(session)"
+              @delete="deleteSession(session)"
+            />
+          </article>
         </div>
 
         <div
@@ -166,7 +149,7 @@
             class="section-icon-action section-icon-action--primary"
             type="button"
             aria-label="Créer une session shopping"
-            @click="createAndOpenSession"
+            @click="openCreateSessionDialog"
           >
             <i class="pi pi-plus" />
           </button>
@@ -194,6 +177,19 @@
         Listes shopping Temu est indépendante de Temu. Les données de session et l'état de connexion restent dans cette application.
       </p>
     </div>
+
+    <EntityNameDialog
+      v-model="nameDialogVisible"
+      :title="nameDialogTitle"
+      :eyebrow="nameDialogEyebrow"
+      :field-label="nameDialogFieldLabel"
+      :placeholder="nameDialogPlaceholder"
+      :initial-value="nameDialogInitialValue"
+      :confirm-label="nameDialogConfirmLabel"
+      :error="nameDialogError"
+      @submit="submitNameDialog"
+      @cancel="clearNameDialogError"
+    />
   </div>
 </template>
 
@@ -206,6 +202,8 @@ import { useProductSnapshotsStore } from "@/stores/productSnapshots";
 import { useShoppingListsStore } from "@/stores/shoppingLists";
 import { useShoppingSessionsStore } from "@/stores/shoppingSessions";
 import type { ShoppingList, ShoppingSession } from "@/types/domain";
+import EntityActionsMenu from "@/ui/temu-shell/components/EntityActionsMenu.vue";
+import EntityNameDialog from "@/ui/temu-shell/components/EntityNameDialog.vue";
 
 defineProps<{
   desktop?: boolean;
@@ -221,10 +219,11 @@ const shoppingListsStore = useShoppingListsStore();
 const productStore = useProductSnapshotsStore();
 const notificationsStore = useNotificationsStore();
 const router = useRouter();
-const newSessionName = ref("");
-const newListName = ref("");
-const listCreationError = ref("");
-const showListCreator = ref(false);
+const nameDialogVisible = ref(false);
+const nameDialogMode = ref<"create-list" | "rename-list" | "create-session" | "rename-session">("create-list");
+const nameDialogTargetId = ref<string | null>(null);
+const nameDialogInitialValue = ref("");
+const nameDialogError = ref("");
 
 const sessions = computed(() => sessionsStore.sessionsByOrder);
 const shoppingLists = computed<ShoppingList[]>(() => shoppingListsStore.listEntries);
@@ -233,21 +232,28 @@ const accents = ["#f97316", "#06b6d4", "#22c55e", "#a855f7", "#ef4444", "#0ea5e9
 
 shoppingListsStore.initializeDefaults();
 
-function createAndOpenSession(): void {
-  const sessionId = sessionsStore.createSession(newSessionName.value);
-  newSessionName.value = "";
-  const session = sessionsStore.getSession(sessionId);
-  if (session) {
-    emit("open-session", session);
-  }
-}
+const nameDialogTitle = computed(() => {
+  if (nameDialogMode.value === "create-session") return "Nommer la session";
+  if (nameDialogMode.value === "rename-session") return "Renommer la session";
+  if (nameDialogMode.value === "rename-list") return "Renommer la liste";
+  return "Nommer la liste";
+});
 
-function toggleListCreator(): void {
-  showListCreator.value = !showListCreator.value;
-  if (!showListCreator.value) {
-    listCreationError.value = "";
-  }
-}
+const nameDialogEyebrow = computed(() =>
+  nameDialogMode.value.includes("session") ? "Session shopping" : "Liste shopping",
+);
+
+const nameDialogFieldLabel = computed(() =>
+  nameDialogMode.value.includes("session") ? "Nom de la session" : "Nom de la liste",
+);
+
+const nameDialogPlaceholder = computed(() =>
+  nameDialogMode.value.includes("session") ? "Ex. Cuisine, Cadeaux, Maison" : "Ex. Cuisine, Vacances, Bébé",
+);
+
+const nameDialogConfirmLabel = computed(() =>
+  nameDialogMode.value.startsWith("rename") ? "Renommer" : "Créer",
+);
 
 function readableListError(error: unknown): string {
   const message = error instanceof Error ? error.message : "";
@@ -260,16 +266,109 @@ function readableListError(error: unknown): string {
   return "Impossible de créer la liste.";
 }
 
-function createList(): void {
-  listCreationError.value = "";
+function readableSessionError(error: unknown): string {
+  const message = error instanceof Error ? error.message : "";
+  if (message.includes("already used") || message.includes("empty")) {
+    return "Nom de session requis ou déjà utilisé.";
+  }
+  return "Impossible d'enregistrer cette session.";
+}
+
+function openNameDialog(
+  mode: typeof nameDialogMode.value,
+  initialValue = "",
+  targetId: string | null = null,
+): void {
+  nameDialogMode.value = mode;
+  nameDialogTargetId.value = targetId;
+  nameDialogInitialValue.value = initialValue;
+  nameDialogError.value = "";
+  nameDialogVisible.value = true;
+}
+
+function openCreateListDialog(): void {
+  openNameDialog("create-list");
+}
+
+function openRenameListDialog(list: ShoppingList): void {
+  openNameDialog("rename-list", list.name, list.id);
+}
+
+function openCreateSessionDialog(): void {
+  openNameDialog("create-session");
+}
+
+function openRenameSessionDialog(session: ShoppingSession): void {
+  openNameDialog("rename-session", session.name, session.id);
+}
+
+function clearNameDialogError(): void {
+  nameDialogError.value = "";
+}
+
+function submitNameDialog(name: string): void {
   try {
-    const listId = shoppingListsStore.createList(newListName.value);
-    newListName.value = "";
-    showListCreator.value = false;
-    notificationsStore.success("Liste créée.");
-    void router.push({ name: "list-detail", params: { listId } });
+    if (nameDialogMode.value === "create-list") {
+      const listId = shoppingListsStore.createList(name);
+      notificationsStore.success("Liste créée.");
+      nameDialogVisible.value = false;
+      void router.push({ name: "list-detail", params: { listId } });
+      return;
+    }
+
+    if (nameDialogMode.value === "rename-list" && nameDialogTargetId.value) {
+      shoppingListsStore.renameList(nameDialogTargetId.value, name);
+      notificationsStore.success("Liste renommée.");
+      nameDialogVisible.value = false;
+      return;
+    }
+
+    if (nameDialogMode.value === "create-session") {
+      const sessionId = sessionsStore.createSession(name);
+      const session = sessionsStore.getSession(sessionId);
+      notificationsStore.success("Session créée.");
+      nameDialogVisible.value = false;
+      if (session) {
+        emit("open-session", session);
+      }
+      return;
+    }
+
+    if (nameDialogMode.value === "rename-session" && nameDialogTargetId.value) {
+      sessionsStore.renameSession(nameDialogTargetId.value, name);
+      notificationsStore.success("Session renommée.");
+      nameDialogVisible.value = false;
+    }
   } catch (error) {
-    listCreationError.value = readableListError(error);
+    nameDialogError.value = nameDialogMode.value.includes("session")
+      ? readableSessionError(error)
+      : readableListError(error);
+  }
+}
+
+function deleteList(list: ShoppingList): void {
+  if (!window.confirm(`Supprimer la liste "${list.name}" et ses produits sauvegardés ?`)) {
+    return;
+  }
+
+  try {
+    shoppingListsStore.deleteList(list.id);
+    notificationsStore.success("Liste supprimée.");
+  } catch (error) {
+    notificationsStore.error(error instanceof Error ? error.message : "Impossible de supprimer la liste.");
+  }
+}
+
+function deleteSession(session: ShoppingSession): void {
+  if (!window.confirm(`Supprimer la session "${session.name}" ?`)) {
+    return;
+  }
+
+  try {
+    sessionsStore.closeSession(session.id);
+    notificationsStore.success("Session supprimée.");
+  } catch (error) {
+    notificationsStore.error(error instanceof Error ? error.message : "Impossible de supprimer la session.");
   }
 }
 

@@ -20,6 +20,7 @@ const latestObservation = computed(() => observationsStore.latestBySnapshot(snap
 const observationHistory = computed(() => observationsStore.historyBySnapshot(snapshotId));
 const reminder = computed(() => observationsStore.reminderBySnapshot(snapshotId));
 const reminderDue = computed(() => observationsStore.isReminderDue(snapshotId));
+const selectedOptionEntries = computed(() => Object.entries(snapshot.value?.selectedOptions ?? {}));
 
 const availabilityOptions: Array<{ value: AvailabilityState; label: string }> = [
   { value: "unknown", label: "À vérifier" },
@@ -126,220 +127,274 @@ watch(
 );
 
 function goBack() {
-  router.back();
+  router.replace({ name: "shopping-shell" });
 }
 </script>
 
 <template>
-  <section
-    v-if="snapshot"
-    class="panel"
-  >
-    <h2>{{ snapshot.title }}</h2>
-    <p class="muted">
-      URL source : {{ snapshot.originalUrl }}
-    </p>
-    <p class="muted">
-      ID produit : {{ snapshot.productId || "inconnu" }}
-    </p>
-    <p>Disponibilité archivage : {{ snapshot.availability }}</p>
-    <p>État des métadonnées : {{ snapshot.metadataStatus }}</p>
-    <p>Quantité demandée : {{ snapshot.quantity }}</p>
+  <main class="canonical-page">
+    <div class="canonical-page-inner canonical-page-inner--wide">
+      <template v-if="snapshot">
+        <header class="canonical-page-header">
+          <div class="canonical-title-block">
+            <span class="canonical-kicker">Produit archivé</span>
+            <h1 class="canonical-title">{{ snapshot.title }}</h1>
+            <p class="canonical-subtitle">
+              {{ snapshot.productId || "ID produit inconnu" }}
+            </p>
+          </div>
+          <button
+            class="canonical-button canonical-button--ghost"
+            type="button"
+            @click="goBack"
+          >
+            <i class="pi pi-arrow-left" />
+            <span>Retour</span>
+          </button>
+        </header>
 
-    <section class="observation-panel">
-      <div class="row split-row">
-        <div>
-          <h3>Dernière observation</h3>
-          <p class="muted">
-            {{ latestObservation ? formatDate(latestObservation.observedAt) : "Aucune observation enregistrée." }}
+        <section class="canonical-card canonical-card--accent product-summary-card">
+          <div
+            v-if="snapshot.imageUrl"
+            class="product-hero-media"
+          >
+            <img
+              :src="snapshot.imageUrl"
+              alt="Image produit"
+              class="product-hero-image"
+            >
+          </div>
+          <div class="canonical-list">
+            <div class="product-meta-grid">
+              <span class="canonical-status-pill">{{ availabilityLabel(snapshot.availability) }}</span>
+              <span class="canonical-status-pill">Métadonnées : {{ snapshot.metadataStatus }}</span>
+              <span class="canonical-status-pill">Quantité : {{ snapshot.quantity }}</span>
+            </div>
+            <p class="canonical-url">
+              {{ snapshot.originalUrl }}
+            </p>
+            <p
+              v-if="snapshot.notes"
+              class="canonical-muted"
+            >
+              {{ snapshot.notes }}
+            </p>
+          </div>
+        </section>
+
+        <section
+          v-if="snapshot.galleryImageUrls.length"
+          class="canonical-card"
+        >
+          <div class="canonical-split-row">
+            <h2 class="canonical-card-title">Images supplémentaires</h2>
+            <span class="canonical-status-pill">{{ snapshot.galleryImageUrls.length }}</span>
+          </div>
+          <div class="product-gallery-grid">
+            <img
+              v-for="image in snapshot.galleryImageUrls"
+              :key="image"
+              :src="image"
+              alt="Image produit supplémentaire"
+              class="product-gallery-image"
+            >
+          </div>
+        </section>
+
+        <section
+          v-if="selectedOptionEntries.length"
+          class="canonical-card"
+        >
+          <h2 class="canonical-card-title">Options</h2>
+          <div class="product-option-grid">
+            <span
+              v-for="[key, value] in selectedOptionEntries"
+              :key="key"
+              class="canonical-status-pill"
+            >
+              {{ key }} : {{ value }}
+            </span>
+          </div>
+        </section>
+
+        <section
+          class="canonical-card"
+          aria-label="Observations produit"
+        >
+          <div class="canonical-split-row">
+            <div class="canonical-title-block">
+              <h2 class="canonical-card-title">Dernière observation</h2>
+              <p class="canonical-muted">
+                {{ latestObservation ? formatDate(latestObservation.observedAt) : "Aucune observation enregistrée." }}
+              </p>
+            </div>
+            <span
+              v-if="reminderDue"
+              class="canonical-status-pill canonical-status-pill--danger"
+            >
+              Rappel de vérification
+            </span>
+          </div>
+
+          <div
+            v-if="latestObservation"
+            class="product-observation-summary"
+          >
+            <span class="canonical-status-pill canonical-status-pill--warning">
+              {{ availabilityLabel(latestObservation.availability) }}
+            </span>
+            <span
+              v-if="latestObservation.price"
+              class="canonical-status-pill canonical-status-pill--success"
+            >
+              {{ latestObservation.price.amount }} {{ latestObservation.price.currency }}
+            </span>
+            <span class="canonical-status-pill">
+              {{ latestObservation.source }} · {{ latestObservation.status }}
+            </span>
+          </div>
+
+          <form
+            class="canonical-form"
+            @submit.prevent="saveObservation"
+          >
+            <div class="product-form-grid">
+              <label class="canonical-field">
+                <span>État observé</span>
+                <select
+                  v-model="availability"
+                  class="canonical-select"
+                >
+                  <option
+                    v-for="option in availabilityOptions"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </option>
+                </select>
+              </label>
+
+              <label class="canonical-field">
+                <span>Prix observé</span>
+                <input
+                  v-model="priceAmount"
+                  class="canonical-input"
+                  inputmode="decimal"
+                  placeholder="ex. 14,99"
+                >
+              </label>
+
+              <label class="canonical-field">
+                <span>Devise</span>
+                <input
+                  v-model="priceCurrency"
+                  class="canonical-input"
+                  maxlength="8"
+                >
+              </label>
+            </div>
+
+            <label class="canonical-field">
+              <span>Note</span>
+              <textarea
+                v-model="note"
+                class="canonical-textarea"
+                rows="3"
+                placeholder="Option, coupon, variante ou contexte observé"
+              />
+            </label>
+
+            <div class="canonical-actions">
+              <button
+                class="canonical-button canonical-button--primary"
+                type="submit"
+              >
+                <i class="pi pi-check" />
+                <span>Mettre à jour l'observation</span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section class="canonical-card canonical-card--flat">
+          <div class="canonical-split-row">
+            <label class="product-reminder-toggle">
+              <input
+                v-model="reminderEnabled"
+                type="checkbox"
+              >
+              <span>Me rappeler de vérifier ce produit</span>
+            </label>
+            <span class="canonical-muted">
+              Prochaine vérification : {{ formatDate(reminder?.nextCheckAt) }}
+            </span>
+          </div>
+          <div class="canonical-actions">
+            <label class="canonical-field product-reminder-interval">
+              <span>Intervalle</span>
+              <input
+                v-model.number="reminderIntervalDays"
+                class="canonical-input"
+                min="1"
+                max="365"
+                type="number"
+              >
+            </label>
+            <button
+              class="canonical-button canonical-button--ghost"
+              type="button"
+              @click="saveReminder"
+            >
+              <i class="pi pi-bell" />
+              <span>Enregistrer le rappel</span>
+            </button>
+          </div>
+        </section>
+
+        <details
+          v-if="observationHistory.length"
+          class="canonical-card product-history"
+        >
+          <summary class="product-history-summary">
+            Historique des observations ({{ observationHistory.length }})
+          </summary>
+          <ul class="product-history-list">
+            <li
+              v-for="observation in observationHistory"
+              :key="observation.id"
+              class="product-history-item"
+            >
+              <strong>{{ availabilityLabel(observation.availability) }}</strong>
+              <span v-if="observation.price">
+                · {{ observation.price.amount }} {{ observation.price.currency }}
+              </span>
+              <span class="canonical-muted">· {{ formatDate(observation.observedAt) }}</span>
+            </li>
+          </ul>
+        </details>
+      </template>
+
+      <section
+        v-else
+        class="canonical-card canonical-card--danger"
+      >
+        <div class="canonical-title-block">
+          <span class="canonical-kicker">Produit archivé</span>
+          <h1 class="canonical-title">Produit introuvable</h1>
+          <p class="canonical-muted">
+            Ce produit n'est plus disponible dans l'archive locale.
           </p>
         </div>
-        <span
-          v-if="reminderDue"
-          class="status-pill blocked"
-        >
-          Rappel de vérification
-        </span>
-      </div>
-
-      <div
-        v-if="latestObservation"
-        class="observation-summary"
-      >
-        <p>
-          Dernier état observé :
-          <strong>{{ availabilityLabel(latestObservation.availability) }}</strong>
-        </p>
-        <p>
-          Dernier prix observé :
-          <strong v-if="latestObservation.price">
-            {{ latestObservation.price.amount }} {{ latestObservation.price.currency }}
-          </strong>
-          <span
-            v-else
-            class="muted"
-          >non renseigné</span>
-        </p>
-        <p class="muted">
-          Source : {{ latestObservation.source }} · statut : {{ latestObservation.status }}
-        </p>
-      </div>
-
-      <form
-        class="observation-form"
-        @submit.prevent="saveObservation"
-      >
-        <label>
-          État observé
-          <select v-model="availability">
-            <option
-              v-for="option in availabilityOptions"
-              :key="option.value"
-              :value="option.value"
-            >
-              {{ option.label }}
-            </option>
-          </select>
-        </label>
-
-        <label>
-          Prix observé
-          <input
-            v-model="priceAmount"
-            inputmode="decimal"
-            placeholder="ex. 14,99"
-          >
-        </label>
-
-        <label>
-          Devise
-          <input
-            v-model="priceCurrency"
-            maxlength="8"
-          >
-        </label>
-
-        <label class="full-width">
-          Note
-          <textarea
-            v-model="note"
-            rows="3"
-            placeholder="Option, coupon, variante ou contexte observé"
-          />
-        </label>
-
-        <button type="submit">
-          Mettre à jour l'observation
-        </button>
-      </form>
-
-      <div class="observation-reminder">
-        <label class="row">
-          <input
-            v-model="reminderEnabled"
-            type="checkbox"
-          >
-          me rappeler de vérifier ce produit
-        </label>
-        <label>
-          Intervalle
-          <input
-            v-model.number="reminderIntervalDays"
-            min="1"
-            max="365"
-            type="number"
-          >
-        </label>
         <button
+          class="canonical-button canonical-button--ghost"
           type="button"
-          @click="saveReminder"
+          @click="goBack"
         >
-          Enregistrer le rappel
+          <i class="pi pi-arrow-left" />
+          <span>Retour</span>
         </button>
-        <p class="muted">
-          Prochaine vérification : {{ formatDate(reminder?.nextCheckAt) }}
-        </p>
-      </div>
-
-      <details v-if="observationHistory.length">
-        <summary>Historique des observations ({{ observationHistory.length }})</summary>
-        <ul class="observation-history">
-          <li
-            v-for="observation in observationHistory"
-            :key="observation.id"
-          >
-            <strong>{{ availabilityLabel(observation.availability) }}</strong>
-            <span v-if="observation.price">
-              · {{ observation.price.amount }} {{ observation.price.currency }}
-            </span>
-            <span class="muted"> · {{ formatDate(observation.observedAt) }}</span>
-          </li>
-        </ul>
-      </details>
-    </section>
-
-    <div
-      v-if="snapshot.imageUrl"
-      class="row"
-    >
-      <img
-        :src="snapshot.imageUrl"
-        alt="Image produit"
-        style="max-width: 220px; max-height: 220px; object-fit: cover; border-radius: 8px"
-      >
+      </section>
     </div>
-
-    <div v-if="snapshot.galleryImageUrls.length">
-      <h3>Images supplémentaires</h3>
-      <div class="row">
-        <img
-          v-for="image in snapshot.galleryImageUrls"
-          :key="image"
-          :src="image"
-          style="max-width: 90px; max-height: 90px; object-fit: cover; border-radius: 6px"
-        >
-      </div>
-    </div>
-
-    <div v-if="snapshot.notes">
-      <h3>Notes</h3>
-      <p class="muted">
-        {{ snapshot.notes }}
-      </p>
-    </div>
-
-    <div v-if="Object.keys(snapshot.selectedOptions).length">
-      <h3>Options</h3>
-      <ul>
-        <li
-          v-for="(value, key) in snapshot.selectedOptions"
-          :key="key"
-        >
-          {{ key }}: {{ value }}
-        </li>
-      </ul>
-    </div>
-
-    <div class="actions">
-      <button
-        type="button"
-        @click="goBack"
-      >
-        Retour
-      </button>
-    </div>
-  </section>
-
-  <section
-    v-else
-    class="panel"
-  >
-    <p>Produit introuvable.</p>
-    <button
-      type="button"
-      @click="goBack"
-    >
-      Retour
-    </button>
-  </section>
+  </main>
 </template>

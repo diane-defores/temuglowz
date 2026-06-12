@@ -4,6 +4,7 @@ import type { ProductObservation, ProductSnapshot } from "@/types/domain";
 
 import {
   isDuplicateSnapshot,
+  validateCloudSyncRecordPayload,
   validateProductObservationInput,
   validateProductSnapshotInput,
 } from "@/lib/validators";
@@ -32,7 +33,7 @@ describe("Snapshot validators", () => {
     const invalid = {
       title: "",
       canonicalUrl: "notaurl",
-      originalUrl: "https://www.temu.com/x",
+      originalUrl: "http://www.temu.com/x",
       quantity: 0,
       selectedOptions: {},
       availability: "unknown" as const,
@@ -43,6 +44,7 @@ describe("Snapshot validators", () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toContain("title");
     expect(result.errors).toContain("canonicalUrl");
+    expect(result.errors).toContain("originalUrl");
     expect(result.errors).toContain("quantity");
   });
 
@@ -126,5 +128,28 @@ describe("Snapshot validators", () => {
       "availability",
       "price",
     ]));
+  });
+
+  it("validates cloud sync payloads against their domain and record key", () => {
+    const result = validateCloudSyncRecordPayload("shopping_list", "list-1", {
+      id: "list-1",
+      name: "Cuisine",
+      itemIds: [],
+      createdAt: 10,
+      updatedAt: 10,
+    });
+
+    expect(result).toEqual({ valid: true, errors: [] });
+
+    expect(validateCloudSyncRecordPayload("shopping_list", "list-2", {
+      id: "list-1",
+      name: "Cuisine",
+      itemIds: [],
+      createdAt: 10,
+      updatedAt: 10,
+    })).toEqual({
+      valid: false,
+      errors: ["recordKey"],
+    });
   });
 });

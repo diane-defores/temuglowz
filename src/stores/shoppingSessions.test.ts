@@ -110,11 +110,29 @@ describe("shopping sessions store", () => {
     expect(store.getSession(id)?.lastCaptureAt).toBeNull();
   });
 
+  it("rejects insecure Temu session start URLs", () => {
+    const { store } = withPersistedStore();
+    const id = store.createSession("Shopping HTTP", "http://www.temu.com/fr/product/12345.html");
+
+    expect(store.getSession(id)?.startUrl).toBe("https://www.temu.com/");
+    expect(store.getSession(id)?.currentUrl).toBe("https://www.temu.com/");
+  });
+
+  it("rejects insecure current session URLs", () => {
+    const { store } = withPersistedStore();
+    const id = store.createSession("Shopping 1");
+
+    expect(() => {
+      store.updateCurrentUrl(id, "http://www.temu.com/fr/category/desk");
+    }).toThrow("invalid current URL");
+  });
+
   it("persists settings in store state", async () => {
     const { store } = withPersistedStore();
     store.createSession("Shopping 1");
     store.setDarkMode(true);
     store.setTextZoom(150);
+    store.setHideTemuClutter(false);
     await nextTick();
 
     const storage = globalThis.localStorage;
@@ -129,6 +147,7 @@ describe("shopping sessions store", () => {
     expect(storage.getItem("temu:shopping-sessions")).not.toBeNull();
     expect(reloaded.settings.darkMode).toBe(true);
     expect(reloaded.settings.textZoom).toBe(150);
+    expect(reloaded.settings.hideTemuClutter).toBe(false);
     expect(reloaded.hasSessions).toBe(true);
   });
 
@@ -161,7 +180,11 @@ describe("shopping sessions store", () => {
     expect(store.bridgeSettings).toEqual({
       darkMode: true,
       textZoom: 145,
+      hideTemuClutter: true,
     });
+
+    store.setHideTemuClutter(false);
+    expect(store.bridgeSettings.hideTemuClutter).toBe(false);
 
     store.setTextZoom(999);
     expect(store.settings.textZoom).toBe(200);

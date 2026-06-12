@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import { useImportDraftsStore } from "@/stores/importDrafts";
 import { useNotificationsStore } from "@/stores/notifications";
@@ -55,6 +55,7 @@ import {
   hideWebview,
   openSession,
   setDarkMode,
+  setHideTemuClutter,
   setTextZoom,
   syncShoppingLists,
   syncSessions,
@@ -77,6 +78,7 @@ const sidebarVisible = ref(true);
 const rightSidebarVisible = ref(true);
 const settingsVisible = ref(false);
 const activeWebviewSessionId = ref<string | null>(null);
+const route = useRoute();
 const router = useRouter();
 const importDraftsStore = useImportDraftsStore();
 const notificationsStore = useNotificationsStore();
@@ -169,12 +171,28 @@ async function openShoppingSession(sessionOrId: ShoppingSession | string): Promi
     session.name,
     sessionsStore.settings.darkMode,
     sessionsStore.settings.textZoom,
+    sessionsStore.settings.hideTemuClutter,
   );
   sessionsStore.setDegradedMode(result.unavailable);
   if (!result.ok) {
     notificationsStore.warning(result.error ?? "Impossible d'ouvrir cette session dans la WebView pour le moment.");
   }
   syncNativeSessions();
+}
+
+async function consumePendingSessionOpen(): Promise<void> {
+  const requestedSessionId = route.query.openSession;
+  if (typeof requestedSessionId !== "string") {
+    return;
+  }
+
+  if (!sessionsStore.getSession(requestedSessionId)) {
+    await router.replace({ name: "shopping-shell" });
+    return;
+  }
+
+  await openShoppingSession(requestedSessionId);
+  await router.replace({ name: "shopping-shell" });
 }
 
 async function returnHome(): Promise<void> {
@@ -286,6 +304,14 @@ async function removeCurrentProductFromList(rawUrl: string, listId: string): Pro
   importDraftsStore.clearDraft();
 }
 
+function resolveTargetListIds(detail: Record<string, unknown>): string[] {
+  if (Array.isArray(detail.listIds)) {
+    return detail.listIds.filter((value): value is string => typeof value === "string" && value.trim().length > 0);
+  }
+
+  return typeof detail.listId === "string" && detail.listId.trim() ? [detail.listId] : [];
+}
+
 async function observeCurrentProduct(rawUrl: string): Promise<void> {
   let draft;
   try {
@@ -327,7 +353,7 @@ const onNativeCaptureRequested = (async (event: CustomEvent) => {
       : detail.action === "observe"
         ? "observe"
         : "review";
-  const listId = typeof detail.listId === "string" ? detail.listId : "";
+  const listIds = resolveTargetListIds(detail);
   const rawUrl = await resolveCaptureUrl(detail);
 
   if (!rawUrl) {
@@ -340,20 +366,24 @@ const onNativeCaptureRequested = (async (event: CustomEvent) => {
 
   try {
     if (action === "add") {
-      if (!listId) {
+      if (!listIds.length) {
         notificationsStore.error("Impossible d'ajouter le produit : aucune liste cible n'a ete transmise.");
         return;
       }
-      await addCurrentProductToList(rawUrl, listId);
+      for (const listId of listIds) {
+        await addCurrentProductToList(rawUrl, listId);
+      }
       return;
     }
 
     if (action === "remove") {
-      if (!listId) {
+      if (!listIds.length) {
         notificationsStore.error("Impossible de retirer le produit : aucune liste cible n'a ete transmise.");
         return;
       }
-      await removeCurrentProductFromList(rawUrl, listId);
+      for (const listId of listIds) {
+        await removeCurrentProductFromList(rawUrl, listId);
+      }
       return;
     }
 
@@ -389,10 +419,23 @@ watch(
   },
   { immediate: true },
 );
+watch(
+  () => sessionsStore.settings.hideTemuClutter,
+  (enabled) => {
+    void setHideTemuClutter(enabled !== false);
+  },
+  { immediate: true },
+);
 
 watch(sessionSummaries, syncNativeSessions, { deep: true });
 watch(() => sessionsStore.activeSessionId, syncNativeSessions);
 watch(shoppingListSummaries, syncNativeShoppingLists, { deep: true });
+watch(
+  () => route.query.openSession,
+  () => {
+    void consumePendingSessionOpen();
+  },
+);
 
 onMounted(() => {
   window.addEventListener("resize", handleResize);
@@ -405,6 +448,8 @@ onMounted(() => {
     syncNativeSessions();
     syncNativeShoppingLists();
   }
+
+  void consumePendingSessionOpen();
 });
 
 onUnmounted(() => {

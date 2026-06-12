@@ -1,6 +1,7 @@
 import { useProductObservationsStore } from "@/stores/productObservations";
 import { useProductSnapshotsStore } from "@/stores/productSnapshots";
 import { useShoppingListsStore } from "@/stores/shoppingLists";
+import { validateCloudSyncRecordPayload } from "@/lib/validators";
 import type {
   ProductObservation,
   ProductSnapshot,
@@ -56,43 +57,46 @@ function applyUpsert(
 ): boolean {
   switch (record.domain) {
     case "shopping_list": {
-      if (!isShoppingList(record.payload)) {
+      if (!validateCloudSyncRecordPayload(record.domain, record.recordKey, record.payload).valid) {
         return false;
       }
+      const payload = record.payload as ShoppingList;
       const existing = lists.lists[record.recordKey];
-      if (existing && existing.updatedAt > record.payload.updatedAt) {
+      if (existing && existing.updatedAt > payload.updatedAt) {
         return false;
       }
-      lists.lists[record.recordKey] = record.payload;
+      lists.lists[record.recordKey] = payload;
       return true;
     }
     case "shopping_list_item": {
-      if (!isShoppingListItem(record.payload)) {
+      if (!validateCloudSyncRecordPayload(record.domain, record.recordKey, record.payload).valid) {
         return false;
       }
-      lists.items[record.recordKey] = record.payload;
+      lists.items[record.recordKey] = record.payload as ShoppingListItem;
       return true;
     }
     case "product_snapshot": {
-      if (!isProductSnapshot(record.payload)) {
+      if (!validateCloudSyncRecordPayload(record.domain, record.recordKey, record.payload).valid) {
         return false;
       }
+      const payload = record.payload as ProductSnapshot;
       const existing = snapshots.snapshots[record.recordKey];
-      if (existing && existing.updatedAt > record.payload.updatedAt) {
+      if (existing && existing.updatedAt > payload.updatedAt) {
         return false;
       }
-      snapshots.snapshots[record.recordKey] = record.payload;
+      snapshots.snapshots[record.recordKey] = payload;
       return true;
     }
     case "product_observation": {
-      if (!isProductObservation(record.payload)) {
+      if (!validateCloudSyncRecordPayload(record.domain, record.recordKey, record.payload).valid) {
         return false;
       }
+      const payload = record.payload as ProductObservation;
       const existing = observations.observations[record.recordKey];
-      if (existing && existing.updatedAt > record.payload.updatedAt) {
+      if (existing && existing.updatedAt > payload.updatedAt) {
         return false;
       }
-      observations.observations[record.recordKey] = record.payload;
+      observations.observations[record.recordKey] = payload;
       return true;
     }
   }
@@ -104,6 +108,10 @@ function applyDelete(
   snapshots: ReturnType<typeof useProductSnapshotsStore>,
   observations: ReturnType<typeof useProductObservationsStore>,
 ): boolean {
+  if (!record.tombstone || record.tombstone.deletedAt <= 0) {
+    return false;
+  }
+
   switch (record.domain) {
     case "shopping_list":
       delete lists.lists[record.recordKey];
@@ -121,65 +129,4 @@ function applyDelete(
       delete observations.observations[record.recordKey];
       return true;
   }
-}
-
-function isObject(value: unknown): value is Record<string, unknown> {
-  return Object.prototype.toString.call(value) === "[object Object]";
-}
-
-function isShoppingList(value: unknown): value is ShoppingList {
-  return (
-    isObject(value)
-    && typeof value.id === "string"
-    && Array.isArray(value.itemIds)
-    && value.itemIds.every((itemId) => typeof itemId === "string")
-    && typeof value.name === "string"
-    && typeof value.createdAt === "number"
-    && typeof value.updatedAt === "number"
-  );
-}
-
-function isShoppingListItem(value: unknown): value is ShoppingListItem {
-  return (
-    isObject(value)
-    && typeof value.id === "string"
-    && typeof value.snapshotId === "string"
-    && typeof value.addedAt === "number"
-    && typeof value.quantity === "number"
-    && typeof value.note === "string"
-  );
-}
-
-function isProductSnapshot(value: unknown): value is ProductSnapshot {
-  return (
-    isObject(value)
-    && typeof value.id === "string"
-    && typeof value.originalUrl === "string"
-    && typeof value.canonicalUrl === "string"
-    && typeof value.title === "string"
-    && typeof value.notes === "string"
-    && Array.isArray(value.galleryImageUrls)
-    && typeof value.quantity === "number"
-    && typeof value.availability === "string"
-    && typeof value.metadataStatus === "string"
-    && typeof value.capturedAt === "number"
-    && typeof value.updatedAt === "number"
-  );
-}
-
-function isProductObservation(value: unknown): value is ProductObservation {
-  return (
-    isObject(value)
-    && typeof value.id === "string"
-    && typeof value.snapshotId === "string"
-    && typeof value.canonicalUrl === "string"
-    && typeof value.source === "string"
-    && typeof value.status === "string"
-    && typeof value.confidence === "string"
-    && typeof value.observedAt === "number"
-    && typeof value.createdAt === "number"
-    && typeof value.updatedAt === "number"
-    && typeof value.availability === "string"
-    && typeof value.note === "string"
-  );
 }

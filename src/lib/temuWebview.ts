@@ -187,6 +187,7 @@ export async function openSession(
   name: string,
   darkMode: boolean,
   textZoom: number,
+  hideTemuClutter = true,
 ): Promise<BridgeCommandResult> {
   const displayName = normalizeDisplayName({ name });
   const payload = await safeInvoke("temu_webview_open_session", {
@@ -196,6 +197,7 @@ export async function openSession(
     displayName,
     darkMode: Boolean(darkMode),
     textZoom: normalizeTextZoomLevel(textZoom),
+    hideTemuClutter: Boolean(hideTemuClutter),
   });
 
   return {
@@ -285,6 +287,19 @@ export async function setDarkMode(enabled: boolean): Promise<BridgeCommandResult
 export async function setTextZoom(level: number = DEFAULT_ZOOM): Promise<BridgeCommandResult> {
   const payload = await safeInvoke("temu_webview_set_text_zoom", {
     level: normalizeTextZoomLevel(level),
+  });
+
+  return {
+    ok: payload.ok,
+    degraded: payload.degraded,
+    unavailable: payload.unavailable,
+    error: payload.error,
+  };
+}
+
+export async function setHideTemuClutter(enabled: boolean): Promise<BridgeCommandResult> {
+  const payload = await safeInvoke("temu_webview_set_hide_temu_clutter", {
+    enabled: Boolean(enabled),
   });
 
   return {

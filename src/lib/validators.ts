@@ -1,11 +1,14 @@
 import type {
   AvailabilityState,
+  ImportSource,
   ProductObservation,
   ProductPriceSnapshot,
   ProductSnapshot,
   ProductObservationConfidence,
   ProductObservationSource,
   ProductObservationStatus,
+  ShoppingList,
+  ShoppingListItem,
   SnapshotMetadataStatus,
 } from "@/types/domain";
 
@@ -43,6 +46,13 @@ const VALID_OBSERVATION_CONFIDENCE = [
   "needs_review",
   "unknown",
 ] as const satisfies readonly ProductObservationConfidence[];
+
+const VALID_IMPORT_SOURCES = [
+  "share",
+  "manual",
+  "edit",
+  "webview",
+] as const satisfies readonly ImportSource[];
 
 type SnapshotInput = {
   title: unknown;
@@ -89,6 +99,30 @@ type ProductObservationInput = Omit<
   note?: unknown;
 };
 
+type ShoppingListInput = Partial<ShoppingList> & {
+  id?: unknown;
+  name?: unknown;
+  itemIds?: unknown;
+  createdAt?: unknown;
+  updatedAt?: unknown;
+};
+
+type ShoppingListItemInput = Partial<ShoppingListItem> & {
+  id?: unknown;
+  snapshotId?: unknown;
+  addedAt?: unknown;
+  quantity?: unknown;
+  note?: unknown;
+};
+
+type ProductSnapshotRecordInput = SnapshotInput & {
+  id?: unknown;
+  productId?: unknown;
+  source?: unknown;
+  capturedAt?: unknown;
+  updatedAt?: unknown;
+};
+
 function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
@@ -109,8 +143,12 @@ function isSafeText(value: unknown, max: number): value is string {
   );
 }
 
+function isOptionalText(value: unknown, max: number): boolean {
+  return value === "" || value === undefined || isSafeText(value, max);
+}
+
 function isUrlString(value: unknown): value is string {
-  return typeof value === "string" && /^https?:\/\//.test(value);
+  return typeof value === "string" && /^https:\/\//.test(value);
 }
 
 function isImageUrlList(value: unknown): value is string[] {
@@ -232,6 +270,119 @@ export function validateProductSnapshotInput(
   };
 }
 
+export function validateShoppingListRecord(
+  input: ShoppingListInput,
+): SnapshotValidationResult {
+  const errors: string[] = [];
+
+  if (!isSafeText(input.id, 80)) {
+    errors.push("id");
+  }
+
+  if (!isSafeText(input.name, 64)) {
+    errors.push("name");
+  }
+
+  if (!Array.isArray(input.itemIds) || !input.itemIds.every((itemId) => isSafeText(itemId, 80))) {
+    errors.push("itemIds");
+  }
+
+  if (!isFiniteNumber(input.createdAt) || input.createdAt <= 0) {
+    errors.push("createdAt");
+  }
+
+  if (!isFiniteNumber(input.updatedAt) || input.updatedAt <= 0) {
+    errors.push("updatedAt");
+  }
+
+  if (
+    isFiniteNumber(input.createdAt)
+    && isFiniteNumber(input.updatedAt)
+    && input.updatedAt < input.createdAt
+  ) {
+    errors.push("updatedAt");
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+export function validateShoppingListItemRecord(
+  input: ShoppingListItemInput,
+): SnapshotValidationResult {
+  const errors: string[] = [];
+
+  if (!isSafeText(input.id, 80)) {
+    errors.push("id");
+  }
+
+  if (!isSafeText(input.snapshotId, 80)) {
+    errors.push("snapshotId");
+  }
+
+  if (!isFiniteNumber(input.addedAt) || input.addedAt <= 0) {
+    errors.push("addedAt");
+  }
+
+  if (!isFiniteNumber(input.quantity) || input.quantity < 1 || input.quantity > 999) {
+    errors.push("quantity");
+  }
+
+  if (!isOptionalText(input.note, MAX_NOTE)) {
+    errors.push("note");
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+export function validateProductSnapshotRecord(
+  input: ProductSnapshotRecordInput,
+): SnapshotValidationResult {
+  const result = validateProductSnapshotInput(input);
+  const errors = [...result.errors];
+
+  if (!isSafeText(input.id, 80)) {
+    errors.push("id");
+  }
+
+  if (input.productId !== undefined && !isSafeText(input.productId, 120)) {
+    errors.push("productId");
+  }
+
+  if (
+    typeof input.source !== "string"
+    || !(VALID_IMPORT_SOURCES as readonly string[]).includes(input.source)
+  ) {
+    errors.push("source");
+  }
+
+  if (!isFiniteNumber(input.capturedAt) || input.capturedAt <= 0) {
+    errors.push("capturedAt");
+  }
+
+  if (!isFiniteNumber(input.updatedAt) || input.updatedAt <= 0) {
+    errors.push("updatedAt");
+  }
+
+  if (
+    isFiniteNumber(input.capturedAt)
+    && isFiniteNumber(input.updatedAt)
+    && input.updatedAt < input.capturedAt
+  ) {
+    errors.push("updatedAt");
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
 export function validateProductObservationInput(
   input: ProductObservationInput,
 ): SnapshotValidationResult {
@@ -309,6 +460,59 @@ export function validateProductObservationInput(
     valid: errors.length === 0,
     errors,
   };
+}
+
+export function validateProductObservationRecord(
+  input: ProductObservationInput,
+): SnapshotValidationResult {
+  const result = validateProductObservationInput(input);
+  const errors = [...result.errors];
+
+  if (
+    isFiniteNumber(input.createdAt)
+    && isFiniteNumber(input.updatedAt)
+    && input.updatedAt < input.createdAt
+  ) {
+    errors.push("updatedAt");
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+export function validateCloudSyncRecordPayload(
+  domain: "shopping_list" | "shopping_list_item" | "product_snapshot" | "product_observation",
+  recordKey: string,
+  payload: unknown,
+): SnapshotValidationResult {
+  let result: SnapshotValidationResult;
+
+  switch (domain) {
+    case "shopping_list":
+      result = validateShoppingListRecord(payload as ShoppingListInput);
+      break;
+    case "shopping_list_item":
+      result = validateShoppingListItemRecord(payload as ShoppingListItemInput);
+      break;
+    case "product_snapshot":
+      result = validateProductSnapshotRecord(payload as ProductSnapshotRecordInput);
+      break;
+    case "product_observation":
+      result = validateProductObservationRecord(payload as ProductObservationInput);
+      break;
+  }
+
+  const payloadId = (payload as { id?: unknown } | null)?.id;
+  if (result.valid && payloadId !== recordKey) {
+    return {
+      valid: false,
+      errors: ["recordKey"],
+    };
+  }
+
+  return result;
 }
 
 export function isDuplicateSnapshot(

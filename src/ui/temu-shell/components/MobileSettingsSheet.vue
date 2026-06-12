@@ -148,6 +148,21 @@
 
             <div class="settings-toggle-row">
               <span class="settings-toggle-label">
+                <i class="pi pi-eye-slash" />
+                Masquer les pop-ups Temu
+              </span>
+              <button
+                class="settings-toggle-pill"
+                :class="{ enabled: sessionsStore.settings.hideTemuClutter !== false }"
+                type="button"
+                @click="toggleHideTemuClutter"
+              >
+                <span class="toggle-thumb" />
+              </button>
+            </div>
+
+            <div class="settings-toggle-row">
+              <span class="settings-toggle-label">
                 <i class="pi pi-search-plus" />
                 Taille du texte
               </span>
@@ -225,7 +240,7 @@ import {
   beginPostAuthSyncFeedback,
   resetPostAuthSyncFeedback,
 } from "@/lib/postAuthSyncFeedback";
-import { setDarkMode, setTextZoom } from "@/lib/temuWebview";
+import { setDarkMode, setHideTemuClutter, setTextZoom } from "@/lib/temuWebview";
 import {
   TEXT_ZOOM_MAX,
   TEXT_ZOOM_MIN,
@@ -341,11 +356,18 @@ function onTextZoomChange(): void {
   void setTextZoom(level);
 }
 
+function toggleHideTemuClutter(): void {
+  const next = sessionsStore.settings.hideTemuClutter === false;
+  sessionsStore.setHideTemuClutter(next);
+  void setHideTemuClutter(next);
+}
+
 async function copyDiagnostics(): Promise<void> {
   const report = buildDiagnosticsReport({
     sessions_count: String(sessionsStore.sessionsByOrder.length),
     dark_mode: String(sessionsStore.settings.darkMode),
     text_zoom: String(textZoomLevel.value),
+    hide_temu_clutter: String(sessionsStore.settings.hideTemuClutter !== false),
     auth_configured: String(isConvexConfigured.value),
     auth_authenticated: String(isAuthenticated.value),
     auth_loading: String(isAuthLoading.value),

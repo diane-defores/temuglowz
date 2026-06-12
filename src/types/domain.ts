@@ -13,6 +13,7 @@ export type ImportSource = "share" | "manual" | "edit" | "webview";
 export interface ShoppingSessionSettings {
   darkMode: boolean;
   textZoom: number;
+  hideTemuClutter: boolean;
 }
 
 export interface ShoppingSession {

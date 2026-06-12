@@ -31,36 +31,46 @@
                 class="sidebar-add-btn"
                 type="button"
                 aria-label="Créer une liste shopping"
-                @click="createList"
+                @click="openCreateListDialog"
               >
                 <i class="pi pi-plus" />
               </button>
             </div>
 
             <div class="menu-items">
-              <RouterLink
+              <div
                 v-for="list in shoppingLists"
                 :key="list.id"
-                class="sidebar-link"
-                :class="{ 'justify-content-center': iconsOnly }"
-                :to="{ name: 'list-detail', params: { listId: list.id } }"
-                :title="list.name"
+                class="sidebar-link-row"
               >
-                <i class="pi pi-list" />
-                <span v-if="!iconsOnly">{{ list.name }}</span>
-                <span
-                  v-if="!iconsOnly"
-                  class="sidebar-count"
+                <RouterLink
+                  class="sidebar-link"
+                  :class="{ 'justify-content-center': iconsOnly }"
+                  :to="{ name: 'list-detail', params: { listId: list.id } }"
+                  :title="list.name"
                 >
-                  {{ itemCountForList(list.id) }}
-                </span>
-              </RouterLink>
+                  <i class="pi pi-list" />
+                  <span v-if="!iconsOnly">{{ list.name }}</span>
+                  <span
+                    v-if="!iconsOnly"
+                    class="sidebar-count"
+                  >
+                    {{ itemCountForList(list.id) }}
+                  </span>
+                </RouterLink>
+                <EntityActionsMenu
+                  v-if="!iconsOnly"
+                  :label="`Actions pour ${list.name}`"
+                  @rename="openRenameListDialog(list)"
+                  @delete="deleteList(list)"
+                />
+              </div>
 
               <button
                 v-if="!shoppingLists.length"
                 class="sidebar-link"
                 type="button"
-                @click="createList"
+                @click="openCreateListDialog"
               >
                 <i class="pi pi-list" />
                 <span>Créer une liste</span>
@@ -77,37 +87,48 @@
               <button
                 class="sidebar-add-btn"
                 type="button"
-                @click="createSession"
+                aria-label="Créer une session shopping"
+                @click="openCreateSessionDialog"
               >
                 <i class="pi pi-plus" />
               </button>
             </div>
 
             <div class="menu-items">
-              <button
+              <div
                 v-for="session in sessions"
                 :key="session.id"
-                class="sidebar-link"
-                :class="{
-                  'justify-content-center': iconsOnly,
-                  'sidebar-link--active': session.id === sessionsStore.activeSessionId,
-                }"
-                type="button"
-                :title="session.name"
-                @click="$emit('open-session', session)"
+                class="sidebar-link-row"
               >
-                <span
-                  class="sidebar-session-dot"
-                  :style="{ background: sessionAccent(session.id) }"
+                <button
+                  class="sidebar-link"
+                  :class="{
+                    'justify-content-center': iconsOnly,
+                    'sidebar-link--active': session.id === sessionsStore.activeSessionId,
+                  }"
+                  type="button"
+                  :title="session.name"
+                  @click="$emit('open-session', session)"
+                >
+                  <span
+                    class="sidebar-session-dot"
+                    :style="{ background: sessionAccent(session.id) }"
+                  />
+                  <span v-if="!iconsOnly">{{ session.name }}</span>
+                </button>
+                <EntityActionsMenu
+                  v-if="!iconsOnly"
+                  :label="`Actions pour ${session.name}`"
+                  @rename="openRenameSessionDialog(session)"
+                  @delete="deleteSession(session)"
                 />
-                <span v-if="!iconsOnly">{{ session.name }}</span>
-              </button>
+              </div>
 
               <button
                 v-if="!sessions.length"
                 class="sidebar-link"
                 type="button"
-                @click="createSession"
+                @click="openCreateSessionDialog"
               >
                 <span class="sidebar-session-dot" />
                 <span>Commencer</span>
@@ -144,6 +165,19 @@
     <main class="desktop-content">
       <slot />
     </main>
+
+    <EntityNameDialog
+      v-model="nameDialogVisible"
+      :title="nameDialogTitle"
+      :eyebrow="nameDialogEyebrow"
+      :field-label="nameDialogFieldLabel"
+      :placeholder="nameDialogPlaceholder"
+      :initial-value="nameDialogInitialValue"
+      :confirm-label="nameDialogConfirmLabel"
+      :error="nameDialogError"
+      @submit="submitNameDialog"
+      @cancel="clearNameDialogError"
+    />
   </div>
 </template>
 
@@ -154,7 +188,9 @@ import { useRouter } from "vue-router";
 import { useNotificationsStore } from "@/stores/notifications";
 import { useShoppingListsStore } from "@/stores/shoppingLists";
 import { useShoppingSessionsStore } from "@/stores/shoppingSessions";
-import type { ShoppingSession } from "@/types/domain";
+import type { ShoppingList, ShoppingSession } from "@/types/domain";
+import EntityActionsMenu from "@/ui/temu-shell/components/EntityActionsMenu.vue";
+import EntityNameDialog from "@/ui/temu-shell/components/EntityNameDialog.vue";
 
 defineProps<{
   modelValue: boolean;
@@ -170,39 +206,150 @@ const sessionsStore = useShoppingSessionsStore();
 const shoppingListsStore = useShoppingListsStore();
 const notificationsStore = useNotificationsStore();
 const iconsOnly = ref(false);
+const nameDialogVisible = ref(false);
+const nameDialogMode = ref<"create-list" | "rename-list" | "create-session" | "rename-session">("create-list");
+const nameDialogTargetId = ref<string | null>(null);
+const nameDialogInitialValue = ref("");
+const nameDialogError = ref("");
 const sessions = computed(() => sessionsStore.sessionsByOrder);
 const shoppingLists = computed(() => shoppingListsStore.listEntries);
 const accents = ["#f97316", "#06b6d4", "#22c55e", "#a855f7", "#ef4444", "#0ea5e9"];
 
 shoppingListsStore.initializeDefaults();
 
-function createSession(): void {
-  const id = sessionsStore.createSession();
-  const session = sessionsStore.getSession(id);
-  if (session) {
-    emit("open-session", session);
-  }
+const nameDialogTitle = computed(() => {
+  if (nameDialogMode.value === "create-session") return "Nommer la session";
+  if (nameDialogMode.value === "rename-session") return "Renommer la session";
+  if (nameDialogMode.value === "rename-list") return "Renommer la liste";
+  return "Nommer la liste";
+});
+
+const nameDialogEyebrow = computed(() =>
+  nameDialogMode.value.includes("session") ? "Session shopping" : "Liste shopping",
+);
+
+const nameDialogFieldLabel = computed(() =>
+  nameDialogMode.value.includes("session") ? "Nom de la session" : "Nom de la liste",
+);
+
+const nameDialogPlaceholder = computed(() =>
+  nameDialogMode.value.includes("session") ? "Ex. Cuisine, Cadeaux, Maison" : "Ex. Cuisine, Vacances, Bébé",
+);
+
+const nameDialogConfirmLabel = computed(() =>
+  nameDialogMode.value.startsWith("rename") ? "Renommer" : "Créer",
+);
+
+function readableListError(error: unknown): string {
+  const message = error instanceof Error ? error.message : "";
+  if (message.includes("required")) return "Nom de liste requis.";
+  if (message.includes("already exists")) return "Une liste porte déjà ce nom.";
+  return "Impossible d'enregistrer cette liste.";
 }
 
-function nextListName(): string {
-  const existingNames = new Set(shoppingLists.value.map((list) => list.name.toLowerCase()));
-  for (let index = 1; index <= shoppingLists.value.length + 1; index += 1) {
-    const candidate = `Nouvelle liste ${index}`;
-    if (!existingNames.has(candidate.toLowerCase())) {
-      return candidate;
-    }
+function readableSessionError(error: unknown): string {
+  const message = error instanceof Error ? error.message : "";
+  if (message.includes("already used") || message.includes("empty")) {
+    return "Nom de session requis ou déjà utilisé.";
   }
-
-  return `Nouvelle liste ${shoppingLists.value.length + 1}`;
+  return "Impossible d'enregistrer cette session.";
 }
 
-function createList(): void {
+function openNameDialog(
+  mode: typeof nameDialogMode.value,
+  initialValue = "",
+  targetId: string | null = null,
+): void {
+  nameDialogMode.value = mode;
+  nameDialogInitialValue.value = initialValue;
+  nameDialogTargetId.value = targetId;
+  nameDialogError.value = "";
+  nameDialogVisible.value = true;
+}
+
+function openCreateListDialog(): void {
+  openNameDialog("create-list");
+}
+
+function openRenameListDialog(list: ShoppingList): void {
+  openNameDialog("rename-list", list.name, list.id);
+}
+
+function openCreateSessionDialog(): void {
+  openNameDialog("create-session");
+}
+
+function openRenameSessionDialog(session: ShoppingSession): void {
+  openNameDialog("rename-session", session.name, session.id);
+}
+
+function clearNameDialogError(): void {
+  nameDialogError.value = "";
+}
+
+function submitNameDialog(name: string): void {
   try {
-    const listId = shoppingListsStore.createList(nextListName());
-    notificationsStore.success("Liste créée.");
-    void router.push({ name: "list-detail", params: { listId } });
+    if (nameDialogMode.value === "create-list") {
+      const listId = shoppingListsStore.createList(name);
+      notificationsStore.success("Liste créée.");
+      nameDialogVisible.value = false;
+      void router.push({ name: "list-detail", params: { listId } });
+      return;
+    }
+
+    if (nameDialogMode.value === "rename-list" && nameDialogTargetId.value) {
+      shoppingListsStore.renameList(nameDialogTargetId.value, name);
+      notificationsStore.success("Liste renommée.");
+      nameDialogVisible.value = false;
+      return;
+    }
+
+    if (nameDialogMode.value === "create-session") {
+      const id = sessionsStore.createSession(name);
+      const session = sessionsStore.getSession(id);
+      notificationsStore.success("Session créée.");
+      nameDialogVisible.value = false;
+      if (session) {
+        emit("open-session", session);
+      }
+      return;
+    }
+
+    if (nameDialogMode.value === "rename-session" && nameDialogTargetId.value) {
+      sessionsStore.renameSession(nameDialogTargetId.value, name);
+      notificationsStore.success("Session renommée.");
+      nameDialogVisible.value = false;
+    }
   } catch (error) {
-    notificationsStore.error(error instanceof Error ? error.message : "Impossible de créer la liste.");
+    nameDialogError.value = nameDialogMode.value.includes("session")
+      ? readableSessionError(error)
+      : readableListError(error);
+  }
+}
+
+function deleteList(list: ShoppingList): void {
+  if (!window.confirm(`Supprimer la liste "${list.name}" et ses produits sauvegardés ?`)) {
+    return;
+  }
+
+  try {
+    shoppingListsStore.deleteList(list.id);
+    notificationsStore.success("Liste supprimée.");
+  } catch (error) {
+    notificationsStore.error(error instanceof Error ? error.message : "Impossible de supprimer la liste.");
+  }
+}
+
+function deleteSession(session: ShoppingSession): void {
+  if (!window.confirm(`Supprimer la session "${session.name}" ?`)) {
+    return;
+  }
+
+  try {
+    sessionsStore.closeSession(session.id);
+    notificationsStore.success("Session supprimée.");
+  } catch (error) {
+    notificationsStore.error(error instanceof Error ? error.message : "Impossible de supprimer la session.");
   }
 }
 

@@ -41,18 +41,34 @@ fn temu_webview_open_session(
     name: String,
     dark_mode: bool,
     text_zoom: i32,
+    hide_temu_clutter: bool,
 ) -> Result<(), String> {
     #[cfg(mobile)]
     {
         return app
             .temu_webview()
-            .open_session(&session_id, &url, &name, dark_mode, text_zoom)
+            .open_session(
+                &session_id,
+                &url,
+                &name,
+                dark_mode,
+                text_zoom,
+                hide_temu_clutter,
+            )
             .map_err(|error| error.to_string());
     }
 
     #[cfg(not(mobile))]
     {
-        let _ = (app, session_id, url, name, dark_mode, text_zoom);
+        let _ = (
+            app,
+            session_id,
+            url,
+            name,
+            dark_mode,
+            text_zoom,
+            hide_temu_clutter,
+        );
         Err("Temu WebView is only available on Android".to_string())
     }
 }
@@ -148,6 +164,23 @@ fn temu_webview_set_text_zoom(app: AppHandle, level: i32) -> Result<(), String> 
 }
 
 #[tauri::command]
+fn temu_webview_set_hide_temu_clutter(app: AppHandle, enabled: bool) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        return app
+            .temu_webview()
+            .set_hide_temu_clutter(enabled)
+            .map_err(|error| error.to_string());
+    }
+
+    #[cfg(not(mobile))]
+    {
+        let _ = (app, enabled);
+        Ok(())
+    }
+}
+
+#[tauri::command]
 fn temu_webview_set_sessions(
     app: AppHandle,
     sessions_json: String,
@@ -203,6 +236,7 @@ pub fn run() {
             temu_webview_capture_current_url,
             temu_webview_set_dark_mode,
             temu_webview_set_text_zoom,
+            temu_webview_set_hide_temu_clutter,
             temu_webview_set_sessions,
             temu_webview_set_shopping_lists,
         ])

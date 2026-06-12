@@ -11,6 +11,7 @@ struct OpenSessionRequest {
     name: String,
     dark_mode: bool,
     text_zoom: i32,
+    hide_temu_clutter: bool,
 }
 
 #[derive(Serialize)]
@@ -29,6 +30,12 @@ struct DarkModeRequest {
 #[serde(rename_all = "camelCase")]
 struct TextZoomRequest {
     level: i32,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct HideTemuClutterRequest {
+    enabled: bool,
 }
 
 #[derive(Serialize)]
@@ -64,6 +71,7 @@ impl<R: Runtime> TemuWebview<R> {
         name: &str,
         dark_mode: bool,
         text_zoom: i32,
+        hide_temu_clutter: bool,
     ) -> Result<()> {
         self.0
             .run_mobile_plugin(
@@ -74,6 +82,7 @@ impl<R: Runtime> TemuWebview<R> {
                     name: name.to_string(),
                     dark_mode,
                     text_zoom,
+                    hide_temu_clutter,
                 },
             )
             .map_err(|e| Error::PluginInvoke(e.to_string()))
@@ -111,6 +120,12 @@ impl<R: Runtime> TemuWebview<R> {
     pub fn set_text_zoom(&self, level: i32) -> Result<()> {
         self.0
             .run_mobile_plugin("setTextZoom", TextZoomRequest { level })
+            .map_err(|e| Error::PluginInvoke(e.to_string()))
+    }
+
+    pub fn set_hide_temu_clutter(&self, enabled: bool) -> Result<()> {
+        self.0
+            .run_mobile_plugin("setHideTemuClutter", HideTemuClutterRequest { enabled })
             .map_err(|e| Error::PluginInvoke(e.to_string()))
     }
 
