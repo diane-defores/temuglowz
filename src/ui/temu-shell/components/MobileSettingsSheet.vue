@@ -240,7 +240,12 @@ import {
   beginPostAuthSyncFeedback,
   resetPostAuthSyncFeedback,
 } from "@/lib/postAuthSyncFeedback";
-import { setDarkMode, setHideTemuClutter, setTextZoom } from "@/lib/temuWebview";
+import {
+  getWebviewDiagnostics,
+  setDarkMode,
+  setHideTemuClutter,
+  setTextZoom,
+} from "@/lib/temuWebview";
 import {
   TEXT_ZOOM_MAX,
   TEXT_ZOOM_MIN,
@@ -363,6 +368,7 @@ function toggleHideTemuClutter(): void {
 }
 
 async function copyDiagnostics(): Promise<void> {
+  const webviewDiagnostics = await getWebviewDiagnostics();
   const report = buildDiagnosticsReport({
     sessions_count: String(sessionsStore.sessionsByOrder.length),
     dark_mode: String(sessionsStore.settings.darkMode),
@@ -372,6 +378,23 @@ async function copyDiagnostics(): Promise<void> {
     auth_authenticated: String(isAuthenticated.value),
     auth_loading: String(isAuthLoading.value),
     auth_error: authBootstrapError.value ?? "none",
+    webview_available: String(webviewDiagnostics.available),
+    webview_multi_profile_supported: String(webviewDiagnostics.multiProfileSupported),
+    webview_multi_profile_enabled: String(webviewDiagnostics.multiProfileEnabled),
+    webview_profile_degraded: String(webviewDiagnostics.profileDegraded),
+    webview_active_session: webviewDiagnostics.activeSessionId ?? "none",
+    webview_active_profile: webviewDiagnostics.activeProfileName ?? "none",
+    webview_active_host: webviewDiagnostics.activeHost ?? "none",
+    webview_warm_hosts: String(webviewDiagnostics.warmHostCount),
+    webview_known_sessions: String(webviewDiagnostics.knownSessionCount),
+    webview_dom_storage: String(webviewDiagnostics.domStorageEnabled ?? "unknown"),
+    webview_database: String(webviewDiagnostics.databaseEnabled ?? "unknown"),
+    webview_mixed_content_mode: String(webviewDiagnostics.mixedContentMode ?? "unknown"),
+    webview_javascript: String(webviewDiagnostics.javaScriptEnabled ?? "unknown"),
+    webview_accept_cookie: String(webviewDiagnostics.acceptCookie),
+    webview_accept_third_party_cookies: String(webviewDiagnostics.acceptThirdPartyCookies ?? "unknown"),
+    webview_hide_temu_clutter: String(webviewDiagnostics.hideTemuClutter),
+    webview_error: webviewDiagnostics.error ?? "none",
   });
 
   try {

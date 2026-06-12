@@ -133,6 +133,9 @@ describe("shopping sessions store", () => {
     store.setDarkMode(true);
     store.setTextZoom(150);
     store.setHideTemuClutter(false);
+    store.skipOnboardingStep("sync");
+    store.setOnboardingDismissed(true);
+    store.setOnboardingCompleted(true);
     await nextTick();
 
     const storage = globalThis.localStorage;
@@ -148,7 +151,27 @@ describe("shopping sessions store", () => {
     expect(reloaded.settings.darkMode).toBe(true);
     expect(reloaded.settings.textZoom).toBe(150);
     expect(reloaded.settings.hideTemuClutter).toBe(false);
+    expect(reloaded.settings.onboardingSkippedStepIds).toEqual(["sync"]);
+    expect(reloaded.settings.onboardingDismissed).toBe(true);
+    expect(reloaded.settings.onboardingCompleted).toBe(true);
     expect(reloaded.hasSessions).toBe(true);
+  });
+
+  it("tracks skipped onboarding steps without duplicates and can reset the flow", () => {
+    const { store } = withPersistedStore();
+
+    store.skipOnboardingStep("session");
+    store.skipOnboardingStep("session");
+    store.setOnboardingDismissed(true);
+
+    expect(store.settings.onboardingSkippedStepIds).toEqual(["session"]);
+    expect(store.settings.onboardingDismissed).toBe(true);
+
+    store.resetOnboardingProgress();
+
+    expect(store.settings.onboardingSkippedStepIds).toEqual([]);
+    expect(store.settings.onboardingDismissed).toBe(false);
+    expect(store.settings.onboardingCompleted).toBe(false);
   });
 
   it("exposes stable session summaries for the native session switcher", () => {

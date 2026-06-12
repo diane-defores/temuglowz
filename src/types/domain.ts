@@ -14,6 +14,9 @@ export interface ShoppingSessionSettings {
   darkMode: boolean;
   textZoom: number;
   hideTemuClutter: boolean;
+  onboardingDismissed?: boolean;
+  onboardingCompleted?: boolean;
+  onboardingSkippedStepIds?: string[];
 }
 
 export interface ShoppingSession {

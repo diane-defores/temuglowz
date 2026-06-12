@@ -139,6 +139,9 @@ export const useShoppingSessionsStore = defineStore("shoppingSessions", {
       darkMode: false,
       textZoom: DEFAULT_TEXT_ZOOM,
       hideTemuClutter: true,
+      onboardingDismissed: false,
+      onboardingCompleted: false,
+      onboardingSkippedStepIds: [],
     },
     degradedMode: false,
   }),
@@ -325,6 +328,30 @@ export const useShoppingSessionsStore = defineStore("shoppingSessions", {
       if (this.activeSessionId) {
         this.sessions[this.activeSessionId]!.updatedAt = now();
       }
+    },
+
+    setOnboardingDismissed(dismissed: boolean): void {
+      this.settings.onboardingDismissed = Boolean(dismissed);
+    },
+
+    setOnboardingCompleted(completed: boolean): void {
+      this.settings.onboardingCompleted = Boolean(completed);
+      if (completed) {
+        this.settings.onboardingDismissed = true;
+      }
+    },
+
+    skipOnboardingStep(stepId: string): void {
+      const existing = this.settings.onboardingSkippedStepIds ?? [];
+      if (!existing.includes(stepId)) {
+        this.settings.onboardingSkippedStepIds = [...existing, stepId];
+      }
+    },
+
+    resetOnboardingProgress(): void {
+      this.settings.onboardingCompleted = false;
+      this.settings.onboardingDismissed = false;
+      this.settings.onboardingSkippedStepIds = [];
     },
 
     setDegradedMode(degraded: boolean): void {

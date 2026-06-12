@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   captureCurrentUrl,
   closeSession,
+  getWebviewDiagnostics,
   hideWebview,
   openSession,
   setActiveSession,
@@ -201,5 +202,52 @@ describe("temu webview bridge", () => {
       unavailable: false,
       error: "native command failed",
     }));
+  });
+
+  it("normalizes native WebView diagnostics without exposing page content", async () => {
+    setTauriAvailable();
+    invoke.mockResolvedValue({
+      available: true,
+      multiProfileSupported: true,
+      multiProfileEnabled: true,
+      profileDegraded: false,
+      activeSessionId: "session-1",
+      activeProfileName: "temu_abc123",
+      activeHost: "www.temu.com",
+      warmHostCount: 2,
+      knownSessionCount: 3,
+      domStorageEnabled: true,
+      databaseEnabled: true,
+      mixedContentMode: 1,
+      javaScriptEnabled: true,
+      acceptCookie: true,
+      acceptThirdPartyCookies: false,
+      hideTemuClutter: false,
+      darkMode: true,
+      textZoom: 125,
+    });
+
+    await expect(getWebviewDiagnostics()).resolves.toEqual({
+      available: true,
+      multiProfileSupported: true,
+      multiProfileEnabled: true,
+      profileDegraded: false,
+      activeSessionId: "session-1",
+      activeProfileName: "temu_abc123",
+      activeHost: "www.temu.com",
+      warmHostCount: 2,
+      knownSessionCount: 3,
+      domStorageEnabled: true,
+      databaseEnabled: true,
+      mixedContentMode: 1,
+      javaScriptEnabled: true,
+      acceptCookie: true,
+      acceptThirdPartyCookies: false,
+      hideTemuClutter: false,
+      darkMode: true,
+      textZoom: 125,
+      error: undefined,
+    });
+    expect(invoke).toHaveBeenCalledWith("temu_webview_get_diagnostics", {});
   });
 });

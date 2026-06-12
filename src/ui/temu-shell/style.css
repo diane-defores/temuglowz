@@ -181,6 +181,178 @@ html.dark {
   cursor: pointer;
 }
 
+.temu-onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: end center;
+  padding: env(safe-area-inset-top, 1rem) 1rem env(safe-area-inset-bottom, 1rem);
+  background: color-mix(in srgb, #020617 54%, transparent);
+}
+
+.temu-onboarding-card {
+  display: grid;
+  width: min(100%, 31rem);
+  max-height: min(43rem, 92vh);
+  overflow: auto;
+  gap: 0.9rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 18px;
+  padding: 1rem;
+  color: var(--text-color);
+  background: var(--surface-card);
+  box-shadow: var(--card-shadow);
+}
+
+.temu-onboarding-header,
+.temu-onboarding-footer,
+.temu-onboarding-dots,
+.temu-onboarding-page,
+.temu-onboarding-page-icon {
+  display: flex;
+  align-items: center;
+}
+
+.temu-onboarding-header,
+.temu-onboarding-footer {
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.temu-onboarding-header h2,
+.temu-onboarding-page-copy h3 {
+  margin: 0;
+  color: var(--text-color);
+  line-height: 1.12;
+}
+
+.temu-onboarding-header h2 {
+  font-size: 1.28rem;
+  font-weight: 900;
+}
+
+.temu-onboarding-kicker {
+  margin: 0 0 0.2rem;
+  padding: 0;
+}
+
+.temu-onboarding-dots {
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding: 0.1rem 0;
+}
+
+.temu-onboarding-dot,
+.temu-onboarding-page-icon {
+  flex-shrink: 0;
+  justify-content: center;
+  border: 1px solid var(--surface-border);
+  border-radius: 999px;
+  color: var(--text-color-secondary);
+  background: var(--surface-hover);
+}
+
+.temu-onboarding-dot {
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+.temu-onboarding-dot i {
+  font-size: 0.78rem;
+}
+
+.temu-onboarding-dot.is-current,
+.temu-onboarding-page-icon.is-current {
+  border-color: var(--primary-color);
+  color: #fff;
+  background: var(--primary-color);
+}
+
+.temu-onboarding-dot.is-completed,
+.temu-onboarding-page-icon.is-completed {
+  border-color: var(--status-success-text);
+  color: #fff;
+  background: var(--status-success-text);
+}
+
+.temu-onboarding-dot.is-skipped,
+.temu-onboarding-page-icon.is-skipped {
+  border-color: var(--status-danger-text);
+  color: #fff;
+  background: var(--status-danger-text);
+}
+
+.temu-onboarding-page {
+  gap: 0.85rem;
+  min-width: 0;
+  padding: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--surface-border) 82%, var(--primary-color));
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--primary-color) 7%, var(--surface-card)),
+      var(--surface-card) 68%
+    );
+}
+
+.temu-onboarding-page-icon {
+  width: 3rem;
+  height: 3rem;
+}
+
+.temu-onboarding-page-icon i {
+  font-size: 1.25rem;
+}
+
+.temu-onboarding-page-copy {
+  min-width: 0;
+}
+
+.temu-onboarding-page-copy h3 {
+  font-size: 1.04rem;
+  font-weight: 900;
+}
+
+.temu-onboarding-page-copy p:last-child {
+  margin: 0.35rem 0 0;
+  color: var(--text-color-secondary);
+  font-size: 0.86rem;
+  line-height: 1.42;
+}
+
+.temu-onboarding-action-card {
+  margin: 0;
+}
+
+.temu-onboarding-primary {
+  color: #fff;
+  background: var(--primary-color);
+}
+
+.temu-onboarding-enter-active,
+.temu-onboarding-leave-active {
+  transition: opacity 180ms ease;
+}
+
+.temu-onboarding-enter-active .temu-onboarding-card,
+.temu-onboarding-leave-active .temu-onboarding-card {
+  transition: transform 220ms ease;
+}
+
+.temu-onboarding-enter-from,
+.temu-onboarding-leave-to {
+  opacity: 0;
+}
+
+.temu-onboarding-enter-from .temu-onboarding-card,
+.temu-onboarding-leave-to .temu-onboarding-card {
+  transform: translateY(1rem);
+}
+
 .home-section {
   margin-bottom: 1.1rem;
 }

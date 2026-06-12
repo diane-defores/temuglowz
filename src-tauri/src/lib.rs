@@ -130,6 +130,45 @@ fn temu_webview_capture_current_url(app: AppHandle) -> Result<serde_json::Value,
 }
 
 #[tauri::command]
+fn temu_webview_get_diagnostics(app: AppHandle) -> Result<serde_json::Value, String> {
+    #[cfg(mobile)]
+    {
+        return app
+            .temu_webview()
+            .diagnostics()
+            .map(serde_json::to_value)
+            .map_err(|error| error.to_string())
+            .and_then(|value| value.map_err(|error| error.to_string()));
+    }
+
+    #[cfg(not(mobile))]
+    {
+        let _ = app;
+        Ok(serde_json::json!({
+          "available": false,
+          "multiProfileSupported": false,
+          "multiProfileEnabled": false,
+          "profileDegraded": true,
+          "activeSessionId": null,
+          "activeProfileName": null,
+          "activeHost": null,
+          "warmHostCount": 0,
+          "knownSessionCount": 0,
+          "domStorageEnabled": null,
+          "databaseEnabled": null,
+          "mixedContentMode": null,
+          "javaScriptEnabled": null,
+          "acceptCookie": false,
+          "acceptThirdPartyCookies": null,
+          "hideTemuClutter": false,
+          "darkMode": false,
+          "textZoom": 100,
+          "error": "Temu WebView is only available on Android"
+        }))
+    }
+}
+
+#[tauri::command]
 fn temu_webview_set_dark_mode(app: AppHandle, enabled: bool) -> Result<(), String> {
     #[cfg(mobile)]
     {
@@ -234,6 +273,7 @@ pub fn run() {
             temu_webview_hide,
             temu_webview_close_session,
             temu_webview_capture_current_url,
+            temu_webview_get_diagnostics,
             temu_webview_set_dark_mode,
             temu_webview_set_text_zoom,
             temu_webview_set_hide_temu_clutter,

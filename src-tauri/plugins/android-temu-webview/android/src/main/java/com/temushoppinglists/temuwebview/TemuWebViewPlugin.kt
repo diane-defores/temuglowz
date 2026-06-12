@@ -327,6 +327,38 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
     }
 
     @Command
+    fun getDiagnostics(invoke: Invoke) {
+        activity.runOnUiThread {
+            val host = activeHost()
+            val webView = host?.webView
+            val settings = webView?.settings
+            val result = JSObject()
+            result.put("available", true)
+            result.put("multiProfileSupported", multiProfileModeEnabled)
+            result.put("multiProfileEnabled", isPoolingEnabled())
+            result.put("profileDegraded", isProfileDegraded())
+            result.put("activeSessionId", host?.id)
+            result.put("activeProfileName", host?.id?.let { webkitProfileName(it) })
+            result.put("activeHost", host?.let { safeHost(currentVisibleUrl(it)) })
+            result.put("warmHostCount", sessionHosts.size)
+            result.put("knownSessionCount", sessionItems.size)
+            result.put("domStorageEnabled", settings?.domStorageEnabled)
+            result.put("databaseEnabled", settings?.databaseEnabled)
+            result.put("mixedContentMode", settings?.mixedContentMode)
+            result.put("javaScriptEnabled", settings?.javaScriptEnabled)
+            result.put("acceptCookie", CookieManager.getInstance().acceptCookie())
+            result.put("acceptThirdPartyCookies", webView?.let { CookieManager.getInstance().acceptThirdPartyCookies(it) })
+            result.put("hideTemuClutter", hideTemuClutter)
+            result.put("darkMode", isDarkMode)
+            result.put("textZoom", textZoomLevel)
+            if (host == null) {
+                result.put("error", "No active Temu WebView session")
+            }
+            invoke.resolve(result)
+        }
+    }
+
+    @Command
     fun setDarkMode(invoke: Invoke) {
         val args = invoke.parseArgs(DarkModeArgs::class.java)
         activity.runOnUiThread {
@@ -994,6 +1026,15 @@ class TemuWebViewPlugin(private val activity: Activity) : Plugin(activity) {
             return liveUrl
         }
         return host.currentUrl.takeIf { it.isNotBlank() }
+    }
+
+    private fun safeHost(raw: String?): String? {
+        if (raw.isNullOrBlank()) return null
+        return try {
+            Uri.parse(raw).host?.lowercase()
+        } catch (_: Exception) {
+            null
+        }
     }
 
     private fun requestCaptureFromBottomBar() {

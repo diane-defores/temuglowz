@@ -32,6 +32,28 @@ interface NativeCapturePayload {
   degraded?: boolean;
   error?: string | null;
 }
+
+export interface WebviewDiagnostics {
+  available: boolean;
+  multiProfileSupported: boolean;
+  multiProfileEnabled: boolean;
+  profileDegraded: boolean;
+  activeSessionId: string | null;
+  activeProfileName: string | null;
+  activeHost: string | null;
+  warmHostCount: number;
+  knownSessionCount: number;
+  domStorageEnabled: boolean | null;
+  databaseEnabled: boolean | null;
+  mixedContentMode: number | null;
+  javaScriptEnabled: boolean | null;
+  acceptCookie: boolean;
+  acceptThirdPartyCookies: boolean | null;
+  hideTemuClutter: boolean;
+  darkMode: boolean;
+  textZoom: number;
+  error?: string;
+}
 const DEFAULT_ZOOM = 100;
 const MIN_ZOOM = 50;
 const MAX_ZOOM = 200;
@@ -352,6 +374,83 @@ export async function captureCurrentUrl(): Promise<BridgeCaptureResult> {
       error: error instanceof Error ? error.message : String(error),
       unavailable: false,
       degraded: true,
+    };
+  }
+}
+
+export async function getWebviewDiagnostics(): Promise<WebviewDiagnostics> {
+  if (!hasTauriRuntime()) {
+    return {
+      available: false,
+      multiProfileSupported: false,
+      multiProfileEnabled: false,
+      profileDegraded: true,
+      activeSessionId: null,
+      activeProfileName: null,
+      activeHost: null,
+      warmHostCount: 0,
+      knownSessionCount: 0,
+      domStorageEnabled: null,
+      databaseEnabled: null,
+      mixedContentMode: null,
+      javaScriptEnabled: null,
+      acceptCookie: false,
+      acceptThirdPartyCookies: null,
+      hideTemuClutter: false,
+      darkMode: false,
+      textZoom: DEFAULT_ZOOM,
+      error: "webview bridge unavailable",
+    };
+  }
+
+  try {
+    const payload = await invokeCommand<Partial<WebviewDiagnostics>>(
+      "temu_webview_get_diagnostics",
+      {},
+    );
+
+    return {
+      available: Boolean(payload.available),
+      multiProfileSupported: Boolean(payload.multiProfileSupported),
+      multiProfileEnabled: Boolean(payload.multiProfileEnabled),
+      profileDegraded: Boolean(payload.profileDegraded),
+      activeSessionId: typeof payload.activeSessionId === "string" ? payload.activeSessionId : null,
+      activeProfileName: typeof payload.activeProfileName === "string" ? payload.activeProfileName : null,
+      activeHost: typeof payload.activeHost === "string" ? payload.activeHost : null,
+      warmHostCount: Number(payload.warmHostCount ?? 0),
+      knownSessionCount: Number(payload.knownSessionCount ?? 0),
+      domStorageEnabled: typeof payload.domStorageEnabled === "boolean" ? payload.domStorageEnabled : null,
+      databaseEnabled: typeof payload.databaseEnabled === "boolean" ? payload.databaseEnabled : null,
+      mixedContentMode: typeof payload.mixedContentMode === "number" ? payload.mixedContentMode : null,
+      javaScriptEnabled: typeof payload.javaScriptEnabled === "boolean" ? payload.javaScriptEnabled : null,
+      acceptCookie: Boolean(payload.acceptCookie),
+      acceptThirdPartyCookies: typeof payload.acceptThirdPartyCookies === "boolean" ? payload.acceptThirdPartyCookies : null,
+      hideTemuClutter: Boolean(payload.hideTemuClutter),
+      darkMode: Boolean(payload.darkMode),
+      textZoom: Number(payload.textZoom ?? DEFAULT_ZOOM),
+      error: typeof payload.error === "string" ? payload.error : undefined,
+    };
+  } catch (error) {
+    return {
+      available: false,
+      multiProfileSupported: false,
+      multiProfileEnabled: false,
+      profileDegraded: true,
+      activeSessionId: null,
+      activeProfileName: null,
+      activeHost: null,
+      warmHostCount: 0,
+      knownSessionCount: 0,
+      domStorageEnabled: null,
+      databaseEnabled: null,
+      mixedContentMode: null,
+      javaScriptEnabled: null,
+      acceptCookie: false,
+      acceptThirdPartyCookies: null,
+      hideTemuClutter: false,
+      darkMode: false,
+      textZoom: DEFAULT_ZOOM,
+      error: error instanceof Error ? error.message : String(error),
     };
   }
 }

@@ -37,6 +37,11 @@
     </template>
 
     <MobileSettingsSheet v-model="settingsVisible" />
+    <TemuOnboardingOverlay
+      v-model="onboardingVisible"
+      @open-session="openShoppingSession"
+      @open-settings="settingsVisible = true"
+    />
   </div>
 </template>
 
@@ -70,6 +75,7 @@ import AppSidebar from "./components/AppSidebar.vue";
 import MobileLayout from "./components/MobileLayout.vue";
 import MobileSettingsSheet from "./components/MobileSettingsSheet.vue";
 import NetworkWebviewHost from "./components/NetworkWebviewHost.vue";
+import TemuOnboardingOverlay from "./components/TemuOnboardingOverlay.vue";
 import { TEXT_ZOOM_DEFAULT, normalizeTextZoomLevel } from "./utils/textZoom";
 
 const INVALID_PRODUCT_PAGE_MESSAGE = "Cette action fonctionne seulement sur une fiche produit Temu. Ouvrez un produit, puis réessayez.";
@@ -77,6 +83,7 @@ const INVALID_PRODUCT_PAGE_MESSAGE = "Cette action fonctionne seulement sur une 
 const sidebarVisible = ref(true);
 const rightSidebarVisible = ref(true);
 const settingsVisible = ref(false);
+const onboardingVisible = ref(false);
 const activeWebviewSessionId = ref<string | null>(null);
 const route = useRoute();
 const router = useRouter();
@@ -438,6 +445,8 @@ watch(
 );
 
 onMounted(() => {
+  onboardingVisible.value = !sessionsStore.settings.onboardingCompleted
+    && !sessionsStore.settings.onboardingDismissed;
   window.addEventListener("resize", handleResize);
   window.addEventListener("temu-webview-hidden", onNativeHidden);
   window.addEventListener("temu-webview-dark-mode-changed", onNativeDarkMode);

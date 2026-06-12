@@ -61,6 +61,30 @@ pub struct CaptureResponse {
     pub error: Option<String>,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DiagnosticsResponse {
+    pub available: bool,
+    pub multi_profile_supported: bool,
+    pub multi_profile_enabled: bool,
+    pub profile_degraded: bool,
+    pub active_session_id: Option<String>,
+    pub active_profile_name: Option<String>,
+    pub active_host: Option<String>,
+    pub warm_host_count: i32,
+    pub known_session_count: i32,
+    pub dom_storage_enabled: Option<bool>,
+    pub database_enabled: Option<bool>,
+    pub mixed_content_mode: Option<i32>,
+    pub java_script_enabled: Option<bool>,
+    pub accept_cookie: bool,
+    pub accept_third_party_cookies: Option<bool>,
+    pub hide_temu_clutter: bool,
+    pub dark_mode: bool,
+    pub text_zoom: i32,
+    pub error: Option<String>,
+}
+
 pub struct TemuWebview<R: Runtime>(pub PluginHandle<R>);
 
 impl<R: Runtime> TemuWebview<R> {
@@ -108,6 +132,12 @@ impl<R: Runtime> TemuWebview<R> {
     pub fn capture_current_url(&self) -> Result<CaptureResponse> {
         self.0
             .run_mobile_plugin("captureCurrentUrl", ())
+            .map_err(|e| Error::PluginInvoke(e.to_string()))
+    }
+
+    pub fn diagnostics(&self) -> Result<DiagnosticsResponse> {
+        self.0
+            .run_mobile_plugin("getDiagnostics", ())
             .map_err(|e| Error::PluginInvoke(e.to_string()))
     }
 
