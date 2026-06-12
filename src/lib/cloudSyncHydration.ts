@@ -62,7 +62,7 @@ function applyUpsert(
       }
       const payload = record.payload as ShoppingList;
       const existing = lists.lists[record.recordKey];
-      if (existing && existing.updatedAt > payload.updatedAt) {
+      if (existing && existing.updatedAt > record.localUpdatedAt) {
         return false;
       }
       lists.lists[record.recordKey] = payload;
@@ -72,7 +72,12 @@ function applyUpsert(
       if (!validateCloudSyncRecordPayload(record.domain, record.recordKey, record.payload).valid) {
         return false;
       }
-      lists.items[record.recordKey] = record.payload as ShoppingListItem;
+      const payload = record.payload as ShoppingListItem;
+      const existing = lists.items[record.recordKey];
+      if (existing && existing.addedAt > record.localUpdatedAt) {
+        return false;
+      }
+      lists.items[record.recordKey] = payload;
       return true;
     }
     case "product_snapshot": {
@@ -81,7 +86,7 @@ function applyUpsert(
       }
       const payload = record.payload as ProductSnapshot;
       const existing = snapshots.snapshots[record.recordKey];
-      if (existing && existing.updatedAt > payload.updatedAt) {
+      if (existing && existing.updatedAt > record.localUpdatedAt) {
         return false;
       }
       snapshots.snapshots[record.recordKey] = payload;
@@ -93,7 +98,7 @@ function applyUpsert(
       }
       const payload = record.payload as ProductObservation;
       const existing = observations.observations[record.recordKey];
-      if (existing && existing.updatedAt > payload.updatedAt) {
+      if (existing && existing.updatedAt > record.localUpdatedAt) {
         return false;
       }
       observations.observations[record.recordKey] = payload;
@@ -112,20 +117,34 @@ function applyDelete(
     return false;
   }
 
+  const incomingVersion = record.tombstone.deletedAt;
+
   switch (record.domain) {
     case "shopping_list":
+      if (lists.lists[record.recordKey]?.updatedAt > incomingVersion) {
+        return false;
+      }
       delete lists.lists[record.recordKey];
       return true;
     case "shopping_list_item":
+      if (lists.items[record.recordKey]?.addedAt > incomingVersion) {
+        return false;
+      }
       delete lists.items[record.recordKey];
       for (const list of Object.values(lists.lists)) {
         list.itemIds = list.itemIds.filter((itemId) => itemId !== record.recordKey);
       }
       return true;
     case "product_snapshot":
+      if (snapshots.snapshots[record.recordKey]?.updatedAt > incomingVersion) {
+        return false;
+      }
       delete snapshots.snapshots[record.recordKey];
       return true;
     case "product_observation":
+      if (observations.observations[record.recordKey]?.updatedAt > incomingVersion) {
+        return false;
+      }
       delete observations.observations[record.recordKey];
       return true;
   }

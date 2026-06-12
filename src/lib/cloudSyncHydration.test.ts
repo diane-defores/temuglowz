@@ -28,6 +28,23 @@ function listRecord(id: string, updatedAt = now): CloudSyncRemoteRecord {
   };
 }
 
+function listDeleteRecord(id: string, deletedAt = now): CloudSyncRemoteRecord {
+  return {
+    domain: "shopping_list",
+    operationType: "delete",
+    recordKey: id,
+    checksum: "delete",
+    idempotencyKey: `idem-delete-${id}`,
+    sourceDeviceId: "device-cloud",
+    localUpdatedAt: deletedAt,
+    serverUpdatedAt: deletedAt,
+    tombstone: {
+      deletedAt,
+      reason: "user_deleted",
+    },
+  };
+}
+
 describe("cloud sync guarded hydration", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
@@ -87,5 +104,53 @@ describe("cloud sync guarded hydration", () => {
 
     expect(summary).toEqual({ applied: 0, skipped: 1 });
     expect(lists.lists["same-list"]?.name).toBe("New local");
+  });
+
+  it("skips stale upsert when cloud update is older than local record", () => {
+    const lists = useShoppingListsStore();
+    lists.lists["same-list"] = {
+      id: "same-list",
+      name: "Brand new",
+      itemIds: [],
+      createdAt: now,
+      updatedAt: now + 100,
+    };
+
+    const summary = applyCloudSyncRecords([listRecord("same-list", now - 10)]);
+
+    expect(summary).toEqual({ applied: 0, skipped: 1 });
+    expect(lists.lists["same-list"]?.name).toBe("Brand new");
+  });
+
+  it("does not apply stale remote tombstone for newer local data", () => {
+    const lists = useShoppingListsStore();
+    lists.lists["same-list"] = {
+      id: "same-list",
+      name: "Local newer",
+      itemIds: [],
+      createdAt: now,
+      updatedAt: now + 100,
+    };
+
+    const summary = applyCloudSyncRecords([listDeleteRecord("same-list", now)]);
+
+    expect(summary).toEqual({ applied: 0, skipped: 1 });
+    expect(lists.lists["same-list"]?.name).toBe("Local newer");
+  });
+
+  it("applies remote tombstone when it is newer than local data", () => {
+    const lists = useShoppingListsStore();
+    lists.lists["same-list"] = {
+      id: "same-list",
+      name: "Local newer",
+      itemIds: [],
+      createdAt: now,
+      updatedAt: now + 10,
+    };
+
+    const summary = applyCloudSyncRecords([listDeleteRecord("same-list", now + 20)]);
+
+    expect(summary).toEqual({ applied: 1, skipped: 0 });
+    expect(lists.lists["same-list"]).toBeUndefined();
   });
 });

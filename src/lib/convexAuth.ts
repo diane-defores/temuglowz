@@ -1,11 +1,12 @@
 /**
  * Convex Auth client for Vue, adapted from SocialGlowz.
  *
- * Manages JWT + refresh token in localStorage, wires into ConvexClient.setAuth()
- * for automatic token refresh, and exposes signIn / signOut helpers.
+ * Manages JWT + refresh token with an injectable storage abstraction and
+ * wires into ConvexClient.setAuth() for automatic token refresh.
  */
 import { ConvexClient, ConvexHttpClient } from "convex/browser";
 import { ref } from "vue";
+import { getAuthTokenStore } from "@/lib/authTokenStore";
 
 const JWT_KEY = "__convexAuthJWT";
 const REFRESH_TOKEN_KEY = "__convexAuthRefreshToken";
@@ -35,6 +36,7 @@ type ConvexActionRef = Parameters<ConvexHttpClient["action"]>[0];
 let clientRef: ConvexClient | null = null;
 let namespace = "";
 let currentToken: string | null = null;
+let tokenStore: ReturnType<typeof getAuthTokenStore> | null = null;
 
 const AUTH_SIGN_IN = "auth:signIn" as unknown as ConvexActionRef;
 const AUTH_SIGN_OUT = "auth:signOut" as unknown as ConvexActionRef;
@@ -54,8 +56,8 @@ function getHttpClient(): ConvexHttpClient {
 
 /**
  * Call once at app startup.
- * Restores a previous session from localStorage and does not auto-create
- * anonymous sessions when no token exists.
+ * Restores a previous session and does not auto-create anonymous sessions
+ * when no token exists.
  */
 export async function setupConvexAuth(
   client: ConvexClient,
@@ -66,6 +68,8 @@ export async function setupConvexAuth(
   isConvexConfigured.value = true;
   authBootstrapError.value = null;
   isAuthLoading.value = true;
+  const storePromise = getAuthTokenStore();
+  tokenStore = storePromise;
   purgeLegacyTokenKeys();
 
   const jwtK = storageKey(JWT_KEY, namespace);
@@ -73,10 +77,11 @@ export async function setupConvexAuth(
 
   client.setAuth(
     async ({ forceRefreshToken }) => {
+      const store = await storePromise;
       if (forceRefreshToken) {
-        const refreshToken = localStorage.getItem(refreshK);
+        const refreshToken = await store.getItem(refreshK);
         if (!refreshToken) {
-          clearTokens();
+          await clearTokens();
           return null;
         }
 
@@ -86,14 +91,14 @@ export async function setupConvexAuth(
             refreshToken,
           })) as AuthResult | null;
           if (result?.tokens) {
-            persistTokens(result.tokens);
+            await persistTokens(result.tokens);
             return result.tokens.token;
           }
         } catch {
           // Refresh failed: clear local auth state and let the app continue local-first.
         }
 
-        clearTokens();
+        await clearTokens();
         return null;
       }
 
@@ -104,8 +109,9 @@ export async function setupConvexAuth(
     },
   );
 
-  const storedToken = localStorage.getItem(jwtK);
-  const storedRefreshToken = localStorage.getItem(refreshK);
+  const store = await storePromise;
+  const storedToken = await store.getItem(jwtK);
+  const storedRefreshToken = await store.getItem(refreshK);
   if (storedToken && storedRefreshToken) {
     currentToken = storedToken;
     isAuthenticated.value = true;
@@ -113,7 +119,7 @@ export async function setupConvexAuth(
     return;
   }
 
-  clearTokens();
+  await clearTokens();
   isAuthLoading.value = false;
 }
 
@@ -134,7 +140,7 @@ export async function signIn(
   })) as AuthResult | null;
 
   if (result?.tokens) {
-    persistTokens(result.tokens);
+    await persistTokens(result.tokens);
   }
 
   return result;
@@ -152,22 +158,35 @@ export async function signOut(): Promise<void> {
     console.warn("[ConvexAuth] Sign-out failed; clearing local session.", error);
   }
 
-  clearTokens();
+  await clearTokens();
 }
 
-function persistTokens(tokens: AuthTokens): void {
+async function persistTokens(tokens: AuthTokens): Promise<void> {
   currentToken = tokens.token;
-  localStorage.setItem(storageKey(JWT_KEY, namespace), tokens.token);
-  localStorage.setItem(storageKey(REFRESH_TOKEN_KEY, namespace), tokens.refreshToken);
+  if (!tokenStore) {
+    return;
+  }
+
+  const store = await tokenStore;
+  await Promise.all([
+    store.setItem(storageKey(JWT_KEY, namespace), tokens.token),
+    store.setItem(storageKey(REFRESH_TOKEN_KEY, namespace), tokens.refreshToken),
+  ]);
   isAuthenticated.value = true;
 }
 
-function clearTokens(): void {
+async function clearTokens(): Promise<void> {
   currentToken = null;
-  if (canUseStorage()) {
-    localStorage.removeItem(storageKey(JWT_KEY, namespace));
-    localStorage.removeItem(storageKey(REFRESH_TOKEN_KEY, namespace));
+  if (!tokenStore) {
+    isAuthenticated.value = false;
+    return;
   }
+
+  const store = await tokenStore;
+  await Promise.all([
+    store.removeItem(storageKey(JWT_KEY, namespace)),
+    store.removeItem(storageKey(REFRESH_TOKEN_KEY, namespace)),
+  ]);
   isAuthenticated.value = false;
 }
 

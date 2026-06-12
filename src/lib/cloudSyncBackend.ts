@@ -42,7 +42,7 @@ export interface CloudSyncHydrationResponse {
 }
 
 export interface CloudSyncPushResponse {
-  status: "inserted" | "updated" | "duplicate";
+  status: "inserted" | "updated" | "duplicate" | "stale";
   serverUpdatedAt: number;
 }
 

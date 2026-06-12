@@ -1,5 +1,6 @@
 use std::sync::Mutex;
 
+use keyring::Entry;
 use tauri::{AppHandle, Builder, State};
 
 #[cfg(mobile)]
@@ -31,6 +32,41 @@ fn submit_share_payload(text: String, state: State<ShareBridgeState>) {
 #[tauri::command]
 fn validate_backup_payload(payload_json: String) -> bool {
     backup::validate_payload(&payload_json).is_ok()
+}
+
+const AUTH_TOKEN_ENTRY_PREFIX: &str = "convex-auth";
+
+#[tauri::command]
+fn auth_token_store_get(key: String) -> Option<String> {
+    let full_key = format!("{AUTH_TOKEN_ENTRY_PREFIX}:{key}");
+    let entry = match Entry::new("temu-shopping-lists", &full_key) {
+        Ok(entry) => entry,
+        Err(_) => return None,
+    };
+
+    entry.get_password().ok()
+}
+
+#[tauri::command]
+fn auth_token_store_set(key: String, value: String) -> bool {
+    let full_key = format!("{AUTH_TOKEN_ENTRY_PREFIX}:{key}");
+    let entry = match Entry::new("temu-shopping-lists", &full_key) {
+        Ok(entry) => entry,
+        Err(_) => return false,
+    };
+
+    entry.set_password(&value).is_ok()
+}
+
+#[tauri::command]
+fn auth_token_store_remove(key: String) -> bool {
+    let full_key = format!("{AUTH_TOKEN_ENTRY_PREFIX}:{key}");
+    let entry = match Entry::new("temu-shopping-lists", &full_key) {
+        Ok(entry) => entry,
+        Err(_) => return false,
+    };
+
+    entry.delete_password().is_ok()
 }
 
 #[tauri::command]
@@ -269,6 +305,9 @@ pub fn run() {
             consume_pending_share,
             submit_share_payload,
             validate_backup_payload,
+            auth_token_store_get,
+            auth_token_store_set,
+            auth_token_store_remove,
             temu_webview_open_session,
             temu_webview_hide,
             temu_webview_close_session,

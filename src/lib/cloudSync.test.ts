@@ -24,6 +24,8 @@ import {
   setSyncEnabled,
   setSyncEnabledForSession,
 } from "@/lib/cloudSync";
+import * as cloudSyncBackend from "@/lib/cloudSyncBackend";
+import * as cloudSyncQueue from "@/lib/cloudSyncQueue";
 import {
   clearCloudSyncQueue,
   enqueueCloudSyncJob,
@@ -104,6 +106,7 @@ describe("cloud sync access-aware replay", () => {
 
   afterEach(() => {
     resetPostAuthSyncFeedback();
+    vi.restoreAllMocks();
     vi.useRealTimers();
   });
 
@@ -294,6 +297,49 @@ describe("cloud sync access-aware replay", () => {
     expect(result.jobs).toHaveLength(1);
     expect(result.jobs[0]!.idempotencyKey).toBe("job-active-account");
     expect(isSyncEnabled.value).toBe(true);
+    expect(postAuthSyncFeedback.stage).toBe("ready");
+  });
+
+  it("does not ack stale push responses during sync handoff", async () => {
+    vi.useFakeTimers();
+    const payload = makeListPayload();
+    const queueSpy = vi.spyOn(cloudSyncQueue, "ackCloudSyncJob");
+    const pushSpy = vi.mocked(cloudSyncBackend.pushCloudSyncOperation);
+    pushSpy.mockResolvedValue({ status: "stale", serverUpdatedAt: 1 });
+
+    enqueueCloudSyncJob({
+      idempotencyKey: "job-stale",
+      domain: "shopping_list",
+      operationType: "upsert",
+      recordKey: payload.id,
+      payload,
+      payloadChecksum: computeSyncChecksum(payload),
+      accountMarker: ACCOUNT,
+      sourceDeviceId: "device-1",
+    });
+
+    const handoff = finalizePasswordSignIn({
+      email: "diane@example.com",
+      flow: "signIn",
+      globalUserId: ACCOUNT.accountId,
+      entitlement: ACTIVE_ENTITLEMENT,
+      accountMarker: ACCOUNT,
+      sourceDeviceId: "device-1",
+    });
+    await vi.advanceTimersByTimeAsync(2300);
+    const result = await handoff;
+
+    expect(result).toEqual({
+      status: "ready",
+      jobs: expect.arrayContaining([
+        expect.objectContaining({
+          idempotencyKey: "job-stale",
+        }),
+      ]),
+    });
+    expect(queueSpy).not.toHaveBeenCalled();
+    expect(listCloudSyncQueue()).toHaveLength(1);
+    expect(listCloudSyncQueue()[0]?.idempotencyKey).toBe("job-stale");
     expect(postAuthSyncFeedback.stage).toBe("ready");
   });
 });

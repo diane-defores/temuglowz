@@ -165,7 +165,7 @@ const pushSyncOperationInternalRef = makeFunctionReference<
     };
   },
   {
-    status: "inserted" | "updated" | "duplicate";
+    status: "inserted" | "updated" | "duplicate" | "stale";
     serverUpdatedAt: number;
   }
 >("sync:pushSyncOperationInternal");
@@ -296,7 +296,12 @@ export const pushSyncOperation = action({
     ),
   },
   returns: v.object({
-    status: v.union(v.literal("inserted"), v.literal("updated"), v.literal("duplicate")),
+    status: v.union(
+      v.literal("inserted"),
+      v.literal("updated"),
+      v.literal("duplicate"),
+      v.literal("stale"),
+    ),
     serverUpdatedAt: v.number(),
   }),
   handler: async (ctx, args) => {
@@ -329,7 +334,12 @@ export const pushSyncOperationInternal = internalMutation({
     ),
   },
   returns: v.object({
-    status: v.union(v.literal("inserted"), v.literal("updated"), v.literal("duplicate")),
+    status: v.union(
+      v.literal("inserted"),
+      v.literal("updated"),
+      v.literal("duplicate"),
+      v.literal("stale"),
+    ),
     serverUpdatedAt: v.number(),
   }),
   handler: async (ctx, args) => {
@@ -365,6 +375,8 @@ export const pushSyncOperationInternal = internalMutation({
       )
       .first();
 
+    const incomingVersion = getIncomingSyncRecordVersion(args);
+
     const record = {
       ownerId: args.ownerId,
       productId: TEMU_SHOPPING_LISTS_PRODUCT_ID,
@@ -383,6 +395,13 @@ export const pushSyncOperationInternal = internalMutation({
     };
 
     if (existingRecord) {
+      if (incomingVersion < getStoredSyncRecordVersion(existingRecord)) {
+        return {
+          status: "stale" as const,
+          serverUpdatedAt: existingRecord.serverUpdatedAt,
+        };
+      }
+
       await ctx.db.patch(existingRecord._id, record);
       return {
         status: "updated" as const,
@@ -397,6 +416,34 @@ export const pushSyncOperationInternal = internalMutation({
     };
   },
 });
+
+function getStoredSyncRecordVersion(record: {
+  operationType: "upsert" | "delete";
+  localUpdatedAt: number;
+  tombstone?: {
+    deletedAt: number;
+    reason?: string;
+  } | null;
+}): number {
+  if (record.operationType === "delete") {
+    return record.tombstone?.deletedAt ?? record.localUpdatedAt;
+  }
+  return record.localUpdatedAt;
+}
+
+function getIncomingSyncRecordVersion(args: {
+  operationType: "upsert" | "delete";
+  localUpdatedAt: number;
+  tombstone?: {
+    deletedAt: number;
+    reason?: string;
+  };
+}): number {
+  if (args.operationType === "delete") {
+    return args.tombstone?.deletedAt ?? args.localUpdatedAt;
+  }
+  return args.localUpdatedAt;
+}
 
 function validateSyncOperation(args: {
   domain: (typeof SYNC_DOMAINS)[number];
