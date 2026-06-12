@@ -114,8 +114,11 @@
             v-for="session in sessions"
             :key="session.id"
             class="session-launch-tile session-tile"
-            :class="{ active: session.id === sessionsStore.activeSessionId }"
-            :style="{ background: tileBg(session) }"
+            :class="[
+              sessionAccentClass(session.id),
+              { active: session.id === sessionsStore.activeSessionId },
+            ]"
+            :style="sessionAccentStyle(session)"
           >
             <button
               class="session-launch-main"
@@ -124,7 +127,7 @@
             >
               <span
                 class="session-icon-wrap"
-                :style="{ background: sessionAccent(session) }"
+                :class="sessionAccentClass(session.id)"
               >
                 <i class="pi pi-shopping-cart" />
               </span>
@@ -228,7 +231,15 @@ const nameDialogError = ref("");
 const sessions = computed(() => sessionsStore.sessionsByOrder);
 const shoppingLists = computed<ShoppingList[]>(() => shoppingListsStore.listEntries);
 
-const accents = ["#f97316", "#06b6d4", "#22c55e", "#a855f7", "#ef4444", "#0ea5e9"];
+const sessionAccentClasses = [
+  "session-accent-0",
+  "session-accent-1",
+  "session-accent-2",
+  "session-accent-3",
+  "session-accent-4",
+  "session-accent-5",
+] as const;
+const sessionAccentCount = sessionAccentClasses.length;
 
 shoppingListsStore.initializeDefaults();
 
@@ -385,13 +396,17 @@ function lastSaved(listId: string): string {
   return productStore.getSnapshot(item.snapshotId)?.title ?? "Produit supprimé";
 }
 
-function sessionAccent(session: ShoppingSession): string {
-  const index = Math.abs(session.id.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0));
-  return session.color ?? accents[index % accents.length]!;
+function sessionAccentClass(sessionOrId: ShoppingSession | string): string {
+  const sessionId = typeof sessionOrId === "string" ? sessionOrId : sessionOrId.id;
+  const index = Math.abs(sessionId.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0));
+  return sessionAccentClasses[index % sessionAccentCount]!;
 }
 
-function tileBg(session: ShoppingSession): string {
-  return `color-mix(in srgb, ${sessionAccent(session)} 8%, var(--surface-card))`;
+function sessionAccentStyle(session: ShoppingSession): Record<string, string> {
+  if (!session.color) {
+    return {};
+  }
+  return { "--session-accent-color": session.color };
 }
 
 function formatSessionMeta(session: ShoppingSession): string {

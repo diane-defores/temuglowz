@@ -119,108 +119,141 @@ function useNewList(): void {
 </script>
 
 <template>
-  <section class="panel">
-    <h2>Revue de l’import</h2>
+  <main class="canonical-page">
+    <div class="canonical-page-inner">
+      <header class="canonical-page-header">
+        <div class="canonical-title-block">
+          <span class="canonical-kicker">Import</span>
+          <h1 class="canonical-title">Revue de l’import</h1>
+          <p class="canonical-subtitle">
+            Vérifiez les champs avant d’enregistrer le produit dans une liste.
+          </p>
+        </div>
+      </header>
 
-    <div v-if="draft">
-      <p><strong>URL détectée:</strong> {{ draft.canonicalUrl }}</p>
-      <label>
-        Titre du produit
-        <input
-          v-model="title"
-          class="full-width"
-        >
-      </label>
-      <label>
-        Quantité
-        <input
-          v-model.number="quantity"
-          type="number"
-          min="1"
-          max="999"
-        >
-      </label>
-      <label>
-        Note personnelle
-        <textarea
-          v-model="note"
-          rows="3"
-          class="full-width"
-        />
-      </label>
-
-      <label>
-        Liste cible
-        <select
-          v-model="selectedListId"
-          class="full-width"
-        >
-          <option
-            v-for="list in lists"
-            :key="list.id"
-            :value="list.id"
-          >
-            {{ list.name }}
-          </option>
-        </select>
-      </label>
-
-      <button
-        type="button"
-        @click="useNewList"
+      <section
+        v-if="draft"
+        class="canonical-card"
       >
-        Créer une nouvelle liste
-      </button>
-
-      <div
-        v-if="duplicateItemId"
-        class="panel"
-        style="margin-top: 0.75rem;"
-      >
-        <p class="muted">
-          Ce produit semble déjà présent dans cette liste.
+        <p class="canonical-muted">
+          <strong>URL détectée :</strong> {{ draft.canonicalUrl }}
         </p>
-        <label>
-          <input
-            v-model="duplicateResolution"
-            type="radio"
-            value="add_new"
-          > Ajouter une quantité
-        </label>
-        <label>
-          <input
-            v-model="duplicateResolution"
-            type="radio"
-            value="update_existing"
-          > Mettre à jour le snapshot existant
-        </label>
-        <label>
-          <input
-            v-model="duplicateResolution"
-            type="radio"
-            value="cancel"
-          > Annuler
-        </label>
-      </div>
+        <div class="canonical-form">
+          <label class="canonical-field">
+            Titre du produit
+            <input
+              v-model="title"
+              class="canonical-input"
+            >
+          </label>
+          <label class="canonical-field">
+            Quantité
+            <input
+              v-model.number="quantity"
+              class="canonical-input"
+              type="number"
+              min="1"
+              max="999"
+            >
+          </label>
+          <label class="canonical-field">
+            Note personnelle
+            <textarea
+              v-model="note"
+              rows="3"
+              class="canonical-textarea"
+            />
+          </label>
+          <label class="canonical-field">
+            Liste cible
+            <select
+              v-model="selectedListId"
+              class="canonical-select"
+            >
+              <option
+                v-for="list in lists"
+                :key="list.id"
+                :value="list.id"
+              >
+                {{ list.name }}
+              </option>
+            </select>
+          </label>
+        </div>
 
-      <div
-        class="actions"
-        style="margin-top: 1rem;"
+        <div class="canonical-actions">
+          <button
+            type="button"
+            class="canonical-button"
+            @click="useNewList"
+          >
+            <i class="pi pi-plus" />
+            <span>Créer une nouvelle liste</span>
+          </button>
+        </div>
+
+        <section
+          v-if="duplicateItemId"
+          class="canonical-card canonical-card--flat"
+        >
+          <p class="canonical-muted">
+            Ce produit semble déjà présent dans cette liste.
+          </p>
+          <label class="canonical-field">
+            <input
+              v-model="duplicateResolution"
+              type="radio"
+              value="add_new"
+            > Ajouter une quantité
+          </label>
+          <label class="canonical-field">
+            <input
+              v-model="duplicateResolution"
+              type="radio"
+              value="update_existing"
+            > Mettre à jour le snapshot existant
+          </label>
+          <label class="canonical-field">
+            <input
+              v-model="duplicateResolution"
+              type="radio"
+              value="cancel"
+            > Annuler
+          </label>
+        </section>
+
+        <div class="canonical-actions">
+          <button
+            type="button"
+            class="canonical-button canonical-button--primary"
+            @click="save"
+          >
+            <i class="pi pi-check" />
+            <span>Enregistrer</span>
+          </button>
+          <button
+            type="button"
+            class="canonical-button canonical-button--danger"
+            @click="importStore.clearDraft()"
+          >
+            <i class="pi pi-times" />
+            <span>Annuler</span>
+          </button>
+        </div>
+      </section>
+
+      <section
+        v-else
+        class="canonical-card canonical-card--danger"
       >
-        <button
-          type="button"
-          @click="save"
-        >
-          Enregistrer
-        </button>
-        <button
-          type="button"
-          class="danger"
-          @click="importStore.clearDraft()"
-        >
-          Annuler
-        </button>
-      </div>
+        <div class="canonical-title-block">
+          <span class="canonical-kicker">Import</span>
+          <h2 class="canonical-title">Aucun brouillon à revoir</h2>
+          <p class="canonical-muted">
+            Recommencez depuis l’import manuel ou le flux de partage.
+          </p>
+        </div>
+      </section>
     </div>
-  </section>
+  </main>
 </template>

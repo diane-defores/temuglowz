@@ -110,10 +110,11 @@
                   :title="session.name"
                   @click="$emit('open-session', session)"
                 >
-                  <span
-                    class="sidebar-session-dot"
-                    :style="{ background: sessionAccent(session.id) }"
-                  />
+                <span
+                  class="sidebar-session-dot"
+                  :class="sessionAccentClass(session.id)"
+                  :style="sessionAccentStyle(session)"
+                />
                   <span v-if="!iconsOnly">{{ session.name }}</span>
                 </button>
                 <EntityActionsMenu
@@ -213,7 +214,15 @@ const nameDialogInitialValue = ref("");
 const nameDialogError = ref("");
 const sessions = computed(() => sessionsStore.sessionsByOrder);
 const shoppingLists = computed(() => shoppingListsStore.listEntries);
-const accents = ["#f97316", "#06b6d4", "#22c55e", "#a855f7", "#ef4444", "#0ea5e9"];
+const sessionAccentClasses = [
+  "session-accent-0",
+  "session-accent-1",
+  "session-accent-2",
+  "session-accent-3",
+  "session-accent-4",
+  "session-accent-5",
+] as const;
+const sessionAccentCount = sessionAccentClasses.length;
 
 shoppingListsStore.initializeDefaults();
 
@@ -357,8 +366,15 @@ function itemCountForList(listId: string): number {
   return shoppingListsStore.getListItems(listId).length;
 }
 
-function sessionAccent(id: string): string {
+function sessionAccentClass(id: string): string {
   const index = Math.abs(id.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0));
-  return accents[index % accents.length]!;
+  return sessionAccentClasses[index % sessionAccentCount]!;
+}
+
+function sessionAccentStyle(session: ShoppingSession): Record<string, string> {
+  if (!session.color) {
+    return {};
+  }
+  return { "--session-accent-color": session.color };
 }
 </script>

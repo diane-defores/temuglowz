@@ -9,8 +9,11 @@
         <div
           ref="sheetRef"
           class="settings-panel settings-sheet"
-          :class="{ 'is-dark': sessionsStore.settings.darkMode }"
-          :style="sheetStyle"
+          :class="{
+            'is-dark': sessionsStore.settings.darkMode,
+            'is-dragging': isDragging,
+          }"
+          :style="{ '--sheet-drag-offset': `${dragOffset}px` }"
         >
           <div
             class="sheet-drag-zone"
@@ -432,11 +435,6 @@ const isDragging = ref(false);
 const activePointerId = ref<number | null>(null);
 const dragStartY = ref(0);
 const dragStartTime = ref(0);
-
-const sheetStyle = computed(() => ({
-  "--sheet-drag-offset": `${dragOffset.value}px`,
-  transition: isDragging.value ? "none" : "transform 250ms ease",
-}));
 
 function getDismissThreshold(): number {
   const sheetHeight = sheetRef.value?.offsetHeight ?? window.innerHeight * 0.5;

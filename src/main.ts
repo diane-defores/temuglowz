@@ -1,4 +1,3 @@
-import "./styles.css";
 import "@/ui/temu-shell/style.css";
 
 import { createApp, watch } from "vue";

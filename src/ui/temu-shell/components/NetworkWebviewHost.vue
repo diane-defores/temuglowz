@@ -2,24 +2,24 @@
   <div class="webview-host">
     <div
       v-if="!isTauri || sessionsStore.degradedMode"
-      class="dev-placeholder"
+      class="webview-dev-placeholder"
     >
-      <div class="placeholder-content">
-        <span class="placeholder-icon">
+      <div class="webview-placeholder-content">
+        <span class="webview-placeholder-icon">
           <i class="pi pi-desktop" />
         </span>
-        <p class="placeholder-title">
+        <p class="webview-placeholder-title">
           {{ session?.name ?? "Session shopping" }}
         </p>
-        <p class="placeholder-url">
+        <p class="webview-placeholder-url">
           {{ session?.currentUrl ?? "https://www.temu.com/" }}
         </p>
-        <p class="hint">
+        <p class="webview-placeholder-hint">
           Sur Android, la WebView native Temu s'affiche au-dessus de cette zone. Le mode navigateur garde la shell visible.
         </p>
-        <div class="placeholder-actions">
+        <div class="webview-placeholder-actions">
           <button
-            class="placeholder-btn"
+            class="webview-placeholder-btn"
             type="button"
             @click="captureProduct"
           >
@@ -27,7 +27,7 @@
             <span>Capturer le produit</span>
           </button>
           <button
-            class="placeholder-btn secondary"
+            class="webview-placeholder-btn webview-placeholder-btn--secondary"
             type="button"
             @click="$emit('open-settings')"
           >
@@ -35,7 +35,7 @@
             <span>Paramètres</span>
           </button>
           <button
-            class="placeholder-btn secondary"
+            class="webview-placeholder-btn webview-placeholder-btn--secondary"
             type="button"
             @click="$emit('close')"
           >
@@ -139,98 +139,3 @@ watch(
   { immediate: true },
 );
 </script>
-
-<style scoped>
-.webview-host {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  background: transparent;
-}
-
-.dev-placeholder {
-  display: flex;
-  min-height: 100%;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  color: var(--text-color);
-  background:
-    radial-gradient(circle at 15% 20%, rgba(249, 115, 22, 0.14), transparent 28%),
-    var(--surface-ground);
-}
-
-.placeholder-content {
-  width: min(34rem, 100%);
-  text-align: center;
-  padding: 1.5rem;
-  background: var(--surface-card);
-  border: 1px solid var(--surface-border);
-  border-radius: 18px;
-  box-shadow: var(--card-shadow);
-}
-
-.placeholder-icon {
-  display: inline-flex;
-  width: 4rem;
-  height: 4rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 18px;
-  color: #fff;
-  background: linear-gradient(135deg, #f97316, #06b6d4);
-}
-
-.placeholder-icon i {
-  font-size: 2rem;
-}
-
-.placeholder-title {
-  margin: 1rem 0 0.25rem;
-  font-size: 1.3rem;
-  font-weight: 800;
-}
-
-.placeholder-url {
-  margin: 0;
-  font-size: 0.82rem;
-  color: var(--text-color-secondary);
-  overflow-wrap: anywhere;
-}
-
-.hint {
-  margin: 1rem 0;
-  color: var(--text-color-secondary);
-  line-height: 1.45;
-}
-
-.placeholder-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.6rem;
-}
-
-.placeholder-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  min-height: 2.5rem;
-  padding: 0 0.9rem;
-  border: 1px solid var(--primary-color);
-  border-radius: 999px;
-  color: #fff;
-  background: var(--primary-color);
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.placeholder-btn.secondary {
-  color: var(--text-color);
-  background: var(--surface-card);
-  border-color: var(--surface-border);
-}
-
-</style>
