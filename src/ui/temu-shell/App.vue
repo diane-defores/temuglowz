@@ -42,6 +42,10 @@
       @open-session="openShoppingSession"
       @open-settings="settingsVisible = true"
     />
+    <ExtensionOverlay
+      v-model="extensionOverlayVisible"
+      @added-to-list="onExtensionAddedToList"
+    />
   </div>
 </template>
 
@@ -72,6 +76,7 @@ import "./assets/main.css";
 import AppHeader from "./components/AppHeader.vue";
 import AppRightSidebar from "./components/AppRightSidebar.vue";
 import AppSidebar from "./components/AppSidebar.vue";
+import ExtensionOverlay from "./components/ExtensionOverlay.vue";
 import MobileLayout from "./components/MobileLayout.vue";
 import MobileSettingsSheet from "./components/MobileSettingsSheet.vue";
 import NetworkWebviewHost from "./components/NetworkWebviewHost.vue";
@@ -85,6 +90,7 @@ const rightSidebarVisible = ref(true);
 const settingsVisible = ref(false);
 const onboardingVisible = ref(false);
 const activeWebviewSessionId = ref<string | null>(null);
+const extensionOverlayVisible = ref(false);
 const route = useRoute();
 const router = useRouter();
 const importDraftsStore = useImportDraftsStore();
@@ -468,4 +474,8 @@ onUnmounted(() => {
   window.removeEventListener("temu-webview-text-zoom-changed", onNativeTextZoom);
   window.removeEventListener("temu-webview-capture-requested", onNativeCaptureRequested);
 });
+
+function onExtensionAddedToList(): void {
+  extensionOverlayVisible.value = false;
+}
 </script>

@@ -38,6 +38,10 @@ function quickFillSample() {
           <p class="canonical-subtitle">
             Collez un lien produit Temu et l'application créera un snapshot local.
           </p>
+          <p class="canonical-muted independence-note">
+            Pour le plein fonctionnement web, installez l'extension Temu Shopping Lists dans votre navigateur.
+            Sinon, l'import manuel reste disponible. Le mode iframe n'est pas supporté.
+          </p>
         </div>
       </header>
 

@@ -1,0 +1,39 @@
+# TemuGlowz - Best Temu Gadgets & Gifts
+
+Organization: TemuGlowz
+Description: Find the best gadgets, kitchen accessories, and unique gifts from Temu
+
+## What We Do
+Independent product recommendations for Temu shoppers. We curate the best gadgets, kitchen accessories, and gift ideas with honest reviews and affiliate links.
+
+## Key Pages
+- Home/Landing: /
+- Best Kitchen Gadgets: /guides/kitchen-gadgets
+- Best Christmas Gifts: /guides/christmas-gifts
+- Best Summer Products: /guides/summer-gifts
+
+## Our Approach
+- Products tested in real conditions
+- Honest reviews with pros/cons
+- Affiliate commissions disclosed transparently
+- Focus on unique finds and bulk-buying opportunities
+
+## Target Categories
+- Kitchen gadgets under $25
+- Unique home gifts
+- Summer outdoor accessories
+- Christmas gift ideas under $50
+- Bulk-buying essentials
+
+## Product Criteria
+- Under $50 price point
+- 4+ star ratings minimum
+- Verified seller on Temu
+- Practical utility or unique design
+- Fast shipping options
+
+## Trust Signals
+- Independent testing methodology
+- Regular price/availability updates
+- Clear affiliate disclosure
+- No paid placements

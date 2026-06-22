@@ -1,0 +1,152 @@
+<template>
+  <section id="pricing" class="py-16 sm:py-24 bg-background">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-12" data-reveal>
+        <h2 class="animate-fade-up text-3xl sm:text-4xl font-bold text-foreground mb-4" style="font-family: var(--font-instrument-sans);">
+          Simple, Transparent Pricing
+        </h2>
+        <p class="animate-fade-up delay-100 text-muted-foreground max-w-2xl mx-auto mb-8">
+          Start free, upgrade when you need more sessions and advanced tracking.
+        </p>
+
+        <!-- Billing Toggle -->
+        <div class="inline-flex items-center p-1 rounded-full bg-card border border-border" id="billing-toggle">
+          <button
+            data-cycle="monthly"
+            class="billing-btn relative px-4 py-2 text-sm font-medium rounded-full transition-colors text-foreground bg-muted"
+          >
+            Monthly
+          </button>
+          <button
+            data-cycle="yearly"
+            class="billing-btn relative px-4 py-2 text-sm font-medium rounded-full transition-colors text-muted-foreground"
+          >
+            Yearly
+            <span class="ml-2 px-2 py-0.5 text-xs bg-emerald-500/20 text-emerald-400 rounded-full">-33%</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" data-reveal>
+        <div
+          v-for="(plan, index) in plans"
+          :key="plan.name"
+          :class="`animate-fade-up-slow delay-${300 + index * 100} relative p-6 rounded-2xl border transition-all duration-300 hover:scale-[1.02] ${plan.highlighted ? 'bg-card border-foreground/30' : 'bg-card/70 border-border hover:border-foreground/25'}`"
+        >
+          <div v-if="plan.highlighted" class="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+            <div
+              class="absolute w-24 h-24 bg-white/20 blur-xl border-beam"
+              style="offset-path: rect(0 100% 100% 0 round 16px);"
+            />
+          </div>
+
+          <div v-if="plan.highlighted" class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-foreground text-background text-xs font-medium rounded-full">
+            Most Popular
+          </div>
+
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold text-foreground mb-2">{{ plan.name }}</h3>
+            <p class="text-muted-foreground text-sm">{{ plan.description }}</p>
+          </div>
+
+          <div class="mb-6">
+            <div class="flex items-baseline gap-1">
+              <span class="text-4xl font-bold text-foreground price-amount" :data-monthly="plan.monthly" :data-yearly="plan.yearly">
+                €{{ plan.monthly }}
+              </span>
+              <span v-if="plan.monthly > 0" class="text-muted-foreground text-sm">/month</span>
+            </div>
+            <p v-if="plan.annual > 0" class="text-xs text-muted-foreground mt-1 yearly-note hidden">
+              Billed annually (€{{ plan.annual }}/year)
+            </p>
+          </div>
+
+          <ul class="space-y-3 mb-8">
+            <li v-for="feature in plan.features" :key="feature" class="flex items-center gap-3 text-sm text-foreground/85">
+              <svg class="w-4 h-4 text-emerald-500 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              {{ feature }}
+            </li>
+          </ul>
+
+          <a
+            href="https://github.com/dianedef/temu-shopping-lists/releases/latest"
+            :class="`block w-full text-center rounded-full py-3 text-sm font-medium transition-colors ${plan.highlighted ? 'shimmer-btn bg-white text-zinc-950 hover:bg-zinc-200' : 'bg-card text-foreground hover:bg-muted border border-border'}`"
+          >
+            {{ plan.cta }}
+          </a>
+        </div>
+      </div>
+      <div class="mt-10 max-w-2xl mx-auto px-4 py-4 rounded-xl bg-card/50 border border-border text-sm text-muted-foreground" data-reveal>
+        <p><span class="font-medium text-foreground">Why subscriptions?</span> TemuGlowz needs ongoing maintenance for Temu API changes, price tracking updates, and cross-platform compatibility.</p>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script setup lang="ts">
+const plans = [
+  {
+    name: 'Free',
+    description: 'Perfect for getting started',
+    monthly: 0,
+    yearly: 0,
+    annual: 0,
+    features: ['2 shopping sessions', '50 products per session', 'Basic price tracking', 'Local storage only', 'Community support'],
+    cta: 'Get Started',
+    highlighted: false,
+  },
+  {
+    name: 'Pro',
+    description: 'For serious deal hunters',
+    monthly: 9,
+    yearly: 6,
+    annual: 72,
+    features: ['Unlimited sessions', 'Unlimited products', 'Full price history', 'Price alerts', 'Priority email support'],
+    cta: 'Start Free Trial',
+    highlighted: true,
+  },
+  {
+    name: 'Team',
+    description: 'For small teams',
+    monthly: 19,
+    yearly: 15,
+    annual: 180,
+    features: ['Everything in Pro', 'Shared lists', 'Team management', 'Priority support'],
+    cta: 'Contact Sales',
+    highlighted: false,
+  },
+]
+
+// Billing toggle logic
+if (typeof window !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('billing-toggle')
+    const buttons = toggle?.querySelectorAll<HTMLButtonElement>('.billing-btn')
+    const prices = document.querySelectorAll<HTMLSpanElement>('.price-amount')
+    const yearlyNotes = document.querySelectorAll<HTMLParagraphElement>('.yearly-note')
+
+    buttons?.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const cycle = btn.dataset.cycle as 'monthly' | 'yearly'
+
+        buttons.forEach((b) => {
+          const isActive = b.dataset.cycle === cycle
+          b.classList.toggle('text-foreground', isActive)
+          b.classList.toggle('bg-muted', isActive)
+          b.classList.toggle('text-muted-foreground', !isActive)
+          b.classList.remove(isActive ? 'text-muted-foreground' : 'bg-muted')
+        })
+
+        prices.forEach((el) => {
+          const value = cycle === 'yearly' ? el.dataset.yearly : el.dataset.monthly
+          el.textContent = `€${value}`
+        })
+
+        yearlyNotes.forEach((el) => {
+          el.classList.toggle('hidden', cycle !== 'yearly')
+        })
+      })
+    })
+  })
+}
+</script>
