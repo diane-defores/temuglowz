@@ -1,0 +1,51 @@
+{
+  "title": "Les Meilleurs Ventilateurs et Accessoires pour se Rafraîchir cet Été 2025",
+  "subtitle": "Notre sélection des 10 meilleures solutions pour surfer la chaleur sans exploser la facture",
+  "description": "Face à la canicule, voici nos ventilateurs performants, accessoires cooling et solutions d'habitation fraîche testés sur Temu. Qualité, performances et prix au top.",
+  "updatedDate": "2025-06-22",
+  "metaDescription": "Top ventilateurs Temu 2025: compares, tests et prix pour rester au frais cet été. Solutions pas chères et efficaces.",
+  "sections": [
+    {
+      "id": "ventilateurs",
+      "title": "Les meilleurs ventilateurs USB et portables",
+      "products": [
+        {
+          "rank": 1,
+          "name": "Ventilateur USB portable 3 vitesses LED",
+          "rating": 4.6,
+          "price": "4,99 €",
+          "image": "https://placehold.co/400x300/0ea5e9/ffffff?text=Ventilateur+USB",
+          "productUrl": "https://www.temu.com/fr/c/fans-air-conditioners-heating-o4-768.html",
+          "description": "Ventilateur portable ultra-compact, 3 vitesses, LED night light, charge USB-C. Idéal bureau et chambre.",
+          "pros": ["Ultra compact", "LED inclus", "3 vitesses"]
+        }
+      ]
+    },
+    {
+      "id": "accessoires",
+      "title": "Accessoires cooling insolites",
+      "products": [
+        {
+          "rank": 2,
+          "name": "Climatiseur de cou portable 360°",
+          "rating": 4.6,
+          "price": "24,99 €",
+          "image": "https://img.kwcdn.com/product/fancy/931dbdcc-1c0b-4a19-b53a-fdbc88f6cf02.jpg",
+          "productUrl": "https://temu.com/g-601100024747812",
+          "description": "Rafraîchit directement le cou avec 5200mAh batterie intégrée.",
+          "pros": ["Rafraîchit le cou", "5200mAh batterie", "Design ergonomique"]
+        }
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "question": "Quel ventilateur choisir pour un grand salon ?",
+      "answer": "Un ventilateur colonne pliable 4 pieds couvre efficacement jusqu'à 25m² avec un coût énergétique réduit."
+    },
+    {
+      "question": "Le climatiseur de cou vaut-il le coup ?",
+      "answer": "Excellent pour les activités outdoor, travail sous la chaleur ou sport. Rafraîchit directement la zone du cou."
+    }
+  ]
+}

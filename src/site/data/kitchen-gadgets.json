@@ -1,0 +1,62 @@
+{
+  "title": "Les Meilleurs Gadgets de Cuisine Temu 2025",
+  "subtitle": "Notre sélection des 12 accessoires indispensables testés et approuvés",
+  "description": "Découvrez les meilleurs gadgets de cuisine sur Temu : coupe-legumes, ustensiles, accessoires organisation et outils performants à prix mini.",
+  "updatedDate": "2025-06-22",
+  "metaDescription": "Top gadgets cuisine Temu 2025: compares, tests et prix pour la cuisine pas chère. Accessoires testés.",
+  "sections": [
+    {
+      "id": "coupe",
+      "title": "Coupe-pâtes et légumes",
+      "products": [
+        {
+          "rank": 1,
+          "name": "Coupe-légumes en acier inoxydable",
+          "rating": 4.6,
+          "price": "13,27 €",
+          "image": "https://placehold.co/400x300/f59e0b/ffffff?text=Coupe+Légumes",
+          "productUrl": "https://www.temu.com/fr/c/kitchen-tools-utensils-668.html",
+          "description": "Coupe-frites, coupe-fruits, hachoir à frites et trancheuse à pommes de terre en acier inoxydable.",
+          "pros": ["Multifonctions", "Acier inox", "Facile nettoyage"]
+        }
+      ]
+    },
+    {
+      "id": "ustensiles",
+      "title": "Ustensiles de base",
+      "products": [
+        {
+          "rank": 2,
+          "name": "Couteau en acier inoxydable 8 pouces",
+          "rating": 4.7,
+          "price": "24,99 €",
+          "image": "https://placehold.co/400x300/10b981/ffffff?text=Couteau",
+          "productUrl": "https://www.temu.com/fr/c/kitchen-tools-utensils-668.html",
+          "description": "Couteau de chef professionnel, lame en acier allemand, manche ergonomique anti-dérapant.",
+          "pros": ["Très affûté", "Confort optimal", "Entretien simple"]
+        },
+        {
+          "rank": 3,
+          "name": "Séparateur d'Œufs PJ377252",
+          "rating": 4.4,
+          "price": "4,99 €",
+          "image": "https://img.kwcdn.com/product/fancy/fd4e5856-b2c3-4ce0-b017-98863ee0648f.jpg",
+          "productUrl": "https://temu.com/g-601099699425157",
+          "description": "Éplucheur et diviseur de jaune rapide en un seul geste. Essentiel pour pâte à crêpes, mayonnaise maison et plats raffinés.",
+          "pros": ["Sépare blanc/jaune", "Nettoyage facile", "Compact"],
+          "cons": ["Plastique"]
+        }
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "question": "Quel est le meilleur couteau pour débuter en cuisine ?",
+      "answer": "Un couteau de chef 8 pouces en acier inoxydable est le choix le plus polyvalent pour une cuisine amateur."
+    },
+    {
+      "question": "Le séparateur d'œufs est-il utile ?",
+      "answer": "Indispensable pour mayonnaise maison, crêpes aux œufs séparés ou pâtisseries raffinées. Gain de temps remarquable."
+    }
+  ]
+}

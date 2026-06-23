@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import ProductCard from './ProductCard.vue'
 
 interface Product {
@@ -6,7 +7,7 @@ interface Product {
   rating: number
   price: string
   image: string
-  amazonUrl?: string
+  productUrl?: string
   description: string
   pros: string[]
   cons?: string[]
@@ -19,26 +20,41 @@ interface Section {
   products: Product[]
 }
 
-defineProps<{
+interface PageData {
   title: string
   subtitle?: string
   description: string
   updatedDate: string
-  author?: string
   sections: Section[]
   faq?: Array<{ question: string; answer: string }>
-  metaDescription?: string
+}
+
+const props = defineProps<{
+  dataFile: string
 }>()
+
+const data = ref<PageData | null>(null)
+
+onMounted(async () => {
+  try {
+    const response = await fetch(`/src/site/data/${props.dataFile}`)
+    // Fallback pour dev - charger depuis le dossier public
+    const response2 = await fetch(`/data/${props.dataFile}`)
+    data.value = await response2.json()
+  } catch (e) {
+    console.error('Failed to load page data:', e)
+  }
+})
 </script>
 
 <template>
-  <main class="min-h-screen bg-background text-foreground">
+  <main v-if="data" class="min-h-screen bg-background text-foreground">
     <!-- Sommaire sticky -->
     <aside class="fixed top-20 right-4 w-64 max-h-[70vh] overflow-y-auto bg-card/80 backdrop-blur-md border border-border rounded-xl p-4 hidden xl:block z-40">
       <h3 class="text-sm font-semibold text-foreground mb-3">Sommaire</h3>
       <nav class="space-y-2">
         <a
-          v-for="section in sections"
+          v-for="section in data.sections"
           :key="section.id"
           :href="`#${section.id}`"
           class="block text-sm text-muted-foreground hover:text-foreground transition-colors py-1"
@@ -46,7 +62,7 @@ defineProps<{
           {{ section.title }}
         </a>
         <a
-          v-if="faq?.length"
+          v-if="data.faq?.length"
           href="#faq"
           class="block text-sm text-muted-foreground hover:text-foreground transition-colors py-1"
         >
@@ -56,7 +72,7 @@ defineProps<{
     </aside>
 
     <article class="max-w-3xl mx-auto px-4 py-12">
-      <!-- Header avec breadcrumb -->
+      <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-foreground">Accueil</a>
         <span>›</span>
@@ -68,43 +84,24 @@ defineProps<{
           <span class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
             Guide complet
           </span>
-          <time :datetime="updatedDate" class="text-xs text-muted-foreground">
-            Mis à jour le {{ updatedDate }}
+          <time :datetime="data.updatedDate" class="text-xs text-muted-foreground">
+            Mis à jour le {{ data.updatedDate }}
           </time>
         </div>
         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4" style="font-family: var(--font-cal-sans);">
-          {{ title }}
+          {{ data.title }}
         </h1>
-        <p v-if="subtitle" class="text-lg text-muted-foreground mb-4">
-          {{ subtitle }}
+        <p v-if="data.subtitle" class="text-lg text-muted-foreground mb-4">
+          {{ data.subtitle }}
         </p>
         <p class="text-lg text-muted-foreground leading-relaxed">
-          {{ description }}
+          {{ data.description }}
         </p>
       </header>
 
-      <!-- Introduction -->
-      <section class="mb-12 p-6 rounded-2xl bg-card border border-border">
-        <h2 class="text-xl font-semibold text-foreground mb-4">Pourquoi nous fait confiance ?</h2>
-        <ul class="space-y-3 text-sm text-muted-foreground">
-          <li class="flex items-start gap-2">
-            <svg class="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
-            <span><strong class="text-foreground">Tests indépendants</strong> - Chaque produit est testé en conditions réelles</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <svg class="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
-            <span><strong class="text-foreground">Mise à jour constante</strong> - Nos guides sont régulièrement actualisés</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <svg class="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
-            <span><strong class="text-foreground">Transparence</strong> - Nous pouvons gagner une commission via les liens affiliés</span>
-          </li>
-        </ul>
-      </section>
-
-      <!-- Sections produits -->
+      <!-- Sections -->
       <section
-        v-for="section in sections"
+        v-for="section in data.sections"
         :id="section.id"
         :key="section.id"
         class="mb-16 scroll-mt-24"
@@ -125,14 +122,14 @@ defineProps<{
         </div>
       </section>
 
-      <!-- FAQ Schema -->
-      <section v-if="faq?.length" id="faq" class="mb-16 scroll-mt-24">
+      <!-- FAQ -->
+      <section v-if="data.faq?.length" id="faq" class="mb-16 scroll-mt-24">
         <h2 class="text-2xl font-bold text-foreground mb-6 pb-2 border-b border-border">
           Questions fréquentes
         </h2>
         <div class="space-y-4">
           <details
-            v-for="(item, index) in faq"
+            v-for="(item, index) in data.faq"
             :key="index"
             class="group p-4 rounded-xl bg-card border border-border"
           >
@@ -147,14 +144,14 @@ defineProps<{
         </div>
       </section>
 
-      <!-- Call to action final -->
+      <!-- CTA final -->
       <aside class="p-8 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent border border-primary/20 text-center">
         <h3 class="text-xl font-bold text-foreground mb-3">Vous n'avez pas trouvé votre bonheur ?</h3>
         <p class="text-muted-foreground mb-6">
           Découvrez plus d'articles et guides dans notre rubrique dédiée.
         </p>
         <a href="/guides/kitchen-gadgets" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-card text-foreground font-medium border border-border hover:bg-muted transition-colors">
-          Plus de guides cuisine
+          Plus de guides
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </a>
       </aside>

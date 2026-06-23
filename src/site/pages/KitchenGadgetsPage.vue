@@ -1,123 +1,118 @@
 <script setup lang="ts">
-import PillarPage from '@/site/components/PillarPage.vue'
+import ProductCard from '@/site/components/ProductCard.vue'
+import kitchenGadgetsData from '@/site/data/kitchen-gadgets.json'
 
-const kitchenGadgets = {
-  title: 'Les Meilleurs Gadgets de Cuisine Temu 2025',
-  subtitle: 'Notre sélection des 12 accessoires indispensables testés et approuvés',
-  description: 'Découvrez les meilleurs gadgets de cuisine sur Temu : coupe-legumes, ustensiles, accessoires organisation et outils performants à prix mini.',
-  updatedDate: '2025-06-22',
-  metaDescription: 'Top gadgets cuisine Temu 2025: compares, tests et prix pour la cuisine pas chère. Accessoires testés.',
-  sections: [
-    {
-      id: 'coupe',
-      title: 'Coupe-pâtes et légumes',
-      products: [
-        {
-          rank: 1,
-          name: 'Coupe-légumes en acier inoxydable',
-          rating: 4.6,
-          price: '13,27 €',
-          image: 'https://placehold.co/400x300/f59e0b/ffffff?text=Coupe+Légumes',
-          amazonUrl: 'https://www.temu.com/fr/kuiper/un9/shopping-gmc-a-psurl.html?_bg_fs=1&_p_jump_id=962&_p_rfs=1&_x_ads_channel=google&_x_ads_sub_channel=shopping&_x_gmc_account=5346989188&_x_login_type=Google&_x_ns_gid=601104220031635&_x_ns_prz_type=-1&_x_ns_sku_id=17613702694250&_x_vst_scene=adg&adg_ctx=a-8b271017~c-5fe119ed&goods_id=601104220031635&locale_override=69~fr~EUR',
-          description: 'Coupe-frites, coupe-fruits, hachoir à frites et trancheuse à pommes de terre en acier inoxydable.',
-          pros: ['Multifonctions', 'Acier inox', 'Facile nettoyage'],
-        },
-        {
-          rank: 2,
-          name: 'Hachoir à oignons électrique',
-          rating: 4.5,
-          price: '12,99 €',
-          image: 'https://placehold.co/400x300/f59e0b/ffffff?text=Hachoir+Oignons',
-          amazonUrl: 'https://www.temu.com/fr/c/kitchen-tools-utensils-668.html',
-          description: 'Hachoir à oignons sans les larmes, presse-agrumes et multi-coupes. Cuisine rapide et propre.',
-          pros: ['Sans larmes', 'Multi-format', 'Easy clean'],
-        },
-      ],
-    },
-    {
-      id: 'organisation',
-      title: 'Organisation et rangement',
-      products: [
-        {
-          rank: 1,
-          name: 'Boîte de rangement empilable 9 tiroirs',
-          rating: 4.4,
-          price: '5,10 €',
-          image: 'https://placehold.co/400x300/8b5cf6/ffffff?text=Rangement',
-          amazonUrl: 'https://www.temu.com/fr/kuiper/un9/shopping-gmc-a-psurl.html?_bg_fs=1&_p_jump_id=962&_p_rfs=1&_x_ads_channel=google&_x_ads_sub_channel=shopping&_x_gmc_account=5346989188&_x_login_type=Google&_x_ns_gid=601099927148766&_x_ns_prz_type=-1&_x_ns_sku_id=17593935740346&_x_vst_scene=adg&adg_ctx=a-9a538cd7~c-ad4afc34&goods_id=601099927148766&locale_override=69~fr~EUR',
-          description: 'Mini boîte empilable avec 9 tiroirs transparents. Organisateur compact pour bureau, cuisine, maquillage.',
-          pros: ['Transparent', 'Empilable', 'Polyvalent'],
-        },
-        {
-          rank: 2,
-          name: 'Étiquettes et marqueurs verres',
-          rating: 4.3,
-          price: '3,99 €',
-          image: 'https://placehold.co/400x300/8b5cf6/ffffff?text=Étiquettes',
-          amazonUrl: 'https://www.temu.com/fr/c/kitchen-tools-utensils-668.html',
-          description: 'Lot de 50 étiquettes en verre avec marqueurs effaçables. Personnalisez vos contenants.',
-          pros: ['Facile écriture', 'Effaçable', 'Lot généreux'],
-        },
-      ],
-    },
-    {
-      id: 'ustensiles',
-      title: 'Ustensiles de base',
-      products: [
-        {
-          rank: 1,
-          name: 'Couteau en acier inoxydable 8 pouces',
-          rating: 4.7,
-          price: '24,99 €',
-          image: 'https://placehold.co/400x300/10b981/ffffff?text=Couteau',
-          amazonUrl: 'https://www.temu.com/fr/c/kitchen-tools-utensils-668.html',
-          description: 'Couteau de chef professionnel, lame en acier allemand, manche ergonomique anti-dérapant.',
-          pros: ['Très affûté', 'Confort optimal', 'Entretien simple'],
-        },
-        {
-          rank: 2,
-          name: 'Planche à découper en bambou',
-          rating: 4.6,
-          price: '19,90 €',
-          image: 'https://placehold.co/400x300/10b981/ffffff?text=Planche',
-          amazonUrl: 'https://www.temu.com/fr/c/kitchen-tools-utensils-668.html',
-          description: 'Planche résistante aux champignons et acides, idéale pour préparer tous vos légumes.',
-          pros: ['Antibactérienne', 'Double faces', 'Design élégant'],
-        },
-        {
-          rank: 3,
-          name: 'Spatule silicone kit de 5 pièces',
-          rating: 4.5,
-          price: '7,99 €',
-          image: 'https://placehold.co/400x300/10b981/ffffff?text=Spatule',
-          amazonUrl: 'https://www.temu.com/fr/c/kitchen-tools-utensils-668.html',
-          description: 'Spatules silicone résistantes au four, soupapes inclus. Toutes les formes nécessaires.',
-          pros: ['Résiste 230°C', 'Anti-adhésif', 'Kit complet'],
-        },
-      ],
-    },
-  ],
-  faq: [
-    {
-      question: 'Quel est le meilleur couteau pour débuter en cuisine ?',
-      answer: 'Un couteau de chef 8 pouces en acier inoxydable est le choix le plus polyvalent pour une cuisine amateur.',
-    },
-    {
-      question: 'Faut-il acheter des ustensiles en set ou séparément ?',
-      answer: 'Les sets de qualité comme les spatules silicone ou les étiquettes offrent un meilleur rapport qualité/prix que les achats séparés.',
-    },
-    {
-      question: 'Les gadgets Temu sont-ils vraiment utiles ?',
-      answer: 'Les tests montrent que les coupe-legumes et ustensiles silicone offrent une excellente qualité à prix mini, idéaux pour cuisine quotidienne.',
-    },
-    {
-      question: 'Comment entretenir les gadgets en acier inoxydable ?',
-      answer: 'Eau et savon neutre suffisent. Évitez les dures abrasives qui rayent la lame.',
-    },
-  ],
-}
+const data = kitchenGadgetsData
 </script>
 
 <template>
-  <PillarPage v-bind="kitchenGadgets" />
+  <main class="min-h-screen bg-background text-foreground">
+    <!-- Sommaire sticky -->
+    <aside class="fixed top-20 right-4 w-64 max-h-[70vh] overflow-y-auto bg-card/80 backdrop-blur-md border border-border rounded-xl p-4 hidden xl:block z-40">
+      <h3 class="text-sm font-semibold text-foreground mb-3">Sommaire</h3>
+      <nav class="space-y-2">
+        <a
+          v-for="section in data.sections"
+          :key="section.id"
+          :href="`#${section.id}`"
+          class="block text-sm text-muted-foreground hover:text-foreground transition-colors py-1"
+        >
+          {{ section.title }}
+        </a>
+        <a
+          v-if="data.faq?.length"
+          href="#faq"
+          class="block text-sm text-muted-foreground hover:text-foreground transition-colors py-1"
+        >
+          Questions fréquentes
+        </a>
+      </nav>
+    </aside>
+
+    <article class="max-w-3xl mx-auto px-4 py-12">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-6" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-foreground">Accueil</a>
+        <span>›</span>
+        <span class="text-foreground">Guides</span>
+      </nav>
+
+      <header class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+            Guide complet
+          </span>
+          <time :datetime="data.updatedDate" class="text-xs text-muted-foreground">
+            Mis à jour le {{ data.updatedDate }}
+          </time>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4" style="font-family: var(--font-cal-sans);">
+          {{ data.title }}
+        </h1>
+        <p v-if="data.subtitle" class="text-lg text-muted-foreground mb-4">
+          {{ data.subtitle }}
+        </p>
+        <p class="text-lg text-muted-foreground leading-relaxed">
+          {{ data.description }}
+        </p>
+      </header>
+
+      <!-- Sections -->
+      <section
+        v-for="section in data.sections"
+        :id="section.id"
+        :key="section.id"
+        class="mb-16 scroll-mt-24"
+      >
+        <h2 class="text-2xl font-bold text-foreground mb-2 pb-2 border-b border-border">
+          {{ section.title }}
+        </h2>
+        <p class="text-muted-foreground mb-6">
+          Découvrez notre sélection des meilleurs produits dans cette catégorie.
+        </p>
+
+        <div class="space-y-8">
+          <ProductCard
+            v-for="product in section.products"
+            :key="product.rank"
+            v-bind="product"
+          />
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section v-if="data.faq?.length" id="faq" class="mb-16 scroll-mt-24">
+        <h2 class="text-2xl font-bold text-foreground mb-6 pb-2 border-b border-border">
+          Questions fréquentes
+        </h2>
+        <div class="space-y-4">
+          <details
+            v-for="(item, index) in data.faq"
+            :key="index"
+            class="group p-4 rounded-xl bg-card border border-border"
+          >
+            <summary class="cursor-pointer font-semibold text-foreground list-none flex items-center justify-between">
+              {{ item.question }}
+              <svg class="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <p class="mt-3 text-sm text-muted-foreground leading-relaxed">
+              {{ item.answer }}
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <!-- CTA final -->
+      <aside class="p-8 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent border border-primary/20 text-center">
+        <h3 class="text-xl font-bold text-foreground mb-3">Vous n'avez pas trouvé votre bonheur ?</h3>
+        <p class="text-muted-foreground mb-6">
+          Découvrez plus d'articles et guides dans notre rubrique dédiée.
+        </p>
+        <a href="/guides/kitchen-gadgets" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-card text-foreground font-medium border border-border hover:bg-muted transition-colors">
+          Plus de guides
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </aside>
+    </article>
+  </main>
 </template>
