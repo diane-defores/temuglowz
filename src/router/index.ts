@@ -12,6 +12,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/site/pages/KitchenGadgetsPage.vue"),
   },
   {
+    path: "/guides/summer-cooling",
+    name: "summer-cooling",
+    component: () => import("@/site/pages/SummerCoolingPage.vue"),
+  },
+  {
     path: "/app",
     name: "shopping-shell",
     component: () => import("@/ui/temu-shell/App.vue"),
