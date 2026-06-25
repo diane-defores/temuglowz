@@ -53,6 +53,8 @@ const observationConfidence = v.union(
   v.literal("unknown"),
 );
 
+const MAX_SYNC_RECORDS_PER_PULL = 500;
+
 const priceSnapshot = v.object({
   amount: v.number(),
   currency: v.string(),
@@ -123,6 +125,7 @@ const listSyncRecordsInternalRef = makeFunctionReference<
     ownerId: string;
     environment: (typeof SYNC_ENVIRONMENTS)[number];
     since?: number;
+    limit?: number;
   },
   {
     productId: typeof TEMU_SHOPPING_LISTS_PRODUCT_ID;
@@ -214,6 +217,7 @@ export const listSyncRecords = action({
   args: {
     environment: syncEnvironment,
     since: v.optional(v.number()),
+    limit: v.optional(v.number()),
   },
   returns: v.object({
     productId: v.literal(TEMU_SHOPPING_LISTS_PRODUCT_ID),
@@ -235,6 +239,7 @@ export const listSyncRecordsInternal = internalQuery({
     ownerId: v.string(),
     environment: syncEnvironment,
     since: v.optional(v.number()),
+    limit: v.optional(v.number()),
   },
   returns: v.object({
     productId: v.literal(TEMU_SHOPPING_LISTS_PRODUCT_ID),
@@ -244,6 +249,10 @@ export const listSyncRecordsInternal = internalQuery({
   }),
   handler: async (ctx, args) => {
     const since = args.since ?? 0;
+    const limit = Math.min(
+      Math.max(Math.floor(args.limit ?? MAX_SYNC_RECORDS_PER_PULL), 1),
+      MAX_SYNC_RECORDS_PER_PULL,
+    );
     const rows = await ctx.db
       .query("syncRecords")
       .withIndex("by_owner_product_updated", (q) =>
@@ -253,7 +262,7 @@ export const listSyncRecordsInternal = internalQuery({
           .eq("environment", args.environment)
           .gte("serverUpdatedAt", since),
       )
-      .collect();
+      .take(limit);
 
     return {
       productId: TEMU_SHOPPING_LISTS_PRODUCT_ID,

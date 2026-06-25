@@ -60,7 +60,7 @@ const getCloudSyncStatusRef = "sync:getCloudSyncStatus" as unknown as ActionRef<
 >;
 
 const listSyncRecordsRef = "sync:listSyncRecords" as unknown as ActionRef<
-  { environment: SyncEnvironment; since?: number },
+  { environment: SyncEnvironment; since?: number; limit?: number },
   CloudSyncHydrationResponse
 >;
 
@@ -92,6 +92,7 @@ export async function getCloudSyncStatus(
 export async function listCloudSyncRecords(params: {
   environment: SyncEnvironment;
   since?: number;
+  limit?: number;
 }): Promise<CloudSyncHydrationResponse> {
   return getConvexClient().action(listSyncRecordsRef, params);
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from "vue";
+import { computed, onUnmounted, watch } from "vue";
 
 import { useNotificationsStore } from "@/stores/notifications";
 
@@ -41,6 +41,13 @@ watch(
   },
   { immediate: true, deep: true },
 );
+
+onUnmounted(() => {
+  dismissTimers.forEach((timer) => {
+    window.clearTimeout(timer);
+  });
+  dismissTimers.clear();
+});
 </script>
 
 <template>
