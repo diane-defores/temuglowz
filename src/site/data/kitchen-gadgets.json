@@ -18,6 +18,16 @@
           "productUrl": "https://www.temu.com/fr/c/kitchen-tools-utensils-668.html",
           "description": "Coupe-frites, coupe-fruits, hachoir à frites et trancheuse à pommes de terre en acier inoxydable.",
           "pros": ["Multifonctions", "Acier inox", "Facile nettoyage"]
+        },
+        {
+          "rank": 2,
+          "name": "Hachoir à oignons électrique",
+          "rating": 4.5,
+          "price": "12,99 €",
+          "image": "https://placehold.co/400x300/f59e0b/ffffff?text=Hachoir+Oignons",
+          "productUrl": "https://www.temu.com/fr/c/kitchen-tools-utensils-668.html",
+          "description": "Hachoir à oignons sans les larmes, presse-agrumes et multi-coupes. Cuisine rapide et propre.",
+          "pros": ["Sans larmes", "Multi-format", "Easy clean"]
         }
       ]
     },
@@ -26,7 +36,7 @@
       "title": "Ustensiles de base",
       "products": [
         {
-          "rank": 2,
+          "rank": 1,
           "name": "Couteau en acier inoxydable 8 pouces",
           "rating": 4.7,
           "price": "24,99 €",
@@ -36,7 +46,27 @@
           "pros": ["Très affûté", "Confort optimal", "Entretien simple"]
         },
         {
+          "rank": 2,
+          "name": "Planche à découper en bambou",
+          "rating": 4.6,
+          "price": "19,90 €",
+          "image": "https://placehold.co/400x300/10b981/ffffff?text=Planche",
+          "productUrl": "https://www.temu.com/fr/c/kitchen-tools-utensils-668.html",
+          "description": "Planche résistante aux champignons et acides, idéale pour préparer tous vos légumes.",
+          "pros": ["Antibactérienne", "Double faces", "Design élégant"]
+        },
+        {
           "rank": 3,
+          "name": "Spatule silicone kit de 5 pièces",
+          "rating": 4.5,
+          "price": "7,99 €",
+          "image": "https://placehold.co/400x300/10b981/ffffff?text=Spatule",
+          "productUrl": "https://www.temu.com/fr/c/kitchen-tools-utensils-668.html",
+          "description": "Spatules silicone résistantes au four, soupapes inclus. Toutes les formes nécessaires.",
+          "pros": ["Résiste 230°C", "Anti-adhésif", "Kit complet"]
+        },
+        {
+          "rank": 4,
           "name": "Séparateur d'Œufs PJ377252",
           "rating": 4.4,
           "price": "4,99 €",
@@ -45,6 +75,22 @@
           "description": "Éplucheur et diviseur de jaune rapide en un seul geste. Essentiel pour pâte à crêpes, mayonnaise maison et plats raffinés.",
           "pros": ["Sépare blanc/jaune", "Nettoyage facile", "Compact"],
           "cons": ["Plastique"]
+        }
+      ]
+    },
+    {
+      "id": "organisation",
+      "title": "Organisation et rangement",
+      "products": [
+        {
+          "rank": 1,
+          "name": "Boîte de rangement empilable 9 tiroirs",
+          "rating": 4.4,
+          "price": "5,10 €",
+          "image": "https://placehold.co/400x300/8b5cf6/ffffff?text=Rangement",
+          "productUrl": "https://www.temu.com/fr/c/kitchen-tools-utensils-668.html",
+          "description": "Mini boîte empilable avec 9 tiroirs transparents. Organisateur compact pour bureau, cuisine, maquillage.",
+          "pros": ["Transparent", "Empilable", "Polyvalent"]
         }
       ]
     }

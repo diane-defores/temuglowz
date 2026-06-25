@@ -1,10 +1,13 @@
 #!/usr/bin/env tsx
 
+import { readFileSync, writeFileSync } from 'fs'
+import { join } from 'path'
+
 type Product = {
   rank: number
   name: string
   rating: number
-  price: string
+  price?: string
   image: string
   productUrl?: string
   description: string
@@ -15,107 +18,92 @@ type Product = {
 type Suggestion = {
   page: string
   section: string
-  reason: string
 }
 
-// Pages et leurs mots-clés pour devinette
-const PAGE_KEYWORDS: Record<string, string[]> = {
-  'kitchen-gadgets': ['cuisine', 'four', 'poêle', 'couteau', 'planche', 'œuf', 'œufs', 'éplucheur', 'casserole', 'mixeur', 'robot', 'ustensile', 'spatule'],
-  'summer-cooling': ['ventilateur', 'clim', 'refroid', 'glace', 'frais', 'canicule', 'été', 'verre', 'gilet', 'coussin'],
-  'christmas-gifts': ['cadeau', 'noël', 'fête', 'cadeaux', 'offert', 'offer'],
-}
-
-function guessPage(productName: string, description: string): Suggestion {
-  const text = `${productName} ${description}`.toLowerCase()
-  
-  for (const [page, keywords] of Object.entries(PAGE_KEYWORDS)) {
-    for (const kw of keywords) {
-      if (text.includes(kw)) {
-        // Déterminer section
-        if (text.includes('ventilateur') || text.includes('clim') || text.includes('glace') || text.includes('refroid') || text.includes('gilet') || text.includes('coussin')) {
-          return { page, section: 'ventilateurs', reason: `Produit lié au rafraîchissement` }
-        }
-        if (text.includes('couteau') || text.includes('planche') || text.includes('éplucheur') || text.includes('œuf') || text.includes('œufs') || text.includes('ustensile') || text.includes('spatule')) {
-          return { page: 'kitchen-gadgets', section: 'ustensiles', reason: `Ustensile de cuisine` }
-        }
-        if (text.includes('organisation') || text.includes('rangement') || text.includes('étiquette') || text.includes('tiroir')) {
-          return { page, section: 'organisation', reason: `Accessoire d'organisation` }
-        }
-      }
-    }
+function detectTarget(text: string): Suggestion {
+  const t = text.toLowerCase()
+  if (/\b(ventilateur|clim|glace|gilet|coussin|rafraichi)\b/.test(t)) {
+    return { page: 'summer-cooling', section: t.includes('gilet') || t.includes('glace') ? 'accessoires' : 'ventilateurs' }
   }
+  return { page: 'kitchen-gadgets', section: 'ustensiles' }
+}
+
+async function extractFromUrl(url: string): Promise<Partial<Product>> {
+  const response = await fetch(url, {
+    headers: { 'User-Agent': 'Mozilla/5.0 Chrome/137.0' },
+    redirect: 'follow',
+  })
   
-  return { page: 'kitchen-gadgets', section: 'ustensiles', reason: 'Page par défaut' }
+  if (!response.ok) return {}
+  
+  const html = await response.text()
+  
+  const titleMatch = html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]+)"/i) || 
+                     html.match(/<title>([^<]+)<\/title>/i)
+  const imageMatch = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i)
+  const descMatch = html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i) ||
+                    html.match(/"description":"([^"]+)"/i)
+  
+  return {
+    name: titleMatch?.[1]?.split('|')[0]?.trim() || '',
+    image: imageMatch?.[1] || '',
+    description: descMatch?.[1] || '',
+  }
 }
 
-function generateVueSnippet(product: Product, page: string): string {
-  return `        {
-          rank: ${product.rank},
-          name: '${product.name}',
-          rating: ${product.rating},
-          price: '${product.price}',
-          image: '${product.image}',
-          productUrl: '${product.productUrl || 'https://temu.com'}',
-          description: '${product.description}',
-          pros: ['${(product.pros || []).join("', '")}'],
-          ${product.cons ? `cons: ['${product.cons.join("', '")}'],` : ''}
-        },`
+function insertProduct(page: string, sectionId: string, product: Product): boolean {
+  const dataPath = join(process.cwd(), `src/site/data/${page}.json`)
+  const data = JSON.parse(readFileSync(dataPath, 'utf8'))
+  const target = data.sections.find((s: {id: string}) => s.id === sectionId)
+  
+  if (!target) return false
+  if (target.products.some((p: Product) => p.name === product.name)) return true
+  
+  target.products.push(product)
+  target.products.sort((a: Product, b: Product) => a.rank - b.rank)
+  
+  writeFileSync(dataPath, JSON.stringify(data, null, 2))
+  return true
 }
 
-// Pour l'instant : mode suggestion seulement
 async function main() {
-  const args = process.argv.slice(2)
+  const [input] = process.argv.slice(2)
   
-  if (args.length === 0) {
-    console.log(`
-Usage: add-temu-product.ts <product_name> <price> <image_url> <description>
-
-Exemple:
-  add-temu-product.ts "Séparateur d'Œufs PJ377252" "4,99 €" "https://img.jpg" "Éplucheur et diviseur de jaune rapide..."
-
-Le script propose une mise à jour, vous validez avant l'insertion.
-`)
-    process.exit(0)
+  if (!input) {
+    console.log('Usage: npx tsx tools/add-temu-product.ts <url|json>')
+    return
   }
 
-  if (args.length < 4) {
-    console.error('Erreur: besoin de nom, prix, image, description')
-    process.exit(1)
+  let product: Partial<Product>
+  
+  if (input.startsWith('http')) {
+    console.log(`🔄 Extraction depuis ${input}`)
+    product = await extractFromUrl(input)
+    product.productUrl = input
+  } else {
+    product = JSON.parse(input)
   }
 
-  const [name, price, image, desc] = args
-  const suggestion = guessPage(name, desc)
+  const target = detectTarget(`${product.name} ${product.description || ''}`)
+  
+  const fullProduct: Product = {
+    rank: 99,
+    name: product.name || '',
+    rating: 4.5,
+    price: product.price || 'Prix non renseigné',
+    image: product.image || '',
+    productUrl: product.productUrl || '',
+    description: product.description || '',
+    pros: product.pros || ['Bon rapport qualité/prix'],
+  }
 
-  console.log(`
-═════════════════════════════════════════
-Proposition d'ajout produit
-═════════════════════════════════════════
-
-Produit  : ${name}
-Prix     : ${price}
-Image    : ${image}
-Description : ${desc}
-
-Page suggérée : /guides/${suggestion.page}
-Section       : ${suggestion.section}
-Raison        : ${suggestion.reason}
-
-Snippet Vue à insérer :
-${generateVueSnippet({
-  rank: 99,
-  name,
-  rating: 4.5,
-  price,
-  image,
-  description: desc,
-  pros: ['Qualité prix', 'Facile utilisation'],
-} as Product, suggestion.page)}
-
-═════════════════════════════════════════
-Vérifiez et insérez manuellement dans :
-src/site/pages/${suggestion.page}.vue
-═════════════════════════════════════════
-`)
+  console.log(`🎯 ${fullProduct.name} → /guides/${target.page}#${target.section}`)
+  
+  if (insertProduct(target.page, target.section, fullProduct)) {
+    console.log('✅ Ajouté')
+  } else {
+    console.log('❌ Erreur d\'insertion')
+  }
 }
 
 main()
