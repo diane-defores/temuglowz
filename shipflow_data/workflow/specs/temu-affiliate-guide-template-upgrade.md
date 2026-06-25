@@ -6,7 +6,7 @@ project: "temu"
 created: "2026-06-25"
 created_at: "2026-06-25 18:13:40 UTC"
 updated: "2026-06-25"
-updated_at: "2026-06-25 18:27:31 UTC"
+updated_at: "2026-06-25 18:44:00 UTC"
 status: reviewed
 source_skill: 100-sf-spec
 source_model: "GPT-5 Codex"
@@ -60,7 +60,7 @@ Temu Affiliate Guide Template Upgrade: Trust, Methodology, Disclosure, And Revie
 
 ## Status
 
-Reviewed by `101-sf-ready` on 2026-06-25 and not yet ready for `/102-sf-start`. The current spec is directionally solid, but it still needs a canonical structured `Test Contract` and an explicit, proportionate security treatment for outbound-link and rendered-content safety before a fresh agent can implement it without making contract decisions mid-run.
+Reviewed by `101-sf-ready` on 2026-06-25 and still not ready for `/102-sf-start`. The prior `Test Contract` and affiliate/content safety blockers are repaired, but the spec still leaves a fresh implementer without explicit read-first files and stop conditions in `Execution Notes`, and it still does not translate the design-system authority into a site-surface contract specific enough for this Astro guide-template change.
 
 ## User Story
 
@@ -150,34 +150,72 @@ Create a shared static Astro affiliate guide template and enrich the guide data 
 - Static-site Sentry remains not expected for current guide pages because there is no auth, checkout, protected route, or user-specific runtime workflow.
 - Fresh external docs verdict: `fresh-docs checked` using Google Search Central helpful content/reviews guidance and FTC endorsement/disclosure guidance accessed 2026-06-25.
 
+## Security Contract
+
+- Rendered guide data is repo-curated JSON content, not trusted HTML. All disclosure, methodology, rationale, caution, FAQ, and product text fields must be rendered as plain text through Astro templating; the implementation must not use `set:html`, `innerHTML`, raw HTML fragments, or markdown-to-HTML rendering for these fields in this slice.
+- Allowed outbound affiliate URL schemes are `https:` only. `http:`, protocol-relative URLs, `javascript:`, `data:`, `file:`, and any non-web/custom scheme must be treated as invalid and must suppress the CTA instead of rendering a clickable link.
+- Allowed outbound affiliate hosts are `temu.com`, `www.temu.com`, and explicitly documented Temu locale subdomains only if the implementation can justify them from current project data at implementation time. Unknown redirector, short-link, tracking, or third-party affiliate hosts must be rejected or normalized before rendering; do not broaden host allowlists implicitly.
+- If `productUrl` cannot be parsed, fails the scheme/host allowlist, or is missing, render the product content without the affiliate CTA and preserve the rest of the card safely.
+- Keep `target="_blank"` and `rel="noopener noreferrer sponsored"` on every rendered affiliate CTA. Do not add executable query fragments, inline event handlers, or scriptable attributes to guide content or CTA markup.
+- JSON-backed text must be treated as untrusted for logging as well as rendering. Diagnostics may record the field name, guide slug, and a short redacted reason such as `invalid productUrl host`, but must not dump full affiliate URLs with tracking parameters or copy large public-content blobs into logs.
+- No user input, cookies, auth/session state, local storage, or Temu account data participates in this guide rendering slice. The surface remains static, public, and non-personalized.
+
 ## Test Contract
 
-This section is not yet in the canonical ready format required by `101-sf-ready`.
+Surface: Astro static guide pages and shared content components rendering repo-curated JSON into public affiliate guide HTML.
 
-Missing structured fields that must be added before `/102-sf-start`:
+proof_profile: mixed automated static proof + design-system drift scan + browser smoke proof for desktop and mobile static pages.
 
-- `surface`
-- `proof_profile`
-- `proof_order`
-- `checklist_path` (or an explicit no-checklist rationale)
-- `required_scenario_ids`
-- `required_results`
-- `exception_with_proof`
-- `exception_without_proof`
+proof_order: automated build and metadata checks -> static HTML/content-policy scans -> browser smoke on both guide routes.
 
-Current intended proof inputs:
+checklist_path: explicit exception. No dedicated ShipFlow checklist exists yet for this narrow static affiliate-guide slice; scenario coverage is carried by the required scenario IDs below and browser/static proof in `103-sf-verify`.
 
-- Automated proof:
-  - `pnpm build:site`
-  - `python3 /home/claude/shipflow/tools/design_system_drift_check.py --changed --format markdown`
-  - `python3 /home/claude/shipflow/tools/shipflow_metadata_lint.py shipflow_data/workflow/specs/temu-affiliate-guide-template-upgrade.md shipflow_data/technical/design-system-authority.md`
-  - Static scans for forbidden unsupported claims in guide data and generated HTML.
-  - Static scans that guide HTML still has no `astro-island`/`client:only` for product cards and that affiliate links keep sponsored/noopener/noreferrer attributes.
-- Browser proof:
-  - Astro preview or equivalent static browser smoke for both guide pages on desktop and mobile.
-  - Check disclosure visibility, methodology block, comparison/criteria block, product cards, FAQ, images, outbound links, console warnings/errors, and mobile overflow.
-- Manual proof:
-  - Hands-on product testing proof is explicitly not part of this slice; verification must not claim it.
+required_scenario_ids: `TC-GUIDE-001`, `TC-GUIDE-002`, `TC-GUIDE-003`, `TC-GUIDE-004`, `TC-GUIDE-005`, `TC-GUIDE-006`, `TC-GUIDE-007`, `TC-GUIDE-008`.
+
+required_results:
+
+- `pnpm build:site` passes and generated guide HTML remains fully static for product-card rendering.
+- `python3 /home/claude/shipflow/tools/design_system_drift_check.py --changed --format markdown` reports no unapproved drift for touched UI/template files.
+- `python3 /home/claude/shipflow/tools/shipflow_metadata_lint.py shipflow_data/workflow/specs/temu-affiliate-guide-template-upgrade.md shipflow_data/technical/design-system-authority.md` passes.
+- Static scans over source data and generated HTML confirm unsupported claim terms are removed or replaced where no evidence exists.
+- Static scans over generated guide HTML confirm no `astro-island` or `client:only` is introduced for static product cards.
+- Static scans over generated guide HTML confirm each rendered affiliate CTA keeps `target="_blank"` and `rel="noopener noreferrer sponsored"`.
+- Static scans or focused checks confirm invalid or non-Temu `productUrl` values do not render clickable affiliate CTAs.
+- Browser smoke on `/guides/kitchen-gadgets` and `/guides/summer-cooling` at desktop and mobile widths shows visible disclosure before the first affiliate CTA, methodology/criteria blocks, upgraded product cards, preserved FAQ/images/CTAs, no obvious overflow, and no console errors.
+
+Required automated proof:
+
+- `pnpm build:site`
+- `python3 /home/claude/shipflow/tools/design_system_drift_check.py --changed --format markdown`
+- `python3 /home/claude/shipflow/tools/shipflow_metadata_lint.py shipflow_data/workflow/specs/temu-affiliate-guide-template-upgrade.md shipflow_data/technical/design-system-authority.md`
+- focused `rg` or equivalent static scans for unsupported public-claim terms in `src/site/data`, guide routes/components, `public/llms.txt` if touched, and generated `dist-site/guides/**/index.html`
+- focused static scans for `astro-island`, `client:only`, and affiliate-link attribute preservation in generated guide HTML
+- focused static scans or assertions that disallowed URL schemes/hosts do not produce affiliate CTA markup
+
+Manual scenarios:
+
+- `TC-GUIDE-001`: guide intro shows a visible affiliate disclosure before the first affiliate CTA on both existing guide routes.
+- `TC-GUIDE-002`: guide top sections show methodology, selection criteria, and update/price-freshness context without claiming hands-on testing when none exists.
+- `TC-GUIDE-003`: each upgraded product card shows best-for/use-case, rationale, caution/limits, and price note when data exists, without breaking mobile layout.
+- `TC-GUIDE-004`: generated HTML contains no unsupported `teste`/`approuve`/guaranteed-performance style claims unless tied to actual repo evidence.
+- `TC-GUIDE-005`: rendered affiliate links retain `target="_blank"` plus `rel="noopener noreferrer sponsored"`.
+- `TC-GUIDE-006`: static guide product cards do not emit Vue hydration, `astro-island`, or `client:only`.
+- `TC-GUIDE-007`: invalid, missing, or disallowed `productUrl` values render product content without a clickable affiliate CTA.
+- `TC-GUIDE-008`: browser smoke shows no console errors, broken images caused by template extraction, or obvious content overlap/overflow on mobile.
+
+exception_with_proof:
+
+- No real-device or app-shell proof is required because this slice is limited to static Astro guide pages and does not change the Tauri/Vue shopping-list app surface.
+- No hands-on product-testing proof is required because this slice explicitly removes unsupported testing claims rather than introducing tested-product assertions.
+- A dedicated checklist file may remain absent for this slice only if `103-sf-verify` records the required scenario evidence directly in the verification artifact with scenario IDs and route-specific screenshots or notes.
+
+exception_without_proof:
+
+- Do not mark implemented or verified if any guide field is rendered through raw HTML injection (`set:html`, `innerHTML`, or equivalent) instead of safe text rendering.
+- Do not mark implemented or verified if affiliate CTAs can render for non-`https` schemes or non-Temu hosts.
+- Do not mark implemented or verified if guide pages still imply Temu partnership, verified seller status, or hands-on testing without linked evidence.
+- Do not mark implemented or verified if invalid `productUrl` values can produce broken, unsafe, or misleading clickable links.
+- Do not mark implemented or verified if the static surface regresses into hydrated product cards for this slice.
 
 ## Dependencies
 
@@ -311,18 +349,18 @@ Fresh external docs verdict: `fresh-docs checked`.
 ## Execution Notes
 
 - Prefer a shared Astro component over repeating markup in each route.
+- Read first: `src/pages/guides/kitchen-gadgets.astro`, `src/pages/guides/summer-cooling.astro`, `src/site/components/ProductCard.astro`, `src/site/data/kitchen-gadgets.json`, `src/site/data/summer-cooling.json`, `src/layouts/Layout.astro`, `shipflow_data/technical/design-system-authority.md`.
 - Do not create a CMS, schema library, or runtime validator unless implementation finds actual recurring maintenance pain that justifies it.
 - Do not invent product testing, purchase history, verified seller status, or live price checks.
 - If the implementation discovers actual evidence of hands-on tests, it may preserve testing language only where the evidence is linked and specific.
 - Treat `site/shipflow_data/editorial/content-map.md` as suspect migration debt because it references `tubeflow-site`, not TemuGlowz.
 - Public guide content is French; internal ShipFlow headings and metadata stay English.
+- Validation commands before handoff: `pnpm build:site`, `python3 /home/claude/shipflow/tools/design_system_drift_check.py --changed --format markdown`, `python3 /home/claude/shipflow/tools/shipflow_metadata_lint.py shipflow_data/workflow/specs/temu-affiliate-guide-template-upgrade.md shipflow_data/technical/design-system-authority.md`, plus the focused `rg` scans listed in `Test Contract`.
+- Stop conditions for `102-sf-start`: stop and return to spec if the implementation needs a new site design authority beyond the current app-shell document, if a guide field requires raw HTML rendering to preserve intended content, if the shared template would break static rendering or force per-card hydration, or if `public/data` ownership cannot be resolved without widening scope.
 
 ## Open Questions
 
-Not ready:
-
-- Rewrite `Test Contract` into the canonical structured format expected by `101-sf-ready`, including scenario IDs, proof order, required results, and explicit proof exceptions.
-- Add an explicit security note covering outbound link validation and rendered-content safety for repo-curated guide data, so a fresh agent does not improvise that contract during implementation.
+None blocking in the spec contract. Next gate is rerunning `101-sf-ready` against this revised document.
 
 ## Skill Run History
 
@@ -330,11 +368,13 @@ Not ready:
 |----------|-------|-------|--------|--------|-----------|
 | 2026-06-25 18:13:40 UTC | 100-sf-spec | GPT-5 Codex | Created spec from user request to raise TemuGlowz guides to major affiliate-site quality after identifying missing trust template, disclosure, methodology, and evidence-safe claim boundaries. | draft | /101-sf-ready Temu affiliate guide template upgrade |
 | 2026-06-25 18:27:31 UTC | 101-sf-ready | GPT-5 Codex | Evaluated readiness gate against structure, freshness, design-system authority, adversarial review, and security expectations. | not ready | /100-sf-spec Temu affiliate guide template upgrade |
+| 2026-06-25 18:44:00 UTC | 100-sf-spec | GPT-5 Codex | Repaired readiness blockers by rewriting `Test Contract` into the canonical structured format and making affiliate-link/rendered-content safety explicit for static JSON-backed guide pages. | reviewed | /101-sf-ready shipflow_data/workflow/specs/temu-affiliate-guide-template-upgrade.md |
+| 2026-06-25 18:44:00 UTC | 101-sf-ready | GPT-5 Codex | Re-evaluated the repaired spec against readiness, freshness, design-system authority, adversarial review, and execution-note completeness. | not ready | /100-sf-spec Temu affiliate guide template upgrade |
 
 ## Current Chantier Flow
 
 - 100-sf-spec: complete, spec created.
-- 101-sf-ready: complete, not ready.
+- 101-sf-ready: complete, not ready after rerun; execution-note and site design-authority blockers remain.
 - 102-sf-start: pending.
 - 103-sf-verify: pending.
 - 104-sf-end: pending.
