@@ -5,8 +5,8 @@ const summerCooling = {
   title: 'Les Meilleurs Ventilateurs et Accessoires pour se Rafraîchir cet Été 2025',
   subtitle: 'Notre sélection des 10 meilleures solutions pour surfer la chaleur sans exploser la facture',
   description: 'Face à la canicule, voici nos ventilateurs performants, accessoires cooling et solutions d\'habitation fraîche testés sur Temu. Qualité, performances et prix au top.',
-  updatedDate: '2025-06-22',
-  metaDescription: 'Top ventilateurs Temu 2025: compares, tests et prix pour rester au frais cet été. Solutions pas chères et efficaces.',
+  updatedDate: '2026-06-25',
+  metaDescription: 'Top ventilateurs Temu 2026: ventilateurs de brumisation, accessoires cooling et solutions compactes pour rester au frais cet été.',
   sections: [
     {
       id: 'ventilateurs',
@@ -34,6 +34,17 @@ const summerCooling = {
         },
         {
           rank: 3,
+          name: 'Ventilateur de brumisation portable rechargeable USB',
+          rating: 4.7,
+          price: '14,99 €',
+          image: 'https://placehold.co/400x300/0ea5e9/ffffff?text=Ventilateur+Brumisation',
+          amazonUrl: 'https://www.temu.com/fr/c/fans-air-conditioners-heating-o4-768.html',
+          description: 'Mini ventilateur de pulvérisation rechargeable par USB avec 4 vitesses réglables, fonctionnement à faible bruit et batterie longue durée. Compact et léger pour le refroidissement personnel, les voyages, le bureau et les activités de plein air.',
+          pros: ['4 vitesses', 'Brumisation', 'Faible bruit'],
+          cons: ['Réservoir à remplir'],
+        },
+        {
+          rank: 4,
           name: 'Ventilateur de bureau double tête 3 vitesses',
           rating: 4.5,
           price: '16,48 €',
@@ -43,7 +54,7 @@ const summerCooling = {
           pros: ['Double zone de rafraîchissement', 'Charge USB', '3 vitesses'],
         },
         {
-          rank: 4,
+          rank: 5,
           name: 'Ventilateur collier necklace personnalisé',
           rating: 4.4,
           price: '9,99 €',

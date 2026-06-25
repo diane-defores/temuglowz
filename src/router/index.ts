@@ -2,21 +2,6 @@ import type { RouteRecordRaw } from "vue-router";
 
 const routes: RouteRecordRaw[] = [
   {
-    path: "/",
-    name: "landing",
-    component: () => import("@/site/LandingPage.vue"),
-  },
-  {
-    path: "/guides/kitchen-gadgets",
-    name: "kitchen-gadgets",
-    component: () => import("@/site/pages/KitchenGadgetsPage.vue"),
-  },
-  {
-    path: "/guides/summer-cooling",
-    name: "summer-cooling",
-    component: () => import("@/site/pages/SummerCoolingPage.vue"),
-  },
-  {
     path: "/app",
     name: "shopping-shell",
     component: () => import("@/ui/temu-shell/App.vue"),
@@ -28,13 +13,13 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/list/:listId",
     name: "list-detail",
-    component: () => import("@/pages/ListDetailPage.vue"),
+    component: () => import("@/app-pages/ListDetailPage.vue"),
     props: true,
   },
   {
     path: "/import/manual",
     name: "manual-import",
-    component: () => import("@/pages/ManualImportPage.vue"),
+    component: () => import("@/app-pages/ManualImportPage.vue"),
   },
   {
     path: "/shopping",
@@ -43,17 +28,17 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/import/review",
     name: "import-review",
-    component: () => import("@/pages/ImportReviewPage.vue"),
+    component: () => import("@/app-pages/ImportReviewPage.vue"),
   },
   {
     path: "/sync",
     name: "sync",
-    component: () => import("@/pages/SyncPage.vue"),
+    component: () => import("@/app-pages/SyncPage.vue"),
   },
   {
     path: "/product/:snapshotId",
     name: "product-detail",
-    component: () => import("@/pages/ProductDetailPage.vue"),
+    component: () => import("@/app-pages/ProductDetailPage.vue"),
     props: true,
   },
 ];

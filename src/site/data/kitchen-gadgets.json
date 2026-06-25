@@ -2,8 +2,8 @@
   "title": "Les Meilleurs Gadgets de Cuisine Temu 2025",
   "subtitle": "Notre sélection des 12 accessoires indispensables testés et approuvés",
   "description": "Découvrez les meilleurs gadgets de cuisine sur Temu : coupe-legumes, ustensiles, accessoires organisation et outils performants à prix mini.",
-  "updatedDate": "2025-06-22",
-  "metaDescription": "Top gadgets cuisine Temu 2025: compares, tests et prix pour la cuisine pas chère. Accessoires testés.",
+  "updatedDate": "2026-06-25",
+  "metaDescription": "Top gadgets cuisine Temu 2026: moules à esquimaux, ustensiles et accessoires testés à prix mini pour la cuisine du quotidien.",
   "sections": [
     {
       "id": "coupe",
@@ -75,6 +75,17 @@
           "description": "Éplucheur et diviseur de jaune rapide en un seul geste. Essentiel pour pâte à crêpes, mayonnaise maison et plats raffinés.",
           "pros": ["Sépare blanc/jaune", "Nettoyage facile", "Compact"],
           "cons": ["Plastique"]
+        },
+        {
+          "rank": 5,
+          "name": "Moules à esquimaux en silicone alimentaire",
+          "rating": 4.7,
+          "price": "9,99 €",
+          "image": "https://placehold.co/400x300/10b981/ffffff?text=Moules+Esquimaux",
+          "productUrl": "https://www.temu.com/fr/c/kitchen-tools-utensils-668.html",
+          "description": "Moules à esquimaux avec couvercle amovible et design empilable pour une utilisation répétée. Idéal pour une congélation rapide à la maison ou en environnement commercial.",
+          "pros": ["Silicone alimentaire", "Empilable", "Réutilisable"],
+          "cons": ["Bâtonnets à vérifier selon lot"]
         }
       ]
     },
