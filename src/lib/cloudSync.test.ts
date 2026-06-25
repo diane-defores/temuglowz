@@ -9,6 +9,9 @@ vi.mock("@/lib/cloudSyncBackend", () => ({
     environment: "local",
     ownerId: "global-user-1",
     records: [],
+    continueCursor: "",
+    isDone: true,
+    pageStatus: null,
   })),
   pushCloudSyncOperation: vi.fn(async () => ({
     status: "inserted",
@@ -25,6 +28,10 @@ import {
   setSyncEnabledForSession,
 } from "@/lib/cloudSync";
 import * as cloudSyncBackend from "@/lib/cloudSyncBackend";
+import type {
+  CloudSyncHydrationResponse,
+  CloudSyncRemoteRecord,
+} from "@/lib/cloudSyncBackend";
 import * as cloudSyncQueue from "@/lib/cloudSyncQueue";
 import {
   clearCloudSyncQueue,
@@ -37,9 +44,11 @@ import {
   postAuthSyncFeedback,
   resetPostAuthSyncFeedback,
 } from "@/lib/postAuthSyncFeedback";
+import { useShoppingListsStore } from "@/stores/shoppingLists";
 import type { ShoppingList } from "@/types/domain";
 import type { SyncAccountMarker } from "@/types/sync";
 import { SYNC_PRODUCT_ID } from "@/types/sync";
+import { createPinia, setActivePinia } from "pinia";
 
 class LocalStorageBag {
   private readonly data = new Map<string, string>();
@@ -90,9 +99,54 @@ function makeListPayload(): ShoppingList {
   };
 }
 
+function makeHydrationPage(options?: {
+  records?: CloudSyncRemoteRecord[];
+  continueCursor?: string;
+  isDone?: boolean;
+  ownerId?: string;
+  productId?: "temu_shopping_lists";
+  environment?: "local";
+  pageStatus?: "SplitRecommended" | "SplitRequired" | null;
+}): CloudSyncHydrationResponse {
+  return {
+    productId: options?.productId ?? "temu_shopping_lists",
+    environment: options?.environment ?? "local",
+    ownerId: options?.ownerId ?? ACCOUNT.accountId,
+    records: options?.records ?? [],
+    continueCursor: options?.continueCursor ?? "",
+    isDone: options?.isDone ?? true,
+    pageStatus: options?.pageStatus ?? null,
+  };
+}
+
+function makeRemoteListRecord(
+  id: string,
+  updatedAt = 1,
+  name = "Cloud list",
+) {
+  return {
+    domain: "shopping_list" as const,
+    operationType: "upsert" as const,
+    recordKey: id,
+    checksum: `checksum-${id}`,
+    idempotencyKey: `idem-${id}`,
+    sourceDeviceId: "device-cloud",
+    localUpdatedAt: updatedAt,
+    serverUpdatedAt: updatedAt,
+    payload: {
+      id,
+      name,
+      itemIds: [],
+      createdAt: updatedAt,
+      updatedAt,
+    },
+  };
+}
+
 describe("cloud sync access-aware replay", () => {
   beforeEach(() => {
     vi.useRealTimers();
+    setActivePinia(createPinia());
     const storage = new LocalStorageBag();
     Object.defineProperty(globalThis, "localStorage", {
       value: storage,
@@ -341,5 +395,170 @@ describe("cloud sync access-aware replay", () => {
     expect(listCloudSyncQueue()).toHaveLength(1);
     expect(listCloudSyncQueue()[0]?.idempotencyKey).toBe("job-stale");
     expect(postAuthSyncFeedback.stage).toBe("ready");
+  });
+
+  it("hydrates every sync page before replaying queued jobs", async () => {
+    vi.useFakeTimers();
+    const payload = makeListPayload();
+    const statusSpy = vi.mocked(cloudSyncBackend.getCloudSyncStatus);
+    const listSpy = vi.mocked(cloudSyncBackend.listCloudSyncRecords);
+    const pushSpy = vi.mocked(cloudSyncBackend.pushCloudSyncOperation);
+    const listsStore = useShoppingListsStore();
+
+    statusSpy.mockResolvedValue({
+      productId: "temu_shopping_lists",
+      access: "active",
+      environment: "local",
+      ownerId: ACCOUNT.accountId,
+    });
+    listSpy
+      .mockResolvedValueOnce(makeHydrationPage({
+        records: [makeRemoteListRecord("cloud-page-1", 10, "Cloud page 1")],
+        continueCursor: "cursor-2",
+        isDone: false,
+      }))
+      .mockResolvedValueOnce(makeHydrationPage({
+        records: [makeRemoteListRecord("cloud-page-2", 20, "Cloud page 2")],
+        continueCursor: "",
+        isDone: true,
+      }));
+
+    enqueueCloudSyncJob({
+      idempotencyKey: "job-after-hydration",
+      domain: "shopping_list",
+      operationType: "upsert",
+      recordKey: payload.id,
+      payload,
+      payloadChecksum: computeSyncChecksum(payload),
+      accountMarker: ACCOUNT,
+      sourceDeviceId: "device-1",
+    });
+
+    const handoff = finalizePasswordSignIn({
+      email: "diane@example.com",
+      flow: "signIn",
+    });
+    await vi.advanceTimersByTimeAsync(2300);
+    const result = await handoff;
+
+    expect(result.status).toBe("ready");
+    expect(listSpy).toHaveBeenNthCalledWith(1, { environment: "local", cursor: null });
+    expect(listSpy).toHaveBeenNthCalledWith(2, {
+      environment: "local",
+      cursor: "cursor-2",
+    });
+    expect(listsStore.lists["cloud-page-1"]?.name).toBe("Cloud page 1");
+    expect(listsStore.lists["cloud-page-2"]?.name).toBe("Cloud page 2");
+    expect(pushSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("blocks queued replay when a later hydration page fails", async () => {
+    vi.useFakeTimers();
+    const payload = makeListPayload();
+    const statusSpy = vi.mocked(cloudSyncBackend.getCloudSyncStatus);
+    const listSpy = vi.mocked(cloudSyncBackend.listCloudSyncRecords);
+    const pushSpy = vi.mocked(cloudSyncBackend.pushCloudSyncOperation);
+    const listsStore = useShoppingListsStore();
+
+    statusSpy.mockResolvedValue({
+      productId: "temu_shopping_lists",
+      access: "active",
+      environment: "local",
+      ownerId: ACCOUNT.accountId,
+    });
+    listSpy
+      .mockResolvedValueOnce(makeHydrationPage({
+        records: [makeRemoteListRecord("cloud-page-1", 10, "Cloud page 1")],
+        continueCursor: "cursor-2",
+        isDone: false,
+      }))
+      .mockRejectedValueOnce(new Error("mid-page failure"));
+
+    enqueueCloudSyncJob({
+      idempotencyKey: "job-blocked",
+      domain: "shopping_list",
+      operationType: "upsert",
+      recordKey: payload.id,
+      payload,
+      payloadChecksum: computeSyncChecksum(payload),
+      accountMarker: ACCOUNT,
+      sourceDeviceId: "device-1",
+    });
+
+    const handoff = finalizePasswordSignIn({
+      email: "diane@example.com",
+      flow: "signIn",
+    });
+    await vi.advanceTimersByTimeAsync(2300);
+    const result = await handoff;
+
+    expect(result).toEqual({
+      status: "blocked",
+      reason: "entitlement_bridge_unavailable",
+      jobs: [],
+    });
+    expect(listsStore.lists["cloud-page-1"]?.name).toBe("Cloud page 1");
+    expect(pushSpy).not.toHaveBeenCalled();
+    expect(listCloudSyncQueue()).toHaveLength(1);
+    expect(isSyncEnabled.value).toBe(false);
+    expect(postAuthSyncFeedback.stage).toBe("blocked");
+  });
+
+  it("blocks hydration when a later page scope mismatches the verified status", async () => {
+    vi.useFakeTimers();
+    const payload = makeListPayload();
+    const statusSpy = vi.mocked(cloudSyncBackend.getCloudSyncStatus);
+    const listSpy = vi.mocked(cloudSyncBackend.listCloudSyncRecords);
+    const pushSpy = vi.mocked(cloudSyncBackend.pushCloudSyncOperation);
+    const listsStore = useShoppingListsStore();
+
+    statusSpy.mockResolvedValue({
+      productId: "temu_shopping_lists",
+      access: "active",
+      environment: "local",
+      ownerId: ACCOUNT.accountId,
+    });
+    listSpy
+      .mockResolvedValueOnce(makeHydrationPage({
+        records: [makeRemoteListRecord("cloud-page-1", 10, "Cloud page 1")],
+        continueCursor: "cursor-2",
+        isDone: false,
+      }))
+      .mockResolvedValueOnce(makeHydrationPage({
+        ownerId: "other-account",
+        records: [makeRemoteListRecord("cloud-page-2", 20, "Wrong account page")],
+        continueCursor: "",
+        isDone: true,
+      }));
+
+    enqueueCloudSyncJob({
+      idempotencyKey: "job-mismatch",
+      domain: "shopping_list",
+      operationType: "upsert",
+      recordKey: payload.id,
+      payload,
+      payloadChecksum: computeSyncChecksum(payload),
+      accountMarker: ACCOUNT,
+      sourceDeviceId: "device-1",
+    });
+
+    const handoff = finalizePasswordSignIn({
+      email: "diane@example.com",
+      flow: "signIn",
+    });
+    await vi.advanceTimersByTimeAsync(2300);
+    const result = await handoff;
+
+    expect(result).toEqual({
+      status: "blocked",
+      reason: "account_mismatch",
+      jobs: [],
+    });
+    expect(listsStore.lists["cloud-page-1"]?.name).toBe("Cloud page 1");
+    expect(listsStore.lists["cloud-page-2"]).toBeUndefined();
+    expect(pushSpy).not.toHaveBeenCalled();
+    expect(listCloudSyncQueue()).toHaveLength(1);
+    expect(isSyncEnabled.value).toBe(false);
+    expect(postAuthSyncFeedback.stage).toBe("blocked");
   });
 });

@@ -1,13 +1,13 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.3"
 project: "temu"
 created: "2026-06-25"
 created_at: "2026-06-25 16:51:25 UTC"
 updated: "2026-06-25"
-updated_at: "2026-06-25 16:57:00 UTC"
-status: ready
+updated_at: "2026-06-25 17:54:07 UTC"
+status: reviewed
 source_skill: 100-sf-spec
 source_model: "GPT-5 Codex"
 scope: "performance hardening for cloud sync pulls and static guide pages"
@@ -64,12 +64,12 @@ evidence:
   - "pnpm build on 2026-06-25 showed app CSS around 400KB and PrimeIcons legacy font assets in the build output."
   - "Official Convex docs accessed 2026-06-25 state paginated queries use .paginate(paginationOpts), and unbounded .collect() should be avoided when results can grow."
   - "Official Astro docs accessed 2026-06-25 state client directives hydrate imported UI framework components, and Astro Image/Picture components optimize image output."
-next_step: "/102-sf-start Temu performance hardening"
+next_step: "/104-sf-end Temu performance hardening"
 ---
 
 # Spec: Temu Performance Hardening
 
-🟢 [temu] spec: Temu performance hardening | status: ready | path: shipflow_data/workflow/specs/temu-performance-hardening.md | next: /102-sf-start Temu performance hardening
+🟢 [temu] spec: Temu performance hardening | status: reviewed | path: shipflow_data/workflow/specs/temu-performance-hardening.md | next: /104-sf-end Temu performance hardening
 
 ## Title
 
@@ -77,7 +77,7 @@ Temu Performance Hardening: Paginated Sync Pulls And Static Site Weight
 
 ## Status
 
-Ready for `/102-sf-start`. This spec was created from the `403-sf-perf` chantier potential on 2026-06-25 and validated by `101-sf-ready` on 2026-06-25. The prior audit already applied two local mitigations: Convex sync reads are capped at 500 records, and notification timers are cleared on unmount. This chantier owns the remaining durable work: cursor-based sync hydration, static guide rendering without unnecessary Vue islands, asset optimization, and proof that performance improves without weakening sync correctness or product-page behavior.
+Reviewed by `/103-sf-verify` on 2026-06-25. Cursor-based sync hydration, static guide rendering without unnecessary Vue islands, Lenis removal, duplicated headshot asset deletion, docs updates, metadata, design-system drift, builds, static artifact inspection, and local browser smoke all pass. Ready for `/104-sf-end`.
 
 ## User Story
 
@@ -268,7 +268,7 @@ Fresh external docs verdict: `fresh-docs checked`. Convex docs support paginatio
 
 ## Implementation Tasks
 
-- [ ] Task 1: Define the sync pagination response contract.
+- [x] Task 1: Define the sync pagination response contract.
   - File: `convex/sync.ts`
   - Action: Replace records-only hydration response with records plus continuation metadata such as `cursor`/`isDone` or Convex `paginationResult`, and document server max page size.
   - User story link: prevents large accounts from hydrating only the first bounded batch.
@@ -276,7 +276,7 @@ Fresh external docs verdict: `fresh-docs checked`. Convex docs support paginatio
   - Validate with: `pnpm typecheck:convex`
   - Notes: Prefer official Convex `.paginate(paginationOpts)` when it fits the indexed query. If an equivalent custom cursor is chosen, it must be server-owned, deterministic, and tested for duplicate timestamps.
 
-- [ ] Task 2: Update frontend sync action types for pagination.
+- [x] Task 2: Update frontend sync action types for pagination.
   - File: `src/lib/cloudSyncBackend.ts`
   - Action: Add request/response typing for pagination options and continuation metadata.
   - User story link: lets the client loop safely without ad hoc untyped fields.
@@ -284,7 +284,7 @@ Fresh external docs verdict: `fresh-docs checked`. Convex docs support paginatio
   - Validate with: `pnpm typecheck:core`
   - Notes: Keep environment and owner/product validation in the response checks.
 
-- [ ] Task 3: Loop backend-verified hydration through every page before ready state.
+- [x] Task 3: Loop backend-verified hydration through every page before ready state.
   - File: `src/lib/cloudSync.ts`
   - Action: Replace single `listCloudSyncRecords({ environment })` hydration with a bounded loop that applies each page, stops only on completion, and blocks queued push replay on partial failure.
   - User story link: ensures users do not lose or miss cloud records on new devices.
@@ -292,7 +292,7 @@ Fresh external docs verdict: `fresh-docs checked`. Convex docs support paginatio
   - Validate with: focused Vitest coverage for multi-page hydration and partial failure.
   - Notes: Use a clear maximum safety guard or backend completion signal to avoid infinite loops.
 
-- [ ] Task 4: Add sync pagination tests.
+- [x] Task 4: Add sync pagination tests.
   - File: `src/lib/cloudSync.test.ts` or a focused new `src/lib/cloudSyncPagination.test.ts`
   - Action: Cover more-than-one-page hydration, failed second page, duplicate retry, no queued push replay before hydration completion, and mismatched owner/product/environment response.
   - User story link: proves sync correctness scales beyond the first page.
@@ -300,7 +300,7 @@ Fresh external docs verdict: `fresh-docs checked`. Convex docs support paginatio
   - Validate with: `pnpm test:once <focused test files>`
   - Notes: Mock backend action wrappers rather than requiring hosted Convex.
 
-- [ ] Task 5: Convert static guide product cards away from Vue hydration.
+- [x] Task 5: Convert static guide product cards away from Vue hydration.
   - File: `src/pages/guides/kitchen-gadgets.astro`, `src/pages/guides/summer-cooling.astro`, and a new or existing Astro/static card component
   - Action: Render the product card markup in Astro/static HTML for guide pages; keep the Vue card only for contexts that need Vue.
   - User story link: reduces unnecessary guide JavaScript while preserving visible content.
@@ -308,7 +308,7 @@ Fresh external docs verdict: `fresh-docs checked`. Convex docs support paginatio
   - Validate with: `pnpm build:site` and built HTML inspection for absence of per-card `astro-island` entries.
   - Notes: Preserve rank, rating display, pros/cons, image alt text, and outbound link attributes.
 
-- [ ] Task 6: Audit and optimize known local static assets.
+- [x] Task 6: Audit and optimize known local static assets.
   - File: `public/`, `site/public/`, and any Astro image imports introduced by the implementation
   - Action: Remove duplicated heavyweight local PNGs when unused, or replace known local display assets with responsive WebP/AVIF through Astro-supported image tooling while preserving required public URLs.
   - User story link: reduces transfer weight for static visitors.
@@ -316,7 +316,7 @@ Fresh external docs verdict: `fresh-docs checked`. Convex docs support paginatio
   - Validate with: `find dist-site -type f ... | du -h`, `pnpm build:site`, and visual/browser smoke.
   - Notes: Do not copy or transform remote Temu product images without explicit policy.
 
-- [ ] Task 7: Decide and implement Lenis loading scope.
+- [x] Task 7: Decide and implement Lenis loading scope.
   - File: `src/layouts/Layout.astro`
   - Action: Remove Lenis by default, or gate it to a narrow page/state with evidence that native scroll is insufficient.
   - User story link: avoids site-wide runtime work that does not serve static guide reading.
@@ -324,7 +324,7 @@ Fresh external docs verdict: `fresh-docs checked`. Convex docs support paginatio
   - Validate with: browser smoke for homepage and guide anchor/reveal behavior, with reduced-motion behavior checked.
   - Notes: IntersectionObserver reveal behavior can remain if it is small and safe; do not break reduced-motion fallback.
 
-- [ ] Task 8: Record documentation and proof updates.
+- [x] Task 8: Record documentation and proof updates.
   - File: `shipflow_data/technical/apps/temu-shopping-lists-android-app.md` and optionally `README.md`
   - Action: Document cursor-based hydration semantics and any changed static asset workflow if implementation changes operator/developer behavior.
   - User story link: keeps future sync/static-site work aligned with the performance contract.
@@ -334,16 +334,16 @@ Fresh external docs verdict: `fresh-docs checked`. Convex docs support paginatio
 
 ## Acceptance Criteria
 
-- [ ] AC1: Given the backend has more changed sync records than one page, when sync hydration runs, then every page is fetched and applied before the handoff returns ready.
-- [ ] AC2: Given a later sync page fails, when hydration runs, then local data remains readable, queued pushes are not replayed, and the handoff returns a recoverable blocked/error state.
-- [ ] AC3: Given duplicate or retried page records, when hydration applies them, then records are idempotent and no conflict is created solely from retry.
-- [ ] AC4: Given the response owner/product/environment does not match the status response, when hydration runs, then sync is blocked and no records are applied as trusted data.
-- [ ] AC5: Given `/guides/kitchen-gadgets` is built, when the generated HTML is inspected, then product cards are present as static content and no per-card Vue `client:only` island is emitted.
-- [ ] AC6: Given `/guides/summer-cooling` is built, when the generated HTML is inspected, then product cards are present as static content and no per-card Vue `client:only` island is emitted.
-- [ ] AC7: Given a guide product has an outbound URL, when rendered, then the link keeps `target="_blank"` and `rel="noopener noreferrer sponsored"`.
-- [ ] AC8: Given local public images are optimized or removed, when `pnpm build:site` runs, then required icons, OG image, and referenced guide images still resolve.
-- [ ] AC9: Given reduced-motion is enabled, when a static page loads, then reveal content is visible without smooth-scroll animation.
-- [ ] AC10: Given the implementation finishes, when validation runs, then `pnpm typecheck:core`, `pnpm typecheck:convex`, focused tests, `pnpm build`, and `pnpm build:site` pass.
+- [x] AC1: Given the backend has more changed sync records than one page, when sync hydration runs, then every page is fetched and applied before the handoff returns ready.
+- [x] AC2: Given a later sync page fails, when hydration runs, then local data remains readable, queued pushes are not replayed, and the handoff returns a recoverable blocked/error state.
+- [x] AC3: Given duplicate or retried page records, when hydration applies them, then records are idempotent and no conflict is created solely from retry.
+- [x] AC4: Given the response owner/product/environment does not match the status response, when hydration runs, then sync is blocked and no records are applied as trusted data.
+- [x] AC5: Given `/guides/kitchen-gadgets` is built, when the generated HTML is inspected, then product cards are present as static content and no per-card Vue `client:only` island is emitted.
+- [x] AC6: Given `/guides/summer-cooling` is built, when the generated HTML is inspected, then product cards are present as static content and no per-card Vue `client:only` island is emitted.
+- [x] AC7: Given a guide product has an outbound URL, when rendered, then the link keeps `target="_blank"` and `rel="noopener noreferrer sponsored"`.
+- [x] AC8: Given local public images are optimized or removed, when `pnpm build:site` runs, then required icons, OG image, and referenced guide images still resolve.
+- [x] AC9: Given reduced-motion is enabled, when a static page loads, then reveal content is visible without smooth-scroll animation.
+- [x] AC10: Given the implementation finishes, when validation runs, then `pnpm typecheck:core`, `pnpm typecheck:convex`, focused tests, `pnpm build`, and `pnpm build:site` pass.
 
 ## Test Strategy
 
@@ -394,14 +394,18 @@ None.
 |----------|-------|-------|--------|--------|-----------|
 | 2026-06-25 16:51:25 UTC | 100-sf-spec | GPT-5 Codex | Created spec from 403-sf-perf chantier potential for sync pagination and static-site performance hardening. | draft | /101-sf-ready Temu performance hardening |
 | 2026-06-25 16:57:00 UTC | 101-sf-ready | GPT-5 Codex | Validated structure, user-story fit, docs freshness, design-system guardrails, security scope, adversarial risks, and proof contract. | ready | /102-sf-start Temu performance hardening |
+| 2026-06-25 17:36:15 UTC | 102-sf-start | GPT-5 Codex | Implemented Convex-backed paginated sync hydration, full client handoff looping before queued replay, static Astro product cards for both guides, removed site-wide Lenis loading, updated technical sync docs, and ran local proof (`typecheck:core`, `typecheck:convex`, focused Vitest, `build`, `build:site`, artifact inspection). Asset duplication under `public/` and `site/public/` was audited but not deleted because the two static surfaces were not proven interchangeable. | implemented | /103-sf-verify Temu performance hardening |
+| 2026-06-25 17:41:11 UTC | 103-sf-verify | GPT-5 Codex | Verified sync pagination, guide static rendering, Lenis removal, docs, metadata, drift, builds, static artifacts, and Playwright smoke on both guide pages. Repaired the preexisting layout skip-link arbitrary z-index drift with the standard `z-50` utility before final drift proof. Remaining gap: duplicated heavyweight `professional-headshot-*.png` files still exist in both `public/` and `site/public/`; deletion or conversion needs a scoped asset policy because public URL compatibility was not proven. | partial | /102-sf-start Temu performance hardening asset consolidation |
+| 2026-06-25 17:49:48 UTC | 102-sf-start | GPT-5 Codex | Implemented the remaining asset consolidation by deleting unreferenced duplicated `professional-headshot-1..5.png` files from both `public/` and `site/public/`. Preserved favicon, touch icon, placeholder, robots, sitemap, llms, and `og-image.png`; verified `pnpm build:site` passes and `dist-site/` no longer contains the deleted headshots. | implemented | /103-sf-verify Temu performance hardening |
+| 2026-06-25 17:54:07 UTC | 103-sf-verify | GPT-5 Codex | Reverified the complete scope after asset deletion: app and Convex typechecks, focused sync tests, app build, site build, design-system drift check, metadata lint, static artifact scans for no Vue islands/Lenis/headshots, and Playwright desktop/mobile guide smoke all passed. | verified | /104-sf-end Temu performance hardening |
 
 ## Current Chantier Flow
 
 - 100-sf-spec: complete, spec created.
 - 101-sf-ready: complete, ready.
-- 102-sf-start: next, implement the ready spec.
-- 103-sf-verify: pending.
-- 104-sf-end: pending.
+- 102-sf-start: complete, asset consolidation implemented after prior partial verification.
+- 103-sf-verify: complete, verified after full local and browser proof.
+- 104-sf-end: next.
 - 005-sf-ship: pending.
 
-Next command: `/102-sf-start Temu performance hardening`
+Next command: `/104-sf-end Temu performance hardening`

@@ -126,6 +126,7 @@ const listSyncRecordsInternalRef = makeFunctionReference<
     environment: (typeof SYNC_ENVIRONMENTS)[number];
     since?: number;
     limit?: number;
+    cursor?: string | null;
   },
   {
     productId: typeof TEMU_SHOPPING_LISTS_PRODUCT_ID;
@@ -146,6 +147,9 @@ const listSyncRecordsInternalRef = makeFunctionReference<
         reason?: string;
       };
     }>;
+    continueCursor: string;
+    isDone: boolean;
+    pageStatus?: "SplitRecommended" | "SplitRequired" | null;
   }
 >("sync:listSyncRecordsInternal");
 
@@ -213,18 +217,30 @@ const syncRecordReturn = v.object({
   ),
 });
 
+const syncHydrationPageReturn = v.object({
+  productId: v.literal(TEMU_SHOPPING_LISTS_PRODUCT_ID),
+  environment: syncEnvironment,
+  ownerId: v.string(),
+  records: v.array(syncRecordReturn),
+  continueCursor: v.string(),
+  isDone: v.boolean(),
+  pageStatus: v.optional(
+    v.union(
+      v.literal("SplitRecommended"),
+      v.literal("SplitRequired"),
+      v.null(),
+    ),
+  ),
+});
+
 export const listSyncRecords = action({
   args: {
     environment: syncEnvironment,
     since: v.optional(v.number()),
     limit: v.optional(v.number()),
+    cursor: v.optional(v.union(v.string(), v.null())),
   },
-  returns: v.object({
-    productId: v.literal(TEMU_SHOPPING_LISTS_PRODUCT_ID),
-    environment: syncEnvironment,
-    ownerId: v.string(),
-    records: v.array(syncRecordReturn),
-  }),
+  returns: syncHydrationPageReturn,
   handler: async (ctx, args) => {
     const access = await requireCloudSyncAccess(ctx);
     return await ctx.runQuery(listSyncRecordsInternalRef, {
@@ -240,20 +256,16 @@ export const listSyncRecordsInternal = internalQuery({
     environment: syncEnvironment,
     since: v.optional(v.number()),
     limit: v.optional(v.number()),
+    cursor: v.optional(v.union(v.string(), v.null())),
   },
-  returns: v.object({
-    productId: v.literal(TEMU_SHOPPING_LISTS_PRODUCT_ID),
-    environment: syncEnvironment,
-    ownerId: v.string(),
-    records: v.array(syncRecordReturn),
-  }),
+  returns: syncHydrationPageReturn,
   handler: async (ctx, args) => {
     const since = args.since ?? 0;
-    const limit = Math.min(
+    const numItems = Math.min(
       Math.max(Math.floor(args.limit ?? MAX_SYNC_RECORDS_PER_PULL), 1),
       MAX_SYNC_RECORDS_PER_PULL,
     );
-    const rows = await ctx.db
+    const pagination = await ctx.db
       .query("syncRecords")
       .withIndex("by_owner_product_updated", (q) =>
         q
@@ -262,13 +274,16 @@ export const listSyncRecordsInternal = internalQuery({
           .eq("environment", args.environment)
           .gte("serverUpdatedAt", since),
       )
-      .take(limit);
+      .paginate({
+        numItems,
+        cursor: args.cursor ?? null,
+      });
 
     return {
       productId: TEMU_SHOPPING_LISTS_PRODUCT_ID,
       environment: args.environment,
       ownerId: args.ownerId,
-      records: rows
+      records: pagination.page
         .map((row) => ({
           domain: row.domain,
           operationType: row.operationType,
@@ -282,6 +297,9 @@ export const listSyncRecordsInternal = internalQuery({
           tombstone: row.tombstone,
         }))
         .filter((record) => isValidStoredSyncRecord(record)),
+      continueCursor: pagination.continueCursor,
+      isDone: pagination.isDone,
+      pageStatus: pagination.pageStatus ?? null,
     };
   },
 });

@@ -100,28 +100,13 @@ const allSchemas = [...defaultSchemas, ...jsonLd]
     <title>{title}</title>
   </head>
   <body>
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:bg-foreground focus:text-background focus:rounded-lg focus:text-sm focus:font-medium">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-foreground focus:text-background focus:rounded-lg focus:text-sm focus:font-medium">
       Skip to content
     </a>
     <div class="noise-overlay" aria-hidden="true"></div>
     <slot />
     <script>
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-      if (!prefersReducedMotion) {
-        import('lenis').then(({ default: Lenis }) => {
-          const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            smoothWheel: true,
-          })
-          function raf(time) {
-            lenis.raf(time)
-            requestAnimationFrame(raf)
-          }
-          requestAnimationFrame(raf)
-        })
-      }
 
       if (prefersReducedMotion) {
         document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('revealed'))

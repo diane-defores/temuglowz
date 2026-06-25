@@ -8,7 +8,11 @@ import type { CloudSyncRemoteRecord } from "@/lib/cloudSyncBackend";
 
 const now = 1_700_000_000_000;
 
-function listRecord(id: string, updatedAt = now): CloudSyncRemoteRecord {
+function listRecord(
+  id: string,
+  updatedAt = now,
+  name = "Cloud list",
+): CloudSyncRemoteRecord {
   return {
     domain: "shopping_list",
     operationType: "upsert",
@@ -20,7 +24,7 @@ function listRecord(id: string, updatedAt = now): CloudSyncRemoteRecord {
     serverUpdatedAt: updatedAt,
     payload: {
       id,
-      name: "Cloud list",
+      name,
       itemIds: [],
       createdAt: updatedAt,
       updatedAt,
@@ -104,6 +108,19 @@ describe("cloud sync guarded hydration", () => {
 
     expect(summary).toEqual({ applied: 0, skipped: 1 });
     expect(lists.lists["same-list"]?.name).toBe("New local");
+  });
+
+  it("applies duplicate retried page records idempotently", () => {
+    const lists = useShoppingListsStore();
+
+    const summary = applyCloudSyncRecords([
+      listRecord("same-list", now, "Cloud list"),
+      listRecord("same-list", now, "Cloud list"),
+    ]);
+
+    expect(summary).toEqual({ applied: 2, skipped: 0 });
+    expect(lists.lists["same-list"]?.name).toBe("Cloud list");
+    expect(Object.keys(lists.lists)).toEqual(["same-list"]);
   });
 
   it("skips stale upsert when cloud update is older than local record", () => {

@@ -39,6 +39,7 @@ import { TEMU_SHOPPING_LISTS_PRODUCT_ID } from "@/lib/accessModel";
 const syncEnabled = ref(false);
 const DEVICE_ID_KEY = "temu:cloud-sync-device-id";
 const ACCOUNT_EMAIL_KEY = "temu:cloud-sync-account-email";
+const MAX_HYDRATION_PAGES = 50;
 let activeAccountMarker: SyncAccountMarker | null = null;
 let activeSourceDeviceId: SyncSourceDeviceId | null = null;
 
@@ -307,21 +308,40 @@ async function startBackendVerifiedSyncHandoff(
       checkedAt: Date.now(),
     };
 
-    const hydration = await listCloudSyncRecords({ environment });
-    if (
-      hydration.ownerId !== status.ownerId
-      || hydration.productId !== status.productId
-      || hydration.environment !== status.environment
-    ) {
-      setSyncEnabled(false);
-      return {
-        status: "blocked",
-        reason: "account_mismatch",
-        jobs: [],
-      };
-    }
+    let cursor: string | null = null;
+    let isDone = false;
+    let pageCount = 0;
 
-    applyCloudSyncRecords(hydration.records);
+    while (!isDone) {
+      if (pageCount >= MAX_HYDRATION_PAGES) {
+        throw new Error("cloud_sync_hydration_page_limit_exceeded");
+      }
+
+      const hydration = await listCloudSyncRecords({ environment, cursor });
+      if (
+        hydration.ownerId !== status.ownerId
+        || hydration.productId !== status.productId
+        || hydration.environment !== status.environment
+      ) {
+        setSyncEnabled(false);
+        return {
+          status: "blocked",
+          reason: "account_mismatch",
+          jobs: [],
+        };
+      }
+      if (hydration.pageStatus === "SplitRequired") {
+        throw new Error("cloud_sync_hydration_split_required");
+      }
+      if (!hydration.isDone && hydration.continueCursor === cursor) {
+        throw new Error("cloud_sync_hydration_cursor_stalled");
+      }
+
+      applyCloudSyncRecords(hydration.records);
+      cursor = hydration.continueCursor;
+      isDone = hydration.isDone;
+      pageCount += 1;
+    }
     const decision = setSyncEnabledForSession(true, {
       globalUserId: status.ownerId,
       entitlement,

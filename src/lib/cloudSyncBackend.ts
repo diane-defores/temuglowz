@@ -39,6 +39,9 @@ export interface CloudSyncHydrationResponse {
   environment: SyncEnvironment;
   ownerId: string;
   records: CloudSyncRemoteRecord[];
+  continueCursor: string;
+  isDone: boolean;
+  pageStatus?: "SplitRecommended" | "SplitRequired" | null;
 }
 
 export interface CloudSyncPushResponse {
@@ -60,7 +63,12 @@ const getCloudSyncStatusRef = "sync:getCloudSyncStatus" as unknown as ActionRef<
 >;
 
 const listSyncRecordsRef = "sync:listSyncRecords" as unknown as ActionRef<
-  { environment: SyncEnvironment; since?: number; limit?: number },
+  {
+    environment: SyncEnvironment;
+    since?: number;
+    limit?: number;
+    cursor?: string | null;
+  },
   CloudSyncHydrationResponse
 >;
 
@@ -93,6 +101,7 @@ export async function listCloudSyncRecords(params: {
   environment: SyncEnvironment;
   since?: number;
   limit?: number;
+  cursor?: string | null;
 }): Promise<CloudSyncHydrationResponse> {
   return getConvexClient().action(listSyncRecordsRef, params);
 }

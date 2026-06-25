@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro'
-import ProductCard from '../../site/components/ProductCard.vue'
+import ProductCard from '../../site/components/ProductCard.astro'
 import Footer from '../../components/Footer.astro'
 import summerCoolingData from '../../site/data/summer-cooling.json'
 
@@ -28,7 +28,7 @@ const data = summerCoolingData
           <span class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
             Guide complet
           </span>
-          <time :datetime="data.updatedDate" class="text-xs text-muted-foreground">
+          <time datetime={data.updatedDate} class="text-xs text-muted-foreground">
             Mis à jour le {data.updatedDate}
           </time>
         </div>
@@ -42,7 +42,7 @@ const data = summerCoolingData
       </header>
 
       {data.sections.map((section: { id: string; title: string; products: any[] }) => (
-        <section :id={section.id} :key={section.id} class="mb-16 scroll-mt-24">
+        <section id={section.id} class="mb-16 scroll-mt-24">
           <h2 class="text-2xl font-bold text-foreground mb-2 pb-2 border-b border-border">
             {section.title}
           </h2>
@@ -52,7 +52,7 @@ const data = summerCoolingData
 
           <div class="space-y-6">
             {section.products.map((product: any) => (
-              <ProductCard client:only="vue" v-bind={product} />
+              <ProductCard {...product} />
             ))}
           </div>
         </section>
@@ -64,11 +64,8 @@ const data = summerCoolingData
             Questions fréquentes
           </h2>
           <div class="space-y-4">
-            {data.faq.map((item: { question: string; answer: string }, index: number) => (
-              <details
-                :key={index}
-                class="group p-4 rounded-xl bg-card border border-border"
-              >
+            {data.faq.map((item: { question: string; answer: string }) => (
+              <details class="group p-4 rounded-xl bg-card border border-border">
                 <summary class="cursor-pointer font-semibold text-foreground list-none flex items-center justify-between">
                   {item.question}
                   <svg class="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>

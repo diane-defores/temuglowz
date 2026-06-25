@@ -122,6 +122,12 @@ only after the same checks pass. Existing local data must never be silently
 wiped by sign-in, sign-out, failed sync, account mismatch, expired entitlement,
 or an empty cloud snapshot.
 
+Hydration reads are now paginated from Convex with a bounded per-page limit and
+continuation cursor. The client must verify owner/product/environment on every
+page, loop until `isDone`, and only replay queued local writes after all pages
+needed for the current handoff have been applied. A page failure or scope
+mismatch keeps cloud sync blocked instead of falsely marking the session ready.
+
 The sync model requires stable domain keys, checksums, account association
 metadata, typed offline operations, idempotency keys, tombstones for deletes,
 and visible states for local-only, blocked, pending, syncing, synced, retrying,
