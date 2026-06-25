@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css'
-import Navbar from '../components/Navbar.vue'
+import Navbar from '../site/components/Navbar.vue'
 
 interface Props {
   title?: string
@@ -104,6 +104,7 @@ const allSchemas = [...defaultSchemas, ...jsonLd]
       Skip to content
     </a>
     <div class="noise-overlay" aria-hidden="true"></div>
+    <Navbar appUrl="https://temuglowz.com" />
     <slot />
     <script>
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches

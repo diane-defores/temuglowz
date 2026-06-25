@@ -77,13 +77,13 @@ onMounted(() => {
   <header class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-3xl animate-slide-down">
     <nav class="relative flex items-center justify-between px-4 py-3 rounded-full bg-background/60 backdrop-blur-md border border-border">
       <a href="/" class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
+        <div class="w-8 h-8 rounded-lg bg-white dark:bg-white flex items-center justify-center shrink-0">
           <svg viewBox="0 0 32 32" class="w-5 h-5" fill="none" aria-hidden="true">
             <path d="M12 9.5v13l11-6.5L12 9.5Z" fill="#18181b"/>
             <rect x="20" y="14" width="2.5" height="9" rx="1.25" fill="#18181b"/>
           </svg>
         </div>
-        <span class="font-semibold text-foreground hidden sm:block">TemuGlowz</span>
+        <span class="font-semibold text-foreground text-sm sm:text-base">TemuGlowz</span>
       </a>
 
       <div class="hidden md:flex items-center gap-1 relative" id="desktop-nav">
@@ -98,11 +98,12 @@ onMounted(() => {
         </a>
       </div>
 
-      <div class="hidden md:flex items-center gap-3">
+      <div class="flex items-center gap-1">
         <button
           @click="toggleTheme"
           class="p-2 text-muted-foreground hover:text-foreground transition-colors"
           :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+          :title="isDark ? 'Light mode' : 'Dark mode'"
         >
           <svg v-if="isDark" class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="5"/>
@@ -112,34 +113,37 @@ onMounted(() => {
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
         </button>
-        <a href="https://github.com/dianedef/temu-shopping-lists/releases/latest" class="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2">
-          Download
-        </a>
-        <a
-          href="https://github.com/dianedef/temu-shopping-lists/releases/latest"
-          class="shimmer-btn bg-white text-zinc-950 hover:bg-zinc-200 rounded-full px-4 py-2 text-sm font-medium transition-colors"
-        >
-          Get Started
-        </a>
-      </div>
 
-      <button
-        id="mobile-menu-btn"
-        class="md:hidden p-2 text-muted-foreground hover:text-foreground"
-        aria-label="Toggle menu"
-        aria-expanded="false"
-        aria-controls="mobile-menu"
-      >
-        <svg class="w-5 h-5 menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="4" x2="20" y1="12" y2="12"/>
-          <line x1="4" x2="20" y1="6" y2="6"/>
-          <line x1="4" x2="20" y1="18" y2="18"/>
-        </svg>
-        <svg class="w-5 h-5 close-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 6 6 18"/>
-          <path d="m6 6 12 12"/>
-        </svg>
-      </button>
+        <div class="hidden md:flex items-center gap-3">
+          <a href="https://github.com/dianedef/temu-shopping-lists/releases/latest" class="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2">
+            Download
+          </a>
+          <a
+            href="https://github.com/dianedef/temu-shopping-lists/releases/latest"
+            class="shimmer-btn bg-white text-zinc-950 hover:bg-zinc-200 rounded-full px-4 py-2 text-sm font-medium transition-colors"
+          >
+            Get Started
+          </a>
+        </div>
+
+        <button
+          id="mobile-menu-btn"
+          class="md:hidden p-2 text-muted-foreground hover:text-foreground"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+        >
+          <svg class="w-5 h-5 menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" x2="20" y1="12" y2="12"/>
+            <line x1="4" x2="20" y1="6" y2="6"/>
+            <line x1="4" x2="20" y1="18" y2="18"/>
+          </svg>
+          <svg class="w-5 h-5 close-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"/>
+            <path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </div>
     </nav>
 
     <div id="mobile-menu" class="hidden absolute top-full left-0 right-0 mt-2 p-4 rounded-2xl bg-background/95 backdrop-blur-md border border-border">
