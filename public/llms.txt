@@ -9,6 +9,7 @@ Independent product recommendations for Temu shoppers. We curate the best gadget
 ## Key Pages
 - Home/Landing: /
 - Best Kitchen Gadgets: /guides/kitchen-gadgets
+- Best Computer Gadgets: /guides/gadgets-informatique
 - Best Christmas Gifts: /guides/christmas-gifts
 - Best Summer Products: /guides/summer-gifts
 
@@ -20,6 +21,7 @@ Independent product recommendations for Temu shoppers. We curate the best gadget
 
 ## Target Categories
 - Kitchen gadgets under $25
+- Computer accessories and USB gadgets
 - Unique home gifts
 - Summer outdoor accessories
 - Christmas gift ideas under $50

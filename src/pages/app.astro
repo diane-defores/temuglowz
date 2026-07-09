@@ -1,0 +1,71 @@
+---
+import Footer from '../components/Footer.astro'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout
+  title="TemuGlowz App"
+  description="Learn how TemuGlowz works today: a local-first Temu shopping list app with Android and development surfaces."
+  path="/app"
+>
+  <main id="main-content" class="min-h-screen bg-background text-foreground">
+    <section class="px-4 pt-24 pb-12">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.8fr)] lg:items-start">
+          <div data-reveal>
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-sm text-muted-foreground mb-6">
+              App overview
+            </span>
+            <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4" style="font-family: var(--font-cal-sans);">
+              TemuGlowz is a local-first shopping list app for Temu links and product snapshots.
+            </h1>
+            <p class="text-lg text-muted-foreground leading-relaxed max-w-3xl mb-6">
+              The product is currently positioned around local storage, saved product links, shopping sessions, and manual price or availability observations. The repository includes Android and development surfaces; a public production web app is not promised on this site.
+            </p>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="rounded-3xl border border-border bg-card/70 p-5">
+                <h2 class="text-lg font-semibold text-foreground mb-2">What it does</h2>
+                <p class="text-sm text-muted-foreground leading-relaxed">
+                  Save Temu product links, organize them into named lists, and keep personal product notes without relying on cloud-first storage.
+                </p>
+              </div>
+              <div class="rounded-3xl border border-border bg-card/70 p-5">
+                <h2 class="text-lg font-semibold text-foreground mb-2">What it does not claim</h2>
+                <p class="text-sm text-muted-foreground leading-relaxed">
+                  No promise of automated cart scraping, official Temu partnership, or always-on public web access.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <aside class="rounded-3xl border border-border bg-card/70 p-6" data-reveal>
+            <h2 class="text-xl font-semibold text-foreground mb-3" style="font-family: var(--font-instrument-sans);">
+              Access paths today
+            </h2>
+            <ul class="space-y-3 text-sm text-muted-foreground leading-relaxed mb-6">
+              <li>Review the source and current implementation on GitHub.</li>
+              <li>Use local development commands if you are testing the project directly.</li>
+              <li>Check the repository README for Android debug build guidance.</li>
+            </ul>
+            <div class="flex flex-col gap-3">
+              <a
+                href="https://github.com/dianedef/temu-shopping-lists"
+                class="shimmer-btn inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-medium text-zinc-950 hover:bg-zinc-200 transition-colors"
+              >
+                View GitHub repository
+              </a>
+              <a
+                href="https://github.com/dianedef/temu-shopping-lists#readme"
+                class="inline-flex items-center justify-center gap-2 rounded-full border border-border px-5 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+              >
+                Read setup notes
+              </a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <Footer />
+  </main>
+</Layout>
