@@ -5,6 +5,10 @@ defineProps<{
   rating: number
   price: string
   image: string
+  imageAvif?: string
+  imageWebp?: string
+  imageWidth?: number
+  imageHeight?: number
   productUrl?: string
   description: string
   pros?: string[]
@@ -21,13 +25,23 @@ defineProps<{
 
     <div class="flex flex-col sm:flex-row gap-6">
       <div class="sm:w-48 shrink-0">
-        <img
-          :src="image"
-          :alt="name"
-          class="w-full h-48 object-cover rounded-lg bg-background"
-          loading="lazy"
-          onerror="this.src='https://placehold.co/400x300/cccccc/666666?text=Produit'"
-        />
+        <picture>
+          <source v-if="imageAvif" :srcset="imageAvif" type="image/avif" sizes="(min-width: 640px) 12rem, 100vw" />
+          <source v-if="imageWebp" :srcset="imageWebp" type="image/webp" sizes="(min-width: 640px) 12rem, 100vw" />
+          <img
+            :src="image"
+            :alt="name"
+            :width="imageWidth ?? 400"
+            :height="imageHeight ?? 300"
+            class="w-full h-48 object-cover rounded-lg bg-background"
+            :style="{ aspectRatio: `${imageWidth ?? 400} / ${imageHeight ?? 300}` }"
+            :loading="highlighted ? 'eager' : 'lazy'"
+            :decoding="highlighted ? 'sync' : 'async'"
+            :fetchpriority="highlighted ? 'high' : 'auto'"
+            sizes="(min-width: 640px) 12rem, 100vw"
+            onerror="this.src='https://placehold.co/400x300/cccccc/666666?text=Produit'"
+          />
+        </picture>
       </div>
 
       <div class="flex-1">

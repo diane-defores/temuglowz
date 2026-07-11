@@ -2,9 +2,15 @@
 import Layout from '../../layouts/Layout.astro'
 import ProductCard from '../../site/components/ProductCard.astro'
 import Footer from '../../components/Footer.astro'
+import { buildGuideJsonLd } from '../../site/lib/guideSchemas'
 import gadgetsInformatiqueData from '../../site/data/gadgets-informatique.json'
 
 const data = gadgetsInformatiqueData
+const jsonLd = buildGuideJsonLd({
+  path: '/guides/gadgets-informatique',
+  lang: 'fr',
+  data,
+})
 ---
 
 <Layout
@@ -12,6 +18,7 @@ const data = gadgetsInformatiqueData
   description={data.metaDescription ?? data.description}
   path="/guides/gadgets-informatique"
   lang="fr"
+  jsonLd={jsonLd}
 >
   <main id="main-content" class="min-h-screen bg-background text-foreground">
     <article class="max-w-3xl mx-auto px-4 pt-24 pb-12 xl:pr-80">
@@ -52,8 +59,8 @@ const data = gadgetsInformatiqueData
 
           {section.products.length > 0 ? (
             <div class="space-y-6">
-              {section.products.map((product: any) => (
-                <ProductCard {...product} />
+              {section.products.map((product: any, productIndex: number) => (
+                <ProductCard {...product} highlighted={section.id === data.sections[0]?.id && productIndex === 0} />
               ))}
             </div>
           ) : (

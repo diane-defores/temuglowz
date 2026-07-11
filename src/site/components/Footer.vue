@@ -34,7 +34,7 @@
       <div class="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
         <p class="text-sm text-muted-foreground/70">&copy; {{ currentYear }} TemuGlowz. All rights reserved.</p>
         <div class="flex items-center gap-6">
-          <a href="/fr" class="text-sm text-muted-foreground/70 hover:text-foreground transition-colors">Français</a>
+          <a href="/guides" class="text-sm text-muted-foreground/70 hover:text-foreground transition-colors">Guides</a>
           <a href="https://github.com/dianedef/temu-shopping-lists" class="text-sm text-muted-foreground/70 hover:text-foreground transition-colors">GitHub</a>
         </div>
       </div>
@@ -47,8 +47,11 @@ const footerLinks: Record<string, { label: string; href: string }[]> = {
   Product: [
     { label: 'Features', href: '/#features' },
     { label: 'Pricing', href: '/#pricing' },
+    { label: 'App', href: '/app' },
   ],
   Resources: [
+    { label: 'Guides', href: '/guides' },
+    { label: 'Blog', href: '/blog' },
     { label: 'Downloads', href: 'https://github.com/dianedef/temu-shopping-lists/releases/latest' },
     { label: 'GitHub', href: 'https://github.com/dianedef/temu-shopping-lists' },
   ],

@@ -24,6 +24,8 @@ const {
 
 const canonicalUrl = new URL(path, 'https://temuglowz.com/').toString()
 const ogImageUrl = image.startsWith('http') ? image : new URL(image, 'https://temuglowz.com/').toString()
+const normalizedLang = lang.toLowerCase()
+const hreflang = normalizedLang.split('-')[0] || 'en'
 
 const defaultSchemas = [
   {
@@ -69,7 +71,7 @@ const allSchemas = [...defaultSchemas, ...jsonLd]
     <meta name="description" content={description} />
     <meta name="generator" content="Astro" />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="alternate" hreflang="en" href={canonicalUrl} />
+    <link rel="alternate" hreflang={hreflang} href={canonicalUrl} />
     <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
 
     <meta property="og:type" content="website" />

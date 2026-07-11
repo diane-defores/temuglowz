@@ -118,9 +118,10 @@ defineProps<{
 
         <div class="space-y-8">
           <ProductCard
-            v-for="product in section.products"
+            v-for="(product, productIndex) in section.products"
             :key="product.rank"
             v-bind="product"
+            :highlighted="section.id === sections[0]?.id && productIndex === 0"
           />
         </div>
       </section>

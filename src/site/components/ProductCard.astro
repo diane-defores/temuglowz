@@ -5,6 +5,10 @@ interface Props {
   rating: number;
   price: string;
   image: string;
+  imageAvif?: string;
+  imageWebp?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   productUrl?: string;
   description: string;
   pros?: string[];
@@ -18,11 +22,21 @@ const {
   rating,
   price,
   image,
+  imageAvif,
+  imageWebp,
+  imageWidth = 400,
+  imageHeight = 300,
   productUrl,
   description,
   pros = [],
   cons = [],
+  highlighted = false,
 } = Astro.props;
+
+const imageSizes = '(min-width: 640px) 12rem, 100vw'
+const imageLoading = highlighted ? 'eager' : 'lazy'
+const imageFetchPriority = highlighted ? 'high' : 'auto'
+const imageDecoding = highlighted ? 'sync' : 'async'
 ---
 
 <article class="group relative p-6 rounded-2xl bg-card border border-border hover:border-primary/30 transition-all duration-300">
@@ -32,13 +46,23 @@ const {
 
   <div class="flex flex-col sm:flex-row gap-6">
     <div class="sm:w-48 shrink-0">
-      <img
-        src={image}
-        alt={name}
-        class="w-full h-48 object-cover rounded-lg bg-background"
-        loading="lazy"
-        onerror="this.src='https://placehold.co/400x300/cccccc/666666?text=Produit'"
-      />
+      <picture>
+        {imageAvif && <source srcset={imageAvif} type="image/avif" sizes={imageSizes} />}
+        {imageWebp && <source srcset={imageWebp} type="image/webp" sizes={imageSizes} />}
+        <img
+          src={image}
+          alt={name}
+          width={imageWidth}
+          height={imageHeight}
+          class="w-full h-48 object-cover rounded-lg bg-background"
+          style={`aspect-ratio: ${imageWidth} / ${imageHeight};`}
+          loading={imageLoading}
+          decoding={imageDecoding}
+          fetchpriority={imageFetchPriority}
+          sizes={imageSizes}
+          onerror="this.src='https://placehold.co/400x300/cccccc/666666?text=Produit'"
+        />
+      </picture>
     </div>
 
     <div class="flex-1">

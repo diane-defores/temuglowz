@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+
+- Added a safer `tools/add-temu-product.ts` prepare/apply flow so Temu product ingestion no longer invents placeholder ratings or prices and can explicitly stop on login-gated products.
+- Fixed public guide `hreflang` tags so localized pages emit the correct alternate language instead of always advertising English.
+- Added page-level structured data to guide pages with breadcrumb, article, FAQ, and product list schema coverage.
+- Improved guide product-card image rendering with explicit dimensions, aspect-ratio reservation, and controlled image priority for better layout stability.
+- Added a technical workflow document for authenticated Temu product enrichment so browser login and payload extraction can be repeated without relying on conversation context.
+- Added a planning brief and source log for a future geek-objects guide so category design can continue without relying on the currently degraded Temu browsing account.
+
 ## 2026-06-10
 
 ### Added
