@@ -14,8 +14,8 @@ risk_level: high
 security_impact: none
 docs_impact: yes
 linked_systems:
-  - src/pages/
-  - src/site/data/
+  - site/src/pages/
+  - site/src/content/
   - public/llms.txt
 depends_on: []
 supersedes: []

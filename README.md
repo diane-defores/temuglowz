@@ -152,9 +152,10 @@ unknown/to review, never as sold out.
 
 See:
 
-- `shipflow_data/workflow/test-checklists/temu-shopping-lists-android.md`
-- `shipflow_data/workflow/test-checklists/temu-shopping-webview-sessions.md`
-- `shipflow_data/workflow/test-checklists/temu-price-availability-observations.md`
-- `shipflow_data/workflow/test-checklists/temu-socialglow-ui-copy-migration.md`
-- `shipflow_data/workflow/test-checklists/temu-shopping-lists-entitlements.md`
-- `shipflow_data/workflow/specs/temu-shopping-lists-android-app.md`
+- `shipflow_data/workflow/test-checklists/temu-shopping-lists-android.md` (legacy app corpus)
+- `shipflow_data/workflow/test-checklists/temu-shopping-webview-sessions.md` (legacy app corpus)
+- `shipflow_data/workflow/test-checklists/temu-price-availability-observations.md` (legacy app corpus)
+- `shipflow_data/workflow/test-checklists/temu-socialglow-ui-copy-migration.md` (legacy app corpus)
+- `shipflow_data/workflow/test-checklists/temu-shopping-lists-entitlements.md` (legacy app corpus)
+- `shipflow_data/workflow/specs/temu-shopping-lists-android-app.md` (legacy app corpus)
+- Canonical governance: `shipglowz_data/technical/`, `shipglowz_data/editorial/`, and `shipglowz_data/workflow/`

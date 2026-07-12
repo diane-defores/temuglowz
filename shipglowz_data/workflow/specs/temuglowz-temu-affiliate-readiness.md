@@ -18,20 +18,20 @@ risk_level: high
 security_impact: yes
 docs_impact: yes
 linked_systems:
-  - "src/pages/guides/**"
-  - "src/site/components/ProductCard.astro"
-  - "src/site/data/**"
-  - "src/pages/terms.astro"
-  - "src/pages/privacy.astro"
-  - "public/sitemap.xml"
+  - "site/src/pages/**"
+  - "site/src/components/**"
+  - "site/src/content/**"
+  - "site/src/pages/terms.astro"
+  - "site/src/pages/privacy.astro"
+  - "site/public/sitemap.xml"
   - "public/llms.txt"
   - "shipglowz_data/workflow/TASKS.md"
   - "shipflow_data/workflow/specs/temu-affiliate-guide-template-upgrade.md"
 depends_on:
-  - artifact: "BUSINESS.md"
-    artifact_version: "0.1.0"
+  - artifact: "shipglowz_data/business/business.md"
+    artifact_version: "0.2.0"
     required_status: draft
-  - artifact: "shipflow_data/technical/design-system-authority.md"
+  - artifact: "shipglowz_data/technical/site/design-system-authority.md"
     artifact_version: "1.0.0"
     required_status: active
   - artifact: "Temu Affiliate Program"

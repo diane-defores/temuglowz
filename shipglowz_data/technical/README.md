@@ -1,10 +1,10 @@
 ---
 artifact: technical_overview
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "0.2.0"
 project: TemuGlowz
 created: "2026-07-09"
-updated: "2026-07-09"
+updated: "2026-07-12"
 status: draft
 source_skill: 300-sg-docs
 scope: technical-governance-bootstrap
@@ -17,6 +17,7 @@ linked_systems:
   - shipglowz_data/technical/code-docs-map.md
   - shipglowz_data/technical/site/guide-pages-contract.md
   - shipglowz_data/technical/site/temu-authenticated-product-enrichment-workflow.md
+  - shipglowz_data/technical/design-system-authority.md
 depends_on: []
 supersedes: []
 evidence:
@@ -44,6 +45,8 @@ This folder is the canonical technical-governance corpus for TemuGlowz.
 
 - `site`: public Astro-rendered marketing and guide pages
 - `app`: Vue/Tauri application runtime
+
+The app design authority is `shipglowz_data/technical/design-system-authority.md`.
 
 ## Maintenance Rule
 

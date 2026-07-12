@@ -1,10 +1,10 @@
 ---
 artifact: technical_map
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "0.2.0"
 project: TemuGlowz
 created: "2026-07-09"
-updated: "2026-07-09"
+updated: "2026-07-12"
 status: draft
 source_skill: 300-sg-docs
 scope: code-docs-routing-bootstrap
@@ -21,6 +21,11 @@ linked_systems:
   - src/layouts/Layout.astro
   - src/pages/guides/
   - src/site/lib/guideSchemas.ts
+  - src/
+  - src-tauri/
+  - convex/
+  - site/src/
+  - shipglowz_data/technical/design-system-authority.md
 depends_on:
   - artifact: "shipglowz_data/technical/README.md"
     artifact_version: "0.1.0"
@@ -41,6 +46,20 @@ next_step: "/300-sg-docs technical"
 Route technical changes to the right canonical documentation owner.
 
 ## Mappings
+
+### Vue/Tauri shopping-list app
+
+- Path patterns: `src/**`, `src-tauri/**`, `convex/**`
+- Primary docs: `shipglowz_data/technical/apps/temu-shopping-lists-android-app.md`, `shipglowz_data/technical/platforms/android.md`, and `shipglowz_data/technical/design-system-authority.md` for UI changes
+- Trigger: import/list persistence, sync/auth, Android share target, WebView, or app UI changes
+- Validation: `pnpm typecheck`, `pnpm typecheck:convex`, `pnpm test:once`, `pnpm lint:check`, `pnpm build`; native proof is CI-first
+
+### Public Astro site
+
+- Path patterns: `site/src/pages/**`, `site/src/components/**`, `site/src/content/**`, `site/src/layouts/**`
+- Primary docs: `shipglowz_data/technical/site/guide-pages-contract.md` and `shipglowz_data/editorial/content-map.md`
+- Trigger: public route, content, SEO, structured-data, pricing, trust, or schema changes
+- Validation: `pnpm build:site`; preserve the Astro content schema and editorial claim gates
 
 ### Public guide pages
 

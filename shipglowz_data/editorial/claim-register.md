@@ -14,9 +14,9 @@ risk_level: high
 security_impact: none
 docs_impact: yes
 linked_systems:
-  - src/site/data/
-  - src/pages/terms.astro
-  - src/pages/privacy.astro
+  - site/src/content/
+  - site/src/pages/terms.astro
+  - site/src/pages/privacy.astro
 depends_on:
   - artifact: "FTC Endorsement Guides: What People Are Asking"
     artifact_version: "accessed 2026-07-12"
