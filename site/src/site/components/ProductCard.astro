@@ -1,0 +1,137 @@
+---
+import { toTrustedTemuUrl } from '../lib/affiliate'
+
+interface Props {
+  rank: number;
+  name: string;
+  price: string;
+  image: string;
+  imageAvif?: string;
+  imageWebp?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  productUrl?: string;
+  description: string;
+  pros?: string[];
+  cons?: string[];
+  bestFor?: string;
+  rationale?: string;
+  caution?: string;
+  priceNote?: string;
+  highlighted?: boolean;
+}
+
+const {
+  rank,
+  name,
+  price,
+  image,
+  imageAvif,
+  imageWebp,
+  imageWidth = 400,
+  imageHeight = 300,
+  productUrl,
+  description,
+  pros = [],
+  cons = [],
+  bestFor,
+  rationale,
+  caution,
+  priceNote = 'Prix indicatif : vérifiez le prix, les variantes et la disponibilité sur Temu avant d’acheter.',
+  highlighted = false,
+} = Astro.props;
+
+const trustedProductUrl = toTrustedTemuUrl(productUrl)
+
+const imageLoading = highlighted ? 'eager' : 'lazy'
+const imageFetchPriority = highlighted ? 'high' : 'auto'
+const imageDecoding = highlighted ? 'sync' : 'async'
+---
+
+<article class="group relative p-6 rounded-2xl bg-card border border-border hover:border-primary/30 transition-all duration-300">
+  <div class="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-primary text-background flex items-center justify-center font-bold text-lg shadow-lg">
+    #{rank}
+  </div>
+
+  <div class="flex flex-col sm:flex-row gap-6">
+    <div class="sm:w-48 shrink-0">
+      <picture>
+        {imageAvif && <source srcset={imageAvif} type="image/avif" />}
+        {imageWebp && <source srcset={imageWebp} type="image/webp" />}
+        <img
+          src={image}
+          alt={name}
+          width={imageWidth}
+          height={imageHeight}
+          class="w-full h-48 object-cover rounded-lg bg-background"
+          style={`aspect-ratio: ${imageWidth} / ${imageHeight};`}
+          loading={imageLoading}
+          decoding={imageDecoding}
+          fetchpriority={imageFetchPriority}
+          onerror="this.src='https://placehold.co/400x300/cccccc/666666?text=Produit'"
+        />
+      </picture>
+    </div>
+
+    <div class="flex-1">
+      <div class="mb-3">
+        <h3 class="text-xl font-semibold text-foreground group-hover:text-primary transition-colors">
+          {name}
+        </h3>
+      </div>
+
+      <p class="text-sm text-muted-foreground mb-4">{description}</p>
+
+      {bestFor && <p class="mb-3 text-sm text-foreground"><span class="font-semibold">Idéal pour :</span> {bestFor}</p>}
+      {rationale && <p class="mb-4 text-sm text-muted-foreground"><span class="font-semibold text-foreground">Pourquoi il figure ici :</span> {rationale}</p>}
+
+      <div class="mb-4">
+        <p class="text-2xl font-bold text-foreground">{price}</p>
+        <p class="mt-1 text-xs text-muted-foreground">{priceNote}</p>
+      </div>
+
+      {pros.length > 0 && (
+        <div class="mb-4">
+          <h4 class="text-sm font-semibold text-foreground mb-2">Points forts :</h4>
+          <ul class="flex flex-wrap gap-2">
+            {pros.map((pro) => (
+              <li class="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs">
+                {pro}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {cons.length > 0 && (
+        <div class="mb-4">
+          <h4 class="text-sm font-semibold text-muted-foreground mb-2">Points faibles :</h4>
+          <ul class="flex flex-wrap gap-2">
+            {cons.map((con) => (
+              <li class="inline-flex items-center px-2.5 py-1 rounded-full bg-red-500/10 text-red-400 text-xs">
+                {con}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {caution && <p class="mb-4 rounded-lg border border-amber-400/20 bg-amber-400/5 p-3 text-sm text-muted-foreground"><span class="font-semibold text-foreground">À vérifier :</span> {caution}</p>}
+
+      {trustedProductUrl && (
+        <a
+          href={trustedProductUrl}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary text-background font-medium hover:bg-primary/90 transition-colors shadow-lg shadow-primary/25"
+        >
+          Voir sur Temu
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+            <path d="M7 17 17 7"></path>
+            <path d="M7 7h10v10"></path>
+          </svg>
+        </a>
+      )}
+    </div>
+  </div>
+</article>

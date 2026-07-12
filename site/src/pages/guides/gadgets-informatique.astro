@@ -1,0 +1,110 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import ProductCard from '../../site/components/ProductCard.astro'
+import Footer from '../../components/Footer.astro'
+import { buildGuideJsonLd } from '../../site/lib/guideSchemas'
+import gadgetsInformatiqueData from '../../site/data/gadgets-informatique.json'
+
+const data = gadgetsInformatiqueData
+const jsonLd = buildGuideJsonLd({
+  path: '/guides/gadgets-informatique',
+  lang: 'fr',
+  data,
+})
+---
+
+<Layout
+  title={`${data.title} | TemuGlowz Guides`}
+  description={data.metaDescription ?? data.description}
+  path="/guides/gadgets-informatique"
+  lang="fr"
+  jsonLd={jsonLd}
+  noIndex={true}
+>
+  <main id="main-content" class="min-h-screen bg-background text-foreground">
+    <article class="max-w-3xl mx-auto px-4 pt-24 pb-12 xl:pr-80">
+      <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-6" aria-label="Fil d'Ariane">
+        <a href="/" class="hover:text-foreground transition-colors">Accueil</a>
+        <span aria-hidden="true">›</span>
+        <a href="/guides" class="hover:text-foreground transition-colors">Guides</a>
+        <span aria-hidden="true">›</span>
+        <span class="text-foreground">Informatique</span>
+      </nav>
+
+      <header class="mb-12" data-reveal>
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+            Guide complet
+          </span>
+          <time datetime={data.updatedDate} class="text-xs text-muted-foreground">
+            Mis à jour le {data.updatedDate}
+          </time>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4" style="font-family: var(--font-cal-sans);">
+          {data.title}
+        </h1>
+        {data.subtitle && (
+          <p class="text-lg text-muted-foreground mb-4">{data.subtitle}</p>
+        )}
+        <p class="text-lg text-muted-foreground leading-relaxed">{data.description}</p>
+      </header>
+
+      {data.sections.map((section: { id: string; title: string; products: any[] }) => (
+        <section id={section.id} class="mb-16 scroll-mt-24">
+          <h2 class="text-2xl font-bold text-foreground mb-2 pb-2 border-b border-border">
+            {section.title}
+          </h2>
+          <p class="text-muted-foreground mb-6">
+            Cette sélection est en préparation et n’est pas encore proposée comme guide d’achat.
+          </p>
+
+          {section.products.length > 0 ? (
+            <div class="space-y-6">
+              {section.products.map((product: any, productIndex: number) => (
+                <ProductCard {...product} highlighted={section.id === data.sections[0]?.id && productIndex === 0} />
+              ))}
+            </div>
+          ) : (
+            <div class="rounded-2xl border border-dashed border-border bg-card/60 p-6 text-sm text-muted-foreground">
+              Aucun produit n’est recommandé ici tant qu’un corpus de sources vérifiées n’est pas disponible.
+            </div>
+          )}
+        </section>
+      ))}
+
+      {data.faq?.length && (
+        <section id="faq" class="mb-16 scroll-mt-24" data-reveal>
+          <h2 class="text-2xl font-bold text-foreground mb-6 pb-2 border-b border-border">
+            Questions fréquentes
+          </h2>
+          <div class="space-y-4">
+            {data.faq.map((item: { question: string; answer: string }) => (
+              <details class="group p-4 rounded-xl bg-card border border-border">
+                <summary class="cursor-pointer font-semibold text-foreground list-none flex items-center justify-between">
+                  {item.question}
+                  <svg class="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                </summary>
+                <p class="mt-3 text-sm text-muted-foreground leading-relaxed">
+                  {item.answer}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <aside class="p-8 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent border border-primary/20 text-center" data-reveal>
+        <h3 class="text-xl font-bold text-foreground mb-3">Besoin d'autres idées utiles ?</h3>
+        <p class="text-muted-foreground mb-6">
+          Retrouvez nos autres selections de produits pratiques sur Temu.
+        </p>
+        <a href="/guides" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-card text-foreground font-medium border border-border hover:bg-muted transition-colors">
+          Tous les guides
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </aside>
+    </article>
+
+    <Footer />
+  </main>
+</Layout>

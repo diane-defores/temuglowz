@@ -1,0 +1,66 @@
+---
+import Footer from '../../components/Footer.astro'
+import Layout from '../../layouts/Layout.astro'
+import { guideIndex } from '../../site/data/guideIndex'
+---
+
+<Layout
+  title="TemuGlowz Guides"
+  description="Browse TemuGlowz buying guides for kitchen gadgets, summer cooling gear, and practical computer accessories."
+  path="/guides"
+>
+  <main id="main-content" class="min-h-screen bg-background text-foreground">
+    <section class="px-4 pt-24 pb-12">
+      <div class="max-w-6xl mx-auto">
+        <div class="max-w-3xl mb-12" data-reveal>
+          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-sm text-muted-foreground mb-6">
+            Product guides
+          </span>
+          <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4" style="font-family: var(--font-cal-sans);">
+            Temu buying guides with focused picks and clearer tradeoffs.
+          </h1>
+          <p class="text-lg text-muted-foreground leading-relaxed">
+            Explore our current guide library for practical Temu categories. Each page is designed to help readers compare options faster and move from browsing to a cleaner shortlist.
+          </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-reveal>
+          {guideIndex.map((guide, index) => (
+            <article
+              class="animate-fade-up rounded-3xl border border-border bg-card/70 p-6"
+              style={`animation-delay: ${index * 100}ms`}
+            >
+              <div class="flex items-center justify-between gap-4 mb-4">
+                <span class="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  {guide.category}
+                </span>
+                <time class="text-xs text-muted-foreground" datetime={guide.updatedDate}>
+                  {guide.updatedDate}
+                </time>
+              </div>
+              <h2 class="text-2xl font-semibold text-foreground mb-3" style="font-family: var(--font-instrument-sans);">
+                <a href={guide.slug} class="hover:text-muted-foreground transition-colors">
+                  {guide.title}
+                </a>
+              </h2>
+              <p class="text-sm text-muted-foreground mb-4 leading-relaxed">{guide.readingHint}</p>
+              <p class="text-sm text-muted-foreground/85 leading-relaxed mb-6">{guide.description}</p>
+              <a
+                href={guide.slug}
+                class="inline-flex items-center gap-2 rounded-full border border-border px-5 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+              >
+                Read guide
+                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14" />
+                  <path d="m12 5 7 7-7 7" />
+                </svg>
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <Footer />
+  </main>
+</Layout>

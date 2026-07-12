@@ -1,0 +1,17 @@
+# TemuGlowz
+
+TemuGlowz is an independent project for people who want to organize Temu shopping links and compare curated product selections.
+
+## Public guides
+
+- Kitchen gadgets: /guides/kitchen-gadgets
+- Summer cooling: /guides/summer-cooling
+
+Only these published guides are intended as current public recommendation pages. Product details, prices, variants and availability can change; readers should verify them on Temu before ordering.
+
+## Editorial approach
+
+- TemuGlowz is not currently an official Temu partner.
+- Published selections are editorial curation, not hands-on product testing unless a page explicitly documents that evidence.
+- If TemuGlowz later uses affiliate links, the relationship and possible commission will be disclosed clearly near recommendations.
+- TemuGlowz does not claim verified sellers, live availability, guaranteed prices or paid placements without documented proof.

@@ -1,0 +1,77 @@
+---
+import Footer from '../components/Footer.astro'
+import Layout from '../layouts/Layout.astro'
+import { guideIndex } from '../site/data/guideIndex'
+---
+
+<Layout
+  title="TemuGlowz Blog"
+  description="Follow TemuGlowz product notes, shopping workflows, and guide updates."
+  path="/blog"
+>
+  <main id="main-content" class="min-h-screen bg-background text-foreground">
+    <section class="px-4 pt-24 pb-12">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.9fr)] lg:items-start">
+          <div data-reveal>
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-sm text-muted-foreground mb-6">
+              Editorial hub
+            </span>
+            <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4" style="font-family: var(--font-cal-sans);">
+              TemuGlowz blog and guide updates.
+            </h1>
+            <p class="text-lg text-muted-foreground leading-relaxed max-w-3xl">
+              This section collects TemuGlowz editorial content: practical product guides, workflow notes, and release-oriented shopping advice. The current published set is guide-first while longer blog posts are still being expanded.
+            </p>
+          </div>
+
+          <aside class="rounded-3xl border border-border bg-card/70 p-6" data-reveal>
+            <h2 class="text-xl font-semibold text-foreground mb-3" style="font-family: var(--font-instrument-sans);">
+              What to expect here
+            </h2>
+            <ul class="space-y-3 text-sm text-muted-foreground leading-relaxed">
+              <li>Temu product roundups for specific use cases.</li>
+              <li>Shopping workflow notes tied to the TemuGlowz app.</li>
+              <li>New guide announcements and future category expansions.</li>
+            </ul>
+            <a href="/guides" class="inline-flex items-center gap-2 mt-6 rounded-full border border-border px-5 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors">
+              Browse all guides
+              <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </a>
+          </aside>
+        </div>
+
+        <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-reveal>
+          {guideIndex.map((guide, index) => (
+            <article
+              class="animate-fade-up rounded-3xl border border-border bg-card/70 p-6"
+              style={`animation-delay: ${index * 100}ms`}
+            >
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-4">
+                Published guide
+              </p>
+              <h2 class="text-2xl font-semibold text-foreground mb-3" style="font-family: var(--font-instrument-sans);">
+                <a href={guide.slug} class="hover:text-muted-foreground transition-colors">
+                  {guide.title}
+                </a>
+              </h2>
+              <p class="text-sm text-muted-foreground leading-relaxed mb-6">{guide.readingHint}</p>
+              <a href={guide.slug} class="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors">
+                Open article
+                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14" />
+                  <path d="m12 5 7 7-7 7" />
+                </svg>
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <Footer />
+  </main>
+</Layout>

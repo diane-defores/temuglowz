@@ -1,0 +1,32 @@
+{
+  "name": "@temuglowz/site",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Public TemuGlowz Astro site.",
+  "engines": {
+    "node": ">=20.19.0 <23"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check",
+    "test": "vitest",
+    "test:once": "vitest run",
+    "product:add": "node tools/add-temu-product.ts"
+  },
+  "dependencies": {
+    "@astrojs/vue": "^7.0.0",
+    "@tailwindcss/vite": "^4.3.1",
+    "astro": "^7.0.2",
+    "tailwindcss": "^4.1.11",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@types/node": "^20.19.41",
+    "typescript": "^5.7.3",
+    "vitest": "^4.1.7"
+  }
+}

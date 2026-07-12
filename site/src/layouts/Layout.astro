@@ -1,0 +1,132 @@
+---
+import '../styles/global.css'
+import Navbar from '../site/components/Navbar.vue'
+
+interface Props {
+  title?: string
+  description?: string
+  path?: string
+  image?: string
+  noIndex?: boolean
+  jsonLd?: Record<string, unknown>[]
+  lang?: string
+}
+
+const {
+  title = 'TemuGlowz — Your Temu Orders. One Organized List.',
+  description = 'Archive your Temu shopping carts and orders locally, track price history, and organize products across multiple sessions.',
+  path = '',
+  image = '/og-image.png',
+  noIndex = false,
+  jsonLd = [],
+  lang = 'en',
+} = Astro.props
+
+const canonicalUrl = new URL(path, 'https://temuglowz.com/').toString()
+const ogImageUrl = image.startsWith('http') ? image : new URL(image, 'https://temuglowz.com/').toString()
+const normalizedLang = lang.toLowerCase()
+const hreflang = normalizedLang.split('-')[0] || 'en'
+
+const defaultSchemas = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "TemuGlowz",
+    url: "https://temuglowz.com",
+    description: "Local-first Temu shopping list archive.",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "TemuGlowz",
+    url: "https://temuglowz.com",
+    logo: "https://temuglowz.com/favicon.svg",
+    sameAs: [],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "TemuGlowz",
+    url: "https://temuglowz.com",
+    applicationCategory: "ShoppingApplication",
+    operatingSystem: "Web",
+    description: "Archive and organize your Temu shopping carts and orders locally.",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "EUR",
+    },
+  },
+]
+
+const allSchemas = [...defaultSchemas, ...jsonLd]
+---
+
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="generator" content="Astro" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang={hreflang} href={canonicalUrl} />
+    <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="TemuGlowz" />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    {allSchemas.map((schema) => (
+      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    ))}
+
+    <title>{title}</title>
+  </head>
+  <body>
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-foreground focus:text-background focus:rounded-lg focus:text-sm focus:font-medium">
+      Skip to content
+    </a>
+    <div class="noise-overlay" aria-hidden="true"></div>
+    <Navbar appUrl="https://temuglowz.com" />
+    <slot />
+    <script>
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+      if (prefersReducedMotion) {
+        document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('revealed'))
+      } else {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('revealed')
+                observer.unobserve(entry.target)
+              }
+            })
+          },
+          { threshold: 0.1, rootMargin: '-50px' }
+        )
+        document.querySelectorAll('[data-reveal]').forEach((el) => observer.observe(el))
+      }
+    </script>
+  </body>
+</html>

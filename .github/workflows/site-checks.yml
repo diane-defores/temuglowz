@@ -1,0 +1,68 @@
+name: TemuGlowz Site Checks
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+      - preview
+      - "release/**"
+    paths:
+      - "site/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/site-checks.yml"
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+      - preview
+      - "release/**"
+    paths:
+      - "site/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/site-checks.yml"
+
+concurrency:
+  group: site-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  site-checks:
+    name: Astro site checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20.19.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm --filter @temuglowz/site typecheck
+
+      - name: Unit tests
+        run: pnpm --filter @temuglowz/site test:once
+
+      - name: Build
+        run: pnpm --filter @temuglowz/site build
