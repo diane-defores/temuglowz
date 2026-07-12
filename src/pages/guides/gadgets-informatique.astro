@@ -19,6 +19,7 @@ const jsonLd = buildGuideJsonLd({
   path="/guides/gadgets-informatique"
   lang="fr"
   jsonLd={jsonLd}
+  noIndex={true}
 >
   <main id="main-content" class="min-h-screen bg-background text-foreground">
     <article class="max-w-3xl mx-auto px-4 pt-24 pb-12 xl:pr-80">
@@ -54,7 +55,7 @@ const jsonLd = buildGuideJsonLd({
             {section.title}
           </h2>
           <p class="text-muted-foreground mb-6">
-            Cette section est prete a accueillir notre selection des meilleurs produits dans cette categorie.
+            Cette sélection est en préparation et n’est pas encore proposée comme guide d’achat.
           </p>
 
           {section.products.length > 0 ? (
@@ -65,7 +66,7 @@ const jsonLd = buildGuideJsonLd({
             </div>
           ) : (
             <div class="rounded-2xl border border-dashed border-border bg-card/60 p-6 text-sm text-muted-foreground">
-              Produits a ajouter.
+              Aucun produit n’est recommandé ici tant qu’un corpus de sources vérifiées n’est pas disponible.
             </div>
           )}
         </section>

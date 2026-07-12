@@ -17,6 +17,7 @@ linked_systems:
   - shipglowz_data/technical/site/guide-pages-contract.md
   - shipglowz_data/technical/site/geek-objects-guide-brief.md
   - shipglowz_data/technical/site/temu-authenticated-product-enrichment-workflow.md
+  - shipglowz_data/technical/site/design-system-authority.md
   - src/layouts/Layout.astro
   - src/pages/guides/
   - src/site/lib/guideSchemas.ts
@@ -50,6 +51,7 @@ Route technical changes to the right canonical documentation owner.
   - `src/layouts/Layout.astro`
 - Primary doc:
   - `shipglowz_data/technical/site/guide-pages-contract.md`
+  - `shipglowz_data/technical/site/design-system-authority.md` for UI/token changes
 - Trigger:
   - public guide route changes
   - structured-data changes

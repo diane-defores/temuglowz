@@ -1,10 +1,13 @@
 {
-  "title": "Les Meilleurs Ventilateurs et Accessoires pour se Rafraîchir cet Été 2025",
-  "subtitle": "Notre sélection des 10 meilleures solutions pour surfer la chaleur sans exploser la facture",
-  "description": "Face à la canicule, voici nos ventilateurs performants, accessoires cooling et solutions d'habitation fraîche testés sur Temu. Qualité, performances et prix au top.",
+  "title": "Ventilateurs et Accessoires Temu pour l’Été 2026 : une sélection à comparer",
+  "subtitle": "Des formats portables et accessoires pour comparer vos options par temps chaud",
+  "description": "Une sélection de ventilateurs portables et d’accessoires Temu pour comparer les formats, options et usages en été.",
   "publishedDate": "2026-06-25",
   "updatedDate": "2026-06-25",
-  "metaDescription": "Top ventilateurs Temu 2026: ventilateurs de brumisation, accessoires cooling et solutions compactes pour rester au frais cet été.",
+  "metaDescription": "Ventilateurs et accessoires Temu à comparer en 2026 : brumisation, formats portables et options compactes pour l’été.",
+  "disclosure": "TemuGlowz n’est pas partenaire de Temu à ce jour. Si certains liens deviennent affiliés après approbation, nous l’indiquerons clairement et pourrons recevoir une commission sans coût supplémentaire pour vous.",
+  "selectionMethod": "Nous sélectionnons des formats décrits pour des usages précis et comparons les informations visibles. Les produits de cette page ne sont pas testés par TemuGlowz : vérifiez autonomie, niveau sonore, sécurité, variantes et disponibilité sur Temu.",
+  "selectionCriteria": ["Format adapté à un usage identifié", "Fonctions annoncées lisibles", "Autonomie et alimentation à vérifier", "Prix et disponibilité considérés comme indicatifs"],
   "sections": [
     {
       "id": "ventilateurs",
@@ -18,7 +21,10 @@
           "image": "https://placehold.co/400x300/0ea5e9/ffffff?text=Ventilateur+USB",
           "productUrl": "https://www.temu.com/fr/c/fans-air-conditioners-heating-o4-768.html",
           "description": "Ventilateur portable ultra-compact, 3 vitesses, LED night light, charge USB-C. Idéal bureau et chambre.",
-          "pros": ["Ultra compact", "LED inclus", "3 vitesses"]
+          "pros": ["Format portable annoncé", "Trois vitesses annoncées", "Recharge USB-C annoncée"],
+          "bestFor": "un bureau ou une petite pièce quand un flux d’air personnel suffit",
+          "rationale": "le format compact et USB correspond à un usage proche de soi.",
+          "caution": "vérifiez la puissance, le niveau sonore et l’autonomie réelle."
         },
         {
           "rank": 2,
@@ -28,8 +34,11 @@
           "image": "https://placehold.co/400x300/0ea5e9/ffffff?text=Ventilateur+Brumisation",
           "productUrl": "https://www.temu.com/fr/c/fans-air-conditioners-heating-o4-768.html",
           "description": "Mini ventilateur de pulvérisation rechargeable par USB avec 4 vitesses réglables, fonctionnement à faible bruit et batterie longue durée. Compact et léger pour le refroidissement personnel, les voyages, le bureau et les activités de plein air.",
-          "pros": ["4 vitesses", "Brumisation", "Faible bruit"],
-          "cons": ["Réservoir à remplir"]
+          "pros": ["Quatre vitesses annoncées", "Fonction brumisation annoncée", "Format rechargeable annoncé"],
+          "cons": ["Réservoir à remplir"],
+          "bestFor": "un usage nomade quand vous acceptez de remplir un petit réservoir",
+          "rationale": "la combinaison ventilateur et brumisation peut convenir à certains usages personnels.",
+          "caution": "vérifiez l’entretien, l’autonomie et les conditions d’utilisation de l’eau."
         }
       ]
     },
@@ -44,8 +53,11 @@
           "price": "24,99 €",
           "image": "https://img.kwcdn.com/product/fancy/931dbdcc-1c0b-4a19-b53a-fdbc88f6cf02.jpg",
           "productUrl": "https://temu.com/g-601100024747812",
-          "description": "Rafraîchit directement le cou avec 5200mAh batterie intégrée.",
-          "pros": ["Rafraîchit le cou", "5200mAh batterie", "Design ergonomique"]
+          "description": "Format de ventilateur de cou avec batterie annoncée de 5200 mAh.",
+          "pros": ["Format porté au cou", "Batterie annoncée de 5200 mAh", "Format ergonomique annoncé"],
+          "bestFor": "un flux d’air personnel en déplacement ou lors d’activités légères",
+          "rationale": "le format mains libres peut répondre à un besoin ponctuel de confort.",
+          "caution": "vérifiez le poids, le niveau sonore, l’autonomie et les consignes de sécurité."
         }
       ]
     }
@@ -53,11 +65,11 @@
   "faq": [
     {
       "question": "Quel ventilateur choisir pour un grand salon ?",
-      "answer": "Un ventilateur colonne pliable 4 pieds couvre efficacement jusqu'à 25m² avec un coût énergétique réduit."
+      "answer": "Pour une grande pièce, comparez le débit d’air, la portée, le niveau sonore et la consommation annoncés. Les chiffres de couverture dépendent du modèle et de la pièce."
     },
     {
       "question": "Le climatiseur de cou vaut-il le coup ?",
-      "answer": "Excellent pour les activités outdoor, travail sous la chaleur ou sport. Rafraîchit directement la zone du cou."
+      "answer": "Un ventilateur de cou peut convenir à un usage personnel en extérieur. Comparez l’autonomie, le poids, le bruit et les avis avant commande."
     }
   ]
 }

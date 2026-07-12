@@ -31,13 +31,13 @@ temu best gadgets, temu kitchen accessories, temu christmas gifts, temu summer p
 - "gadgets cuisine pas chers" - intention d'achat claire
 
 ## valeur_proposition
-Découvrez les meilleurs gadgets, accessoires et cadeaux uniques sur Temu. Sélection expert, tests indépendants, liens d'affiliation sélectifs pour vous simplifier les achats smart.
+Découvrez des gadgets, accessoires et idées cadeaux Temu à comparer. Sélections éditoriales transparentes, critères visibles et liens potentiellement affiliés uniquement après approbation du programme.
 
 ## positionnement
-Site d'affiliation indépendant proposant des sélections thématiques de produits Temu originaux, avec un positionnement budget-ami et découverte produit.
+Projet indépendant de sélections thématiques de produits Temu, avec un positionnement budget-ami et découverte produit. Aucune affiliation ou autorisation Temu n’est revendiquée avant approbation écrite.
 
 ## model_économique
-Affiliation Amazon/Temu (commission sur achats via liens affiliés)
+Affiliation envisagée (commission éventuelle sur achats via liens affiliés après approbation d’un programme partenaire)
 
 ## compliance
 - Transparence affiliation : mentions claires sur les liens sponsorisés

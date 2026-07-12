@@ -1,8 +1,9 @@
 ---
+import { toTrustedTemuUrl } from '../lib/affiliate'
+
 interface Props {
   rank: number;
   name: string;
-  rating: number;
   price: string;
   image: string;
   imageAvif?: string;
@@ -13,13 +14,16 @@ interface Props {
   description: string;
   pros?: string[];
   cons?: string[];
+  bestFor?: string;
+  rationale?: string;
+  caution?: string;
+  priceNote?: string;
   highlighted?: boolean;
 }
 
 const {
   rank,
   name,
-  rating,
   price,
   image,
   imageAvif,
@@ -30,10 +34,15 @@ const {
   description,
   pros = [],
   cons = [],
+  bestFor,
+  rationale,
+  caution,
+  priceNote = 'Prix indicatif : vérifiez le prix, les variantes et la disponibilité sur Temu avant d’acheter.',
   highlighted = false,
 } = Astro.props;
 
-const imageSizes = '(min-width: 640px) 12rem, 100vw'
+const trustedProductUrl = toTrustedTemuUrl(productUrl)
+
 const imageLoading = highlighted ? 'eager' : 'lazy'
 const imageFetchPriority = highlighted ? 'high' : 'auto'
 const imageDecoding = highlighted ? 'sync' : 'async'
@@ -47,8 +56,8 @@ const imageDecoding = highlighted ? 'sync' : 'async'
   <div class="flex flex-col sm:flex-row gap-6">
     <div class="sm:w-48 shrink-0">
       <picture>
-        {imageAvif && <source srcset={imageAvif} type="image/avif" sizes={imageSizes} />}
-        {imageWebp && <source srcset={imageWebp} type="image/webp" sizes={imageSizes} />}
+        {imageAvif && <source srcset={imageAvif} type="image/avif" />}
+        {imageWebp && <source srcset={imageWebp} type="image/webp" />}
         <img
           src={image}
           alt={name}
@@ -59,35 +68,26 @@ const imageDecoding = highlighted ? 'sync' : 'async'
           loading={imageLoading}
           decoding={imageDecoding}
           fetchpriority={imageFetchPriority}
-          sizes={imageSizes}
           onerror="this.src='https://placehold.co/400x300/cccccc/666666?text=Produit'"
         />
       </picture>
     </div>
 
     <div class="flex-1">
-      <div class="flex items-start justify-between gap-4 mb-3">
+      <div class="mb-3">
         <h3 class="text-xl font-semibold text-foreground group-hover:text-primary transition-colors">
           {name}
         </h3>
-        <div class="flex items-center gap-1 text-amber-400">
-          {Array.from({ length: 5 }, (_, index) => (
-            <svg
-              class:list={["w-4 h-4", { "fill-current": index + 1 <= rating, "opacity-30": index + 1 > rating }]}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-            </svg>
-          ))}
-          <span class="text-sm text-muted-foreground ml-1">{rating}/5</span>
-        </div>
       </div>
 
       <p class="text-sm text-muted-foreground mb-4">{description}</p>
 
+      {bestFor && <p class="mb-3 text-sm text-foreground"><span class="font-semibold">Idéal pour :</span> {bestFor}</p>}
+      {rationale && <p class="mb-4 text-sm text-muted-foreground"><span class="font-semibold text-foreground">Pourquoi il figure ici :</span> {rationale}</p>}
+
       <div class="mb-4">
         <p class="text-2xl font-bold text-foreground">{price}</p>
+        <p class="mt-1 text-xs text-muted-foreground">{priceNote}</p>
       </div>
 
       {pros.length > 0 && (
@@ -116,9 +116,11 @@ const imageDecoding = highlighted ? 'sync' : 'async'
         </div>
       )}
 
-      {productUrl && (
+      {caution && <p class="mb-4 rounded-lg border border-amber-400/20 bg-amber-400/5 p-3 text-sm text-muted-foreground"><span class="font-semibold text-foreground">À vérifier :</span> {caution}</p>}
+
+      {trustedProductUrl && (
         <a
-          href={productUrl}
+          href={trustedProductUrl}
           target="_blank"
           rel="noopener noreferrer sponsored"
           class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary text-background font-medium hover:bg-primary/90 transition-colors shadow-lg shadow-primary/25"

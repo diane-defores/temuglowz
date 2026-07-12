@@ -6,10 +6,11 @@
 
 ## Active
 
-🟠 [temuglowz] task: Protect incomplete guide pages from indexing until product selections are ready | status: todo | area: seo-guides | next: add noindex or remove /guides/gadgets-informatique from sitemap and llms.txt until the page has substantive product content
+🔴 [temuglowz] task: Reach verified public-site readiness before Temu affiliate outreach | status: in_progress | area: affiliate-readiness | spec: shipglowz_data/workflow/specs/temuglowz-temu-affiliate-readiness.md | next: run readiness gate then resolve public-site audit blockers before any contact with Temu
+🟢 [temuglowz] task: Protect incomplete guide pages from indexing until product selections are ready | status: done | area: seo-guides | next: none | notes: draft computing guide is noindexed and removed from sitemap, guide index and llms.txt
 🟠 [temuglowz] task: Repair public-site internal links and guide index integrity | status: todo | area: seo-site-architecture | next: verify all linked public routes resolve or remove broken links across footer, guides, and utility pages
 🟠 [temuglowz] task: Add an upstream image optimization path for guide product assets | status: todo | area: seo-cwv-images | next: define how product ingestion stores width/height plus local WebP or AVIF derivatives instead of relying on raw third-party image URLs
-🟠 [temuglowz] task: Run build and browser verification for public guide SEO and CWV changes | status: todo | area: seo-verification | next: run site build, inspect rendered head output, and capture browser-level validation for LCP/CLS-sensitive guide pages
+🟠 [temuglowz] task: Run build and browser verification for public guide SEO and CWV changes | status: in_progress | area: seo-verification | next: local build and static checks pass; capture browser-level desktop/mobile and production validation for promoted guide pages
 🟠 [temuglowz] task: Industrialize authenticated Temu product enrichment with a reusable test-account flow | status: doing | area: guide-ingestion-auth | next: connect the new prepare/apply product-ingestion CLI to the authenticated browser session so login-gated Temu products can be turned into guide-ready payloads without ad hoc manual reshaping | notes: tools/add-temu-product.ts now supports normalized prepare/apply modes and explicit needs_authentication output
 🟠 [temuglowz] task: Split geek-object content planning away from the practical computing guide | status: doing | area: content-taxonomy-guides | next: keep the future geek-objects guide in planning mode until a stable source corpus exists, then decide whether to replace or complement /guides/gadgets-informatique | notes: taxonomy and source-log docs now exist under shipglowz_data/technical/site/
 

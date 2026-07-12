@@ -50,16 +50,6 @@ function toAbsoluteUrl(pathOrUrl?: string) {
   return new URL(pathOrUrl, `${SITE_URL}/`).toString()
 }
 
-function parseEuroPrice(price?: string) {
-  if (!price) {
-    return undefined
-  }
-
-  const normalized = price.replace(/[^\d,.-]/g, '').replace(',', '.')
-  const amount = Number.parseFloat(normalized)
-  return Number.isFinite(amount) ? amount.toFixed(2) : undefined
-}
-
 export function buildGuideJsonLd({ path, lang, data }: BuildGuideJsonLdOptions) {
   const canonicalUrl = new URL(path, `${SITE_URL}/`).toString()
   const publishedDate = data.publishedDate ?? data.updatedDate
@@ -146,7 +136,6 @@ export function buildGuideJsonLd({ path, lang, data }: BuildGuideJsonLdOptions) 
         .slice()
         .sort((left, right) => left.rank - right.rank)
         .map((product, index) => {
-          const price = parseEuroPrice(product.price)
           const productSchema: Record<string, unknown> = {
             '@type': 'Product',
             name: product.name,
@@ -158,42 +147,10 @@ export function buildGuideJsonLd({ path, lang, data }: BuildGuideJsonLdOptions) 
             productSchema.image = image
           }
 
-          if (product.productUrl) {
-            productSchema.url = product.productUrl
-          }
-
-          if (typeof product.rating === 'number') {
-            productSchema.aggregateRating = {
-              '@type': 'AggregateRating',
-              ratingValue: product.rating.toFixed(1),
-              bestRating: '5',
-              worstRating: '1',
-            }
-          }
-
-          if (price) {
-            const offerSchema: Record<string, unknown> = {
-              '@type': 'Offer',
-              price,
-              priceCurrency: 'EUR',
-              availability: 'https://schema.org/InStock',
-            }
-
-            if (product.productUrl) {
-              offerSchema.url = product.productUrl
-            }
-
-            productSchema.offers = offerSchema
-          }
-
           const listItem: Record<string, unknown> = {
             '@type': 'ListItem',
             position: index + 1,
             item: productSchema,
-          }
-
-          if (product.productUrl) {
-            listItem.url = product.productUrl
           }
 
           return listItem

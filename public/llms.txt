@@ -1,41 +1,17 @@
-# TemuGlowz - Best Temu Gadgets & Gifts
+# TemuGlowz
 
-Organization: TemuGlowz
-Description: Find the best gadgets, kitchen accessories, and unique gifts from Temu
+TemuGlowz is an independent project for people who want to organize Temu shopping links and compare curated product selections.
 
-## What We Do
-Independent product recommendations for Temu shoppers. We curate the best gadgets, kitchen accessories, and gift ideas with honest reviews and affiliate links.
+## Public guides
 
-## Key Pages
-- Home/Landing: /
-- Best Kitchen Gadgets: /guides/kitchen-gadgets
-- Best Computer Gadgets: /guides/gadgets-informatique
-- Best Christmas Gifts: /guides/christmas-gifts
-- Best Summer Products: /guides/summer-gifts
+- Kitchen gadgets: /guides/kitchen-gadgets
+- Summer cooling: /guides/summer-cooling
 
-## Our Approach
-- Products tested in real conditions
-- Honest reviews with pros/cons
-- Affiliate commissions disclosed transparently
-- Focus on unique finds and bulk-buying opportunities
+Only these published guides are intended as current public recommendation pages. Product details, prices, variants and availability can change; readers should verify them on Temu before ordering.
 
-## Target Categories
-- Kitchen gadgets under $25
-- Computer accessories and USB gadgets
-- Unique home gifts
-- Summer outdoor accessories
-- Christmas gift ideas under $50
-- Bulk-buying essentials
+## Editorial approach
 
-## Product Criteria
-- Under $50 price point
-- 4+ star ratings minimum
-- Verified seller on Temu
-- Practical utility or unique design
-- Fast shipping options
-
-## Trust Signals
-- Independent testing methodology
-- Regular price/availability updates
-- Clear affiliate disclosure
-- No paid placements
+- TemuGlowz is not currently an official Temu partner.
+- Published selections are editorial curation, not hands-on product testing unless a page explicitly documents that evidence.
+- If TemuGlowz later uses affiliate links, the relationship and possible commission will be disclosed clearly near recommendations.
+- TemuGlowz does not claim verified sellers, live availability, guaranteed prices or paid placements without documented proof.
