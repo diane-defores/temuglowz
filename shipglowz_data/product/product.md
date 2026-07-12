@@ -20,8 +20,8 @@ user_problem: "Product links and shopping intent are difficult to capture into d
 linked_systems:
   - README.md
   - site/src/pages/
-  - src/
-  - src-tauri/
+  - app/src/
+  - app/src-tauri/
 depends_on: []
 supersedes: []
 evidence:

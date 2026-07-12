@@ -1,7 +1,7 @@
 ---
 artifact: editorial_governance
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.1"
 project: "TemuGlowz"
 created: "2026-07-12"
 updated: "2026-07-12"
@@ -15,8 +15,8 @@ security_impact: none
 docs_impact: yes
 linked_systems:
   - site/src/pages/
-  - site/src/content/
-  - public/llms.txt
+  - site/src/site/data/
+  - site/public/llms.txt
 depends_on: []
 supersedes: []
 evidence:

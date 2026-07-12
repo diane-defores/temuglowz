@@ -1,7 +1,7 @@
 ---
 artifact: technical_map
 metadata_schema_version: "1.0"
-artifact_version: "0.2.0"
+artifact_version: "0.3.1"
 project: TemuGlowz
 created: "2026-07-09"
 updated: "2026-07-12"
@@ -18,12 +18,12 @@ linked_systems:
   - shipglowz_data/technical/site/geek-objects-guide-brief.md
   - shipglowz_data/technical/site/temu-authenticated-product-enrichment-workflow.md
   - shipglowz_data/technical/site/design-system-authority.md
-  - src/layouts/Layout.astro
-  - src/pages/guides/
-  - src/site/lib/guideSchemas.ts
-  - src/
-  - src-tauri/
-  - convex/
+  - site/src/layouts/Layout.astro
+  - site/src/pages/guides/
+  - site/src/site/lib/guideSchemas.ts
+  - app/src/
+  - app/src-tauri/
+  - app/convex/
   - site/src/
   - shipglowz_data/technical/design-system-authority.md
 depends_on:
@@ -35,6 +35,7 @@ evidence:
   - "Public guide routes use Astro and share a guide JSON-LD helper."
   - "Recent SEO fixes touched Layout.astro and guide page structured data."
   - "Authenticated Temu product enrichment now has a dedicated workflow document."
+  - "The legacy map recorded CI-first Android proof and explicit coverage for app source, native Tauri, Convex, and extension paths."
 next_review: "2026-07-23"
 next_step: "/300-sg-docs technical"
 ---
@@ -49,14 +50,16 @@ Route technical changes to the right canonical documentation owner.
 
 ### Vue/Tauri shopping-list app
 
-- Path patterns: `src/**`, `src-tauri/**`, `convex/**`
+- Path patterns: `app/src/**`, `app/src-tauri/**`, `app/convex/**`, `app/extension/**`
 - Primary docs: `shipglowz_data/technical/apps/temu-shopping-lists-android-app.md`, `shipglowz_data/technical/platforms/android.md`, and `shipglowz_data/technical/design-system-authority.md` for UI changes
 - Trigger: import/list persistence, sync/auth, Android share target, WebView, or app UI changes
 - Validation: `pnpm typecheck`, `pnpm typecheck:convex`, `pnpm test:once`, `pnpm lint:check`, `pnpm build`; native proof is CI-first
 
+Changes to native commands, Android manifests, share intents, WebView plugins, sync schemas, merge semantics, auth storage, or extension bridges require an explicit documentation review even when browser tests pass. Native Android claims remain gated by CI plus real-device proof.
+
 ### Public Astro site
 
-- Path patterns: `site/src/pages/**`, `site/src/components/**`, `site/src/content/**`, `site/src/layouts/**`
+- Path patterns: `site/src/pages/**`, `site/src/components/**`, `site/src/site/**`, `site/src/layouts/**`
 - Primary docs: `shipglowz_data/technical/site/guide-pages-contract.md` and `shipglowz_data/editorial/content-map.md`
 - Trigger: public route, content, SEO, structured-data, pricing, trust, or schema changes
 - Validation: `pnpm build:site`; preserve the Astro content schema and editorial claim gates
@@ -64,10 +67,10 @@ Route technical changes to the right canonical documentation owner.
 ### Public guide pages
 
 - Path patterns:
-  - `src/pages/guides/*.astro`
-  - `src/site/data/*.json`
-  - `src/site/lib/guideSchemas.ts`
-  - `src/layouts/Layout.astro`
+  - `site/src/pages/guides/*.astro`
+  - `site/src/site/data/*.json`
+  - `site/src/site/lib/guideSchemas.ts`
+  - `site/src/layouts/Layout.astro`
 - Primary doc:
   - `shipglowz_data/technical/site/guide-pages-contract.md`
   - `shipglowz_data/technical/site/design-system-authority.md` for UI/token changes
@@ -85,9 +88,9 @@ Route technical changes to the right canonical documentation owner.
 
 - Path patterns:
   - `.agents/skills/temu-product-adder/SKILL.md`
-  - `src/site/data/*.json`
-  - `src/pages/guides/*.astro`
-  - `src/site/components/ProductCard.astro`
+  - `site/src/site/data/*.json`
+  - `site/src/pages/guides/*.astro`
+  - `site/src/site/components/ProductCard.astro`
 - Primary doc:
   - `shipglowz_data/technical/site/temu-authenticated-product-enrichment-workflow.md`
 - Trigger:
@@ -105,8 +108,8 @@ Route technical changes to the right canonical documentation owner.
 - Path patterns:
   - `shipglowz_data/technical/site/geek-objects-guide-brief.md`
   - `shipglowz_data/technical/site/geek-objects-source-log.md`
-  - `src/pages/guides/gadgets-informatique.astro`
-  - `src/site/data/gadgets-informatique.json`
+  - `site/src/pages/guides/gadgets-informatique.astro`
+  - `site/src/site/data/gadgets-informatique.json`
 - Primary doc:
   - `shipglowz_data/technical/site/geek-objects-guide-brief.md`
 - Trigger:

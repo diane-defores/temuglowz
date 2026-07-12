@@ -1,18 +1,23 @@
-// @ts-check
 import { defineConfig } from 'astro/config';
-
+import vue from '@astrojs/vue';
 import tailwindcss from '@tailwindcss/vite';
+import { fileURLToPath, URL } from 'node:url';
 
-// https://astro.build/config
 export default defineConfig({
-  i18n: {
-    defaultLocale: 'en',
-    locales: ['en', 'fr'],
-    routing: {
-      prefixDefaultLocale: false,
+  integrations: [vue()],
+  output: 'static',
+  build: {
+    format: 'directory',
+  },
+  outDir: 'dist',
+  site: 'https://temuglowz.com',
+  vite: {
+    plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        '~': fileURLToPath(new URL('./src/site', import.meta.url)),
+      },
     },
   },
-  vite: {
-    plugins: [tailwindcss()]
-  }
 });

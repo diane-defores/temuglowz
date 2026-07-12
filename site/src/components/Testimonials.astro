@@ -2,23 +2,23 @@
 const testimonials = [
   {
     rating: 5,
-    review: 'Run personal and client accounts from one workspace without mixing sessions or losing context.',
-    name: 'Community manager',
-    designation: 'Multi-account workflow',
+    review: 'I finally have a place to keep track of all my Temu orders. No more digging through emails.',
+    name: 'Batch buyer',
+    designation: 'Personal shopping',
     featured: false,
   },
   {
     rating: 5,
-    review: 'Keep outreach, posting, inbox checks, and analytics links close together instead of spreading work across tabs.',
-    name: 'Founder operator',
-    designation: 'Daily execution',
+    review: 'Price history is a game changer. I can see if a deal is real before I checkout. Saved so much already.',
+    name: 'Deal hunter',
+    designation: 'Smart shopping',
     featured: true,
   },
   {
     rating: 5,
-    review: 'Use anti-distraction controls when social networks are work tools, not places to drift for another hour.',
-    name: 'Creator team',
-    designation: 'Focus and review',
+    review: 'Having everything local means I can review my carts even when I am offline. App works great on Android too.',
+    name: 'Power user',
+    designation: 'Multi-device workflow',
     featured: false,
   },
 ]
@@ -32,7 +32,7 @@ const testimonials = [
         class="animate-fade-up delay-100 text-3xl sm:text-4xl font-bold text-foreground"
         style="font-family: var(--font-instrument-sans);"
       >
-        Built for Real Social Operations
+        Built for Real Temu Shoppers
       </h2>
     </div>
 
@@ -54,7 +54,6 @@ const testimonials = [
             </div>
           )}
 
-          <!-- Stars -->
           <div class="flex gap-1 mb-4" role="img" aria-label={`${item.rating} out of 5 stars`}>
             {Array.from({ length: item.rating }).map(() => (
               <svg class="w-4 h-4 fill-amber-400 text-amber-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>

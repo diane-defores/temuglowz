@@ -1,7 +1,7 @@
 ---
 artifact: agent_entrypoint
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.1.0"
 project: "TemuGlowz"
 created: "2026-07-12"
 updated: "2026-07-12"
@@ -16,45 +16,37 @@ docs_impact: yes
 linked_systems:
   - CLAUDE.md
   - README.md
+  - app/README.md
+  - site/README.md
   - shipglowz_data/
 depends_on: []
 supersedes: []
 evidence:
-  - "Created as the canonical repository routing entrypoint required by ShipGlowz governance."
+  - "The repository is organized as a thin pnpm root with app and site workspaces."
 next_review: "2026-08-12"
 next_step: "/103-sg-verify project governance"
 ---
 
-# TemuGlowz Agent Contract
+# TemuGlowz agent router
 
 ## Read first
 
-1. `CLAUDE.md` for execution and validation constraints.
-2. `README.md` for the public project overview.
-3. `shipglowz_data/technical/code-docs-map.md` before code changes.
-4. `shipglowz_data/editorial/content-map.md` before public-copy or content changes.
-5. The mapped primary document before changing a subsystem.
+1. `CLAUDE.md` for monorepo execution and validation constraints.
+2. `README.md` for workspace routing and root commands.
+3. `app/README.md` before app, Tauri, Convex, or extension work.
+4. `site/README.md` before Astro, public asset, guide data, or site-tool work.
+5. The mapped document under root `shipglowz_data/` when governance access is in scope.
 
-## Canonical ownership
+## Ownership
 
-- Durable governance lives under `shipglowz_data/`.
-- `shipglowz_data/business/` owns business, product, brand, and GTM truth.
-- `shipglowz_data/technical/` owns implementation and platform contracts.
-- `shipglowz_data/editorial/` owns public surfaces, claims, page intent, and editorial follow-up.
-- `shipglowz_data/workflow/` owns specs, audits, checklists, evidence, and execution tasks.
-- Root legacy docs such as `BUSINESS.md`, `TASKS.md`, and `AUDIT_LOG.md` are migration sources, not new sources of truth.
+- `app/` owns Vue, Vite, Tauri, Convex, extension code, app assets, and app-local configuration.
+- `site/` owns Astro pages/layouts/components, site-only Vue islands, guide data, public assets, and site tools.
+- The root owns workspace orchestration, CI routing, process configuration, and repository entrypoints.
+- Keep exactly one governance corpus at root; never create nested or legacy governance copies.
 
 ## Non-negotiables
 
 - Do not claim Temu partnership, approval, live pricing, availability, testing, or automation without evidence.
 - Keep app data local-first and do not store Temu cookies, credentials, or browser session exports.
-- Preserve runtime content schemas; governance frontmatter belongs only on governance artifacts.
-- Any code or public-claim change requires documentation alignment or an explicit no-impact record.
-
-## Validation
-
-Run the focused checks named by the mapped technical/editorial contract, plus metadata lint on changed governance artifacts. Native Android proof is CI-first in this workspace.
-
-## Maintenance Rule
-
-Update this contract when canonical ownership, entrypoint order, security boundaries, or authoritative validation changes.
+- Do not make the app depend on files under `site/`, or the public site depend on app implementation files.
+- Validate the affected workspace and run root orchestration checks for cross-workspace changes.

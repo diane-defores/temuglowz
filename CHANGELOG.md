@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Reorganized the repository into a root pnpm workspace with canonical `app/`, `site/`, and `shipglowz_data/` trees; local install, typecheck, lint, tests, builds, and migration hygiene checks pass.
 - Added a safer `tools/add-temu-product.ts` prepare/apply flow so Temu product ingestion no longer invents placeholder ratings or prices and can explicitly stop on login-gated products.
 - Fixed public guide `hreflang` tags so localized pages emit the correct alternate language instead of always advertising English.
 - Added page-level structured data to guide pages with breadcrumb, article, FAQ, and product list schema coverage.

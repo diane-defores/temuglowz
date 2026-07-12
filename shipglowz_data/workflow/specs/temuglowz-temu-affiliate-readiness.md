@@ -24,9 +24,9 @@ linked_systems:
   - "site/src/pages/terms.astro"
   - "site/src/pages/privacy.astro"
   - "site/public/sitemap.xml"
-  - "public/llms.txt"
+  - "site/public/llms.txt"
   - "shipglowz_data/workflow/TASKS.md"
-  - "shipflow_data/workflow/specs/temu-affiliate-guide-template-upgrade.md"
+  - "shipglowz_data/workflow/specs/temu-affiliate-guide-template-upgrade.md"
 depends_on:
   - artifact: "shipglowz_data/business/business.md"
     artifact_version: "0.2.0"
@@ -175,7 +175,7 @@ exception_without_proof:
 
 ## Dependencies
 
-- `shipflow_data/workflow/specs/temu-affiliate-guide-template-upgrade.md` must pass readiness and verification before its guide pages can count as affiliate-ready.
+- `shipglowz_data/workflow/specs/temu-affiliate-guide-template-upgrade.md` must pass readiness and verification before its guide pages can count as affiliate-ready.
 - `shipglowz_data/workflow/TASKS.md` is the execution tracker for technical readiness work; public-content tasks belong in the editorial roadmap when that surface is governed.
 - Official sources accessed 2026-07-12: Temu Affiliate Program, FTC Endorsement Guides FAQ, and Google Search Central Reviews System. Fresh-docs verdict: `fresh-docs checked`.
 
@@ -189,10 +189,10 @@ exception_without_proof:
 
 ## Links & Consequences
 
-- `src/pages/guides/gadgets-informatique.astro` currently renders empty guide sections while `public/sitemap.xml` includes the route; this is a readiness blocker.
-- `src/site/components/ProductCard.astro` currently checks only whether `productUrl` exists; it needs the link-safety contract already specified by the affiliate-guide chantier.
-- `BUSINESS.md` says "tests indépendants" although the guide spec requires non-test wording; this conflict must be resolved before it informs public copy or outreach.
-- `src/pages/terms.astro` and `src/pages/privacy.astro` are trust surfaces and must match the real public/app status without overclaiming legal completeness.
+- `site/src/pages/guides/gadgets-informatique.astro` currently renders empty guide sections while `site/public/sitemap.xml` includes the route; this is a readiness blocker.
+- `site/src/site/components/ProductCard.astro` currently checks only whether `productUrl` exists; it needs the link-safety contract already specified by the affiliate-guide chantier.
+- `shipglowz_data/business/business.md` says "tests indépendants" although the guide spec requires non-test wording; this conflict must be resolved before it informs public copy or outreach.
+- `site/src/pages/terms.astro` and `site/src/pages/privacy.astro` are trust surfaces and must match the real site/public/app status without overclaiming legal completeness.
 - Existing app security tasks stay separate; public claims about cloud, accounts or production availability must remain conservative until their own proof exists.
 
 ## Documentation Coherence
@@ -221,7 +221,7 @@ exception_without_proof:
   - Validate with: dated audit records, no invented pass/fail status.
 
 - [ ] Task 2: Remove or complete thin and broken public surfaces.
-  - Files: `src/pages/guides/gadgets-informatique.astro`, `src/site/data/guideIndex.ts`, `public/sitemap.xml`, `public/llms.txt`, relevant footer/navigation files.
+  - Files: `site/src/pages/guides/gadgets-informatique.astro`, `site/src/site/data/guideIndex.ts`, `site/public/sitemap.xml`, `site/public/llms.txt`, relevant footer/navigation files.
   - Action: Keep only substantive, reachable public guide routes indexable; repair or remove broken internal references.
   - Depends on: Task 1 finding set.
   - User story link: ensures the channel sent to Temu helps a real reader instead of exposing unfinished pages.
@@ -235,7 +235,7 @@ exception_without_proof:
   - Validate with: that spec's full test contract and verification artifact.
 
 - [ ] Task 4: Align claims, legal/trust pages and product sourcing evidence.
-  - Files: `BUSINESS.md`, `src/pages/terms.astro`, `src/pages/privacy.astro`, guide data/source-log artifacts.
+  - Files: `shipglowz_data/business/business.md`, `site/src/pages/terms.astro`, `site/src/pages/privacy.astro`, guide data/source-log artifacts.
   - Action: remove unsupported test/partnership claims; define evidence and freshness fields for every promoted product.
   - Depends on: Task 1 claim audit and Task 3 content contract.
   - User story link: prevents the operator and reader from relying on unproved claims.
@@ -282,7 +282,7 @@ exception_without_proof:
 
 ## Execution Notes
 
-Read first: `BUSINESS.md`, `shipglowz_data/workflow/TASKS.md`, `shipflow_data/workflow/specs/temu-affiliate-guide-template-upgrade.md`, `src/pages/guides/gadgets-informatique.astro`, `src/site/components/ProductCard.astro`, `public/sitemap.xml`, and `shipflow_data/technical/design-system-authority.md`.
+Read first: `shipglowz_data/business/business.md`, `shipglowz_data/workflow/TASKS.md`, `shipglowz_data/workflow/specs/temu-affiliate-guide-template-upgrade.md`, `site/src/pages/guides/gadgets-informatique.astro`, `site/src/site/components/ProductCard.astro`, `site/public/sitemap.xml`, and `shipglowz_data/technical/design-system-authority.md`.
 
 Execution order: baseline audit -> public-surface blockers -> affiliate-guide dependency -> claims/trust alignment -> technical/a11y/performance proof -> production proof -> independent verification -> operator-reviewed outreach draft. Do not begin outreach work while any NO-GO gate remains.
 

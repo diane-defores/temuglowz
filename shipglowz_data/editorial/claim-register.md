@@ -1,7 +1,7 @@
 ---
 artifact: claim_register
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.1"
 project: "TemuGlowz"
 created: "2026-07-12"
 updated: "2026-07-12"
@@ -14,7 +14,8 @@ risk_level: high
 security_impact: none
 docs_impact: yes
 linked_systems:
-  - site/src/content/
+  - site/src/site/data/
+  - site/src/pages/guides/
   - site/src/pages/terms.astro
   - site/src/pages/privacy.astro
 depends_on:

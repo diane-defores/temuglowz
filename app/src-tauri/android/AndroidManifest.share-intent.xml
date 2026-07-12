@@ -1,0 +1,16 @@
+<!--
+  Tauri Android ACTION_SEND entry point placeholder.
+
+  When running `tauri android init`, copy this <intent-filter> into:
+  app/src-tauri/gen/android/app/src/main/AndroidManifest.xml
+  inside the MainActivity declaration.
+-->
+<activity
+  android:name=".MainActivity"
+  android:exported="true">
+  <intent-filter>
+    <action android:name="android.intent.action.SEND" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <data android:mimeType="text/plain" />
+  </intent-filter>
+</activity>

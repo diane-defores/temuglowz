@@ -15,15 +15,15 @@ security_impact: none
 docs_impact: yes
 linked_systems:
   - shipglowz_data/technical/code-docs-map.md
-  - src/pages/guides/
-  - src/layouts/Layout.astro
-  - src/site/lib/guideSchemas.ts
-  - src/site/data/guideIndex.ts
+  - site/src/pages/guides/
+  - site/src/layouts/Layout.astro
+  - site/src/site/lib/guideSchemas.ts
+  - site/src/site/data/guideIndex.ts
 depends_on: []
 supersedes: []
 evidence:
-  - "Repository contains public guide routes under src/pages/guides/*.astro."
-  - "Guide pages use Layout.astro and page-level JSON-LD through src/site/lib/guideSchemas.ts."
+  - "Repository contains public guide routes under site/src/pages/guides/*.astro."
+  - "Guide pages use Layout.astro and page-level JSON-LD through site/src/site/lib/guideSchemas.ts."
   - "Vue remains available for widgets/islands, but duplicate public guide pages create governance and SEO drift."
 next_review: "2026-07-23"
 next_step: "/300-sg-docs update public site governance"
@@ -39,21 +39,21 @@ Define the canonical implementation contract for public guide pages on the TemuG
 
 This document applies to:
 
-- public guide routes under `src/pages/guides/*.astro`
-- guide content data in `src/site/data/*.json`
-- guide structured-data generation in `src/site/lib/guideSchemas.ts`
-- shared site metadata behavior in `src/layouts/Layout.astro`
+- public guide routes under `site/src/pages/guides/*.astro`
+- guide content data in `site/src/site/data/*.json`
+- guide structured-data generation in `site/src/site/lib/guideSchemas.ts`
+- shared site metadata behavior in `site/src/layouts/Layout.astro`
 
 ## Owned Files
 
-- `src/pages/guides/*.astro`
-- `src/site/data/*.json`
-- `src/site/lib/guideSchemas.ts`
-- `src/layouts/Layout.astro`
+- `site/src/pages/guides/*.astro`
+- `site/src/site/data/*.json`
+- `site/src/site/lib/guideSchemas.ts`
+- `site/src/layouts/Layout.astro`
 
 ## Rendering Rules
 
-- Public guide pages must live in `src/pages/guides/*.astro`.
+- Public guide pages must live in `site/src/pages/guides/*.astro`.
 - Public guide pages are the canonical indexable routes for guide content.
 - Do not create a second public Vue page for the same guide slug unless there is an explicit, documented product reason.
 - Vue is allowed inside Astro when a widget or island is genuinely needed.
@@ -69,7 +69,7 @@ Every public guide page should pass these props to `Layout`:
 - `description`
 - `jsonLd`
 
-Page-level structured data for guides should be generated through `src/site/lib/guideSchemas.ts`.
+Page-level structured data for guides should be generated through `site/src/site/lib/guideSchemas.ts`.
 
 That helper is the current source of truth for:
 
@@ -84,7 +84,7 @@ If a guide is incomplete or intentionally not ready for indexing, do not expose 
 
 ## Data Rules
 
-Guide content data should live in `src/site/data/*.json`.
+Guide content data should live in `site/src/site/data/*.json`.
 
 Each guide data file should include at minimum:
 
@@ -107,15 +107,15 @@ If products exist, keep product metadata complete enough for structured data whe
 
 ## Current Examples
 
-- `src/pages/guides/kitchen-gadgets.astro`
-- `src/pages/guides/summer-cooling.astro`
-- `src/pages/guides/gadgets-informatique.astro`
+- `site/src/pages/guides/kitchen-gadgets.astro`
+- `site/src/pages/guides/summer-cooling.astro`
+- `site/src/pages/guides/gadgets-informatique.astro`
 
 ## Validation
 
 - Confirm public guide routes remain Astro-first.
 - Confirm `jsonLd` is passed into `Layout`.
-- Confirm `src/site/lib/guideSchemas.ts` still matches the guide data shape.
+- Confirm `site/src/site/lib/guideSchemas.ts` still matches the guide data shape.
 - Confirm `hreflang` follows page language.
 - Confirm sitemap inclusion matches indexability intent.
 

@@ -1,7 +1,7 @@
 ---
 artifact: business_context
 metadata_schema_version: "1.0"
-artifact_version: "0.2.0"
+artifact_version: "0.3.0"
 project: "TemuGlowz"
 created: "2026-06-22"
 updated: "2026-07-12"
@@ -20,11 +20,11 @@ value_proposition: "Transparent, evidence-bounded selections and comparisons of 
 linked_systems:
   - site/src/pages/
   - shipglowz_data/editorial/claim-register.md
-  - BUSINESS.md
 depends_on: []
 supersedes: []
 evidence:
-  - "Consolidated from BUSINESS.md and the current public site scope."
+  - "Consolidated from shipglowz_data/business/business.md and the current public site scope."
+  - "Legacy audience and search-intent hypotheses were retained as discovery inputs during the 2026-07-12 governance consolidation."
 next_review: "2026-08-12"
 next_step: "/201-sg-enrich business positioning"
 ---
@@ -34,6 +34,8 @@ next_step: "/201-sg-enrich business positioning"
 ## Audience and intent
 
 TemuGlowz targets shoppers looking for budget-friendly Temu discoveries, themed product selections, gift ideas, and practical accessories. Search intent is primarily commercial discovery around gadgets, kitchen accessories, seasonal products, and shopping organization.
+
+Initial discovery themes include bulk-buying ideas, original gifts, kitchen accessories, summer products, wishlist organization, and price-observation tools. Candidate queries such as “meilleurs gadgets Temu”, “cadeaux originaux Temu”, “accessoires cuisine Temu”, and “gadgets cuisine pas chers” remain research hypotheses, not validated traffic claims.
 
 ## Positioning
 

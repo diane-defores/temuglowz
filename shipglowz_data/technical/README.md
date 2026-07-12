@@ -1,7 +1,7 @@
 ---
 artifact: technical_overview
 metadata_schema_version: "1.0"
-artifact_version: "0.2.0"
+artifact_version: "0.3.0"
 project: TemuGlowz
 created: "2026-07-09"
 updated: "2026-07-12"
@@ -15,6 +15,8 @@ security_impact: none
 docs_impact: yes
 linked_systems:
   - shipglowz_data/technical/code-docs-map.md
+  - shipglowz_data/technical/apps/temu-shopping-lists-android-app.md
+  - shipglowz_data/technical/platforms/android.md
   - shipglowz_data/technical/site/guide-pages-contract.md
   - shipglowz_data/technical/site/temu-authenticated-product-enrichment-workflow.md
   - shipglowz_data/technical/design-system-authority.md
@@ -47,6 +49,35 @@ This folder is the canonical technical-governance corpus for TemuGlowz.
 - `app`: Vue/Tauri application runtime
 
 The app design authority is `shipglowz_data/technical/design-system-authority.md`.
+
+## Owned Files
+
+- `shipglowz_data/technical/code-docs-map.md`: path-to-document routing and validation ownership.
+- `shipglowz_data/technical/apps/temu-shopping-lists-android-app.md`: app runtime, persistence, sync, entitlement, and product-observation contracts.
+- `shipglowz_data/technical/platforms/android.md`: Android/Tauri native proof and share/WebView boundaries.
+- `shipglowz_data/technical/site/`: public Astro site contracts.
+
+## Entrypoints
+
+- Read `shipglowz_data/technical/code-docs-map.md` before code-facing documentation work.
+- Use the app module for changes under `app/**` and the site modules for changes under `site/**`.
+- Keep native Android claims conditional on CI and real-device proof.
+
+## Invariants
+
+- TemuGlowz has one technical governance corpus under `shipglowz_data/technical/`.
+- App and site rules stay surface-scoped when their runtimes or proof requirements differ.
+- Technical documentation must not strengthen implementation, affiliation, price, availability, or runtime claims beyond recorded evidence.
+
+## Validation
+
+Run the ShipGlowz metadata linter on changed durable artifacts and verify that active references resolve only through `app/**`, `site/**`, or `shipglowz_data/**`.
+
+## Reader Checklist
+
+- Identify whether the change affects app, site, or both.
+- Load the corresponding primary document from the code-docs map.
+- Recheck security, public claims, and proof authority before changing a durable contract.
 
 ## Maintenance Rule
 

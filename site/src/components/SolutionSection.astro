@@ -1,19 +1,24 @@
 ---
 const solutions = [
   {
-    icon: '✨',
-    title: 'Isolated Profiles',
-    description: 'Create separate spaces for personal, work, clients, and projects. Cookies and sessions stay tied to the right profile.',
+    icon: '📁',
+    title: 'Organized Shopping Lists',
+    description: 'Group your Temu finds by list, session, or category. Every product stays tagged and easy to find.',
   },
   {
-    icon: '🏛️',
-    title: 'Unified Network Access',
-    description: 'Open 18+ social networks and custom links from one app shell instead of juggling browser windows.',
+    icon: '💾',
+    title: 'Offline-First Storage',
+    description: 'All data is stored locally on your device. No internet required to view your lists, no cloud signup needed.',
   },
   {
-    icon: '🚫',
-    title: 'Anti-Distraction Controls',
-    description: 'Use grayscale, friends-only filtering, and custom scripts to make social work calmer and more intentional.',
+    icon: '🔍',
+    title: 'Product Detail Views',
+    description: 'Keep the full product context: images, prices, notes, and observation history in one place.',
+  },
+  {
+    icon: '🔄',
+    title: 'Sync When You Want',
+    description: 'Premium sync is optional and opt-in. You decide when and where your data moves, not the other way around.',
   },
 ]
 ---
@@ -21,21 +26,24 @@ const solutions = [
 <section class="py-16 sm:py-24 bg-background">
   <div class="max-w-6xl mx-auto px-4">
     <div class="text-center mb-12 sm:mb-16" data-reveal>
+      <p class="animate-fade-up text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">How It Works</p>
       <h2
-        class="animate-fade-up text-3xl sm:text-4xl font-bold text-foreground mb-4"
+        class="animate-fade-up delay-100 text-3xl sm:text-4xl font-bold text-foreground mb-4"
         style="font-family: var(--font-instrument-sans);"
       >
-        A Social Workspace That Keeps Context Intact
+        One Tool to Rule Your Temu Lists
       </h2>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" data-reveal>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" data-reveal>
       {solutions.map((solution, index) => (
         <div
-          class={`animate-fade-up delay-${(index + 1) * 100} group relative p-6 rounded-2xl bg-card border border-border hover:border-foreground/25 hover:scale-[1.02] transition-all duration-300 text-center`}
+          class={`animate-fade-up delay-${(index + 1) * 100} group relative p-6 rounded-2xl bg-card border border-border hover:border-foreground/25 hover:scale-[1.02] transition-all duration-300`}
         >
-          <span class="text-4xl sm:text-5xl block mb-4">{solution.icon}</span>
-          <h3 class="text-xl sm:text-2xl font-semibold text-foreground mb-3">{solution.title}</h3>
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-3xl sm:text-4xl">{solution.icon}</span>
+            <h3 class="text-xl sm:text-2xl font-semibold text-foreground">{solution.title}</h3>
+          </div>
           <p class="text-base text-muted-foreground leading-relaxed">{solution.description}</p>
         </div>
       ))}

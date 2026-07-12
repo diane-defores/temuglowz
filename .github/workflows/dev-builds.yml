@@ -10,15 +10,10 @@ on:
       - preview
       - "release/**"
     paths:
-      - "src/**"
-      - "src-tauri/**"
-      - "convex/**"
+      - "app/**"
       - "package.json"
       - "pnpm-lock.yaml"
-      - "vite.config.ts"
-      - "vite.tauri.config.ts"
-      - "vitest.config.ts"
-      - "tsconfig*.json"
+      - "pnpm-workspace.yaml"
       - ".github/workflows/dev-builds.yml"
   pull_request:
     branches:
@@ -28,15 +23,10 @@ on:
       - preview
       - "release/**"
     paths:
-      - "src/**"
-      - "src-tauri/**"
-      - "convex/**"
+      - "app/**"
       - "package.json"
       - "pnpm-lock.yaml"
-      - "vite.config.ts"
-      - "vite.tauri.config.ts"
-      - "vitest.config.ts"
-      - "tsconfig*.json"
+      - "pnpm-workspace.yaml"
       - ".github/workflows/dev-builds.yml"
 
 concurrency:
@@ -101,7 +91,7 @@ jobs:
       - name: Cache Rust
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: "./src-tauri -> target"
+          workspaces: "./app/src-tauri -> target"
           shared-key: tauri-android-debug
           cache-on-failure: true
           save-if: ${{ github.ref == 'refs/heads/main' }}
@@ -113,8 +103,8 @@ jobs:
             .gradle-cache/caches
             .gradle-cache/wrapper
             .gradle-cache/jdks
-            src-tauri/gen/android/.gradle
-          key: gradle-android-${{ runner.os }}-${{ hashFiles('src-tauri/gen/android/**/*.gradle*', 'src-tauri/gen/android/**/gradle-wrapper.properties', 'src-tauri/Cargo.lock', 'pnpm-lock.yaml') }}
+            app/src-tauri/gen/android/.gradle
+          key: gradle-android-${{ runner.os }}-${{ hashFiles('app/src-tauri/gen/android/**/*.gradle*', 'app/src-tauri/gen/android/**/gradle-wrapper.properties', 'app/src-tauri/Cargo.lock', 'pnpm-lock.yaml') }}
           restore-keys: |
             gradle-android-${{ runner.os }}-
             gradle-android-
@@ -123,19 +113,19 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Typecheck
-        run: pnpm typecheck
+        run: pnpm --filter @temuglowz/app typecheck
 
       - name: Unit tests
-        run: pnpm test:once
+        run: pnpm --filter @temuglowz/app test:once
 
       - name: Lint
-        run: pnpm lint:check
+        run: pnpm --filter @temuglowz/app lint:check
 
       - name: Build web target
-        run: pnpm build
+        run: pnpm --filter @temuglowz/app build
 
       - name: Initialize Android project
-        run: pnpm exec tauri android init --ci
+        run: pnpm --filter @temuglowz/app exec tauri android init --ci
 
       - name: Ensure Android share target manifest
         shell: bash
@@ -143,7 +133,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          manifest = Path("src-tauri/gen/android/app/src/main/AndroidManifest.xml")
+          manifest = Path("app/src-tauri/gen/android/app/src/main/AndroidManifest.xml")
           text = manifest.read_text()
           if "android.intent.action.SEND" not in text:
               share_filter = """            <intent-filter>
@@ -162,8 +152,8 @@ jobs:
       - name: Verify Android share target manifest
         shell: bash
         run: |
-          grep -q 'android.intent.action.SEND' src-tauri/gen/android/app/src/main/AndroidManifest.xml
-          grep -q 'android:mimeType="text/plain"' src-tauri/gen/android/app/src/main/AndroidManifest.xml
+          grep -q 'android.intent.action.SEND' app/src-tauri/gen/android/app/src/main/AndroidManifest.xml
+          grep -q 'android:mimeType="text/plain"' app/src-tauri/gen/android/app/src/main/AndroidManifest.xml
 
   android-debug:
     name: Manual Android debug build (arm64)
@@ -214,7 +204,7 @@ jobs:
       - name: Cache Rust
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: "./src-tauri -> target"
+          workspaces: "./app/src-tauri -> target"
           shared-key: tauri-android-debug
           cache-on-failure: true
           save-if: ${{ github.ref == 'refs/heads/main' }}
@@ -226,8 +216,8 @@ jobs:
             .gradle-cache/caches
             .gradle-cache/wrapper
             .gradle-cache/jdks
-            src-tauri/gen/android/.gradle
-          key: gradle-android-${{ runner.os }}-${{ hashFiles('src-tauri/gen/android/**/*.gradle*', 'src-tauri/gen/android/**/gradle-wrapper.properties', 'src-tauri/Cargo.lock', 'pnpm-lock.yaml') }}
+            app/src-tauri/gen/android/.gradle
+          key: gradle-android-${{ runner.os }}-${{ hashFiles('app/src-tauri/gen/android/**/*.gradle*', 'app/src-tauri/gen/android/**/gradle-wrapper.properties', 'app/src-tauri/Cargo.lock', 'pnpm-lock.yaml') }}
           restore-keys: |
             gradle-android-${{ runner.os }}-
             gradle-android-
@@ -236,7 +226,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Initialize Android project
-        run: pnpm exec tauri android init --ci
+        run: pnpm --filter @temuglowz/app exec tauri android init --ci
 
       - name: Ensure Android share target manifest
         shell: bash
@@ -244,7 +234,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          manifest = Path("src-tauri/gen/android/app/src/main/AndroidManifest.xml")
+          manifest = Path("app/src-tauri/gen/android/app/src/main/AndroidManifest.xml")
           text = manifest.read_text()
           if "android.intent.action.SEND" not in text:
               share_filter = """            <intent-filter>
@@ -263,16 +253,16 @@ jobs:
       - name: Verify Android share target manifest
         shell: bash
         run: |
-          grep -q 'android.intent.action.SEND' src-tauri/gen/android/app/src/main/AndroidManifest.xml
-          grep -q 'android:mimeType="text/plain"' src-tauri/gen/android/app/src/main/AndroidManifest.xml
+          grep -q 'android.intent.action.SEND' app/src-tauri/gen/android/app/src/main/AndroidManifest.xml
+          grep -q 'android:mimeType="text/plain"' app/src-tauri/gen/android/app/src/main/AndroidManifest.xml
 
       - name: Build debug APK
-        run: pnpm exec tauri android build --ci --debug --apk -t aarch64
+        run: pnpm --filter @temuglowz/app exec tauri android build --ci --debug --apk -t aarch64
 
       - name: Upload Android artifact
         uses: actions/upload-artifact@v7
         with:
           name: temu-android-debug
-          path: src-tauri/gen/android/app/build/outputs/**/*.apk
+          path: app/src-tauri/gen/android/app/build/outputs/**/*.apk
           if-no-files-found: error
           retention-days: 1

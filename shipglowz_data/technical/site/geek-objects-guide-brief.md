@@ -18,8 +18,8 @@ linked_systems:
   - shipglowz_data/technical/site/guide-pages-contract.md
   - shipglowz_data/technical/site/geek-objects-source-log.md
   - shipglowz_data/workflow/TASKS.md
-  - src/pages/guides/gadgets-informatique.astro
-  - src/site/data/gadgets-informatique.json
+  - site/src/pages/guides/gadgets-informatique.astro
+  - site/src/site/data/gadgets-informatique.json
 depends_on:
   - artifact: "shipglowz_data/technical/site/guide-pages-contract.md"
     artifact_version: "0.1.0"

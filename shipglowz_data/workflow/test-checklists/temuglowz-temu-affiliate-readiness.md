@@ -18,8 +18,8 @@ stack_profile: "Astro static site + JSON guide data"
 proof_profile: "automated static checks, local route smoke, browser and production proof pending"
 linked_systems:
   - shipglowz_data/workflow/specs/temuglowz-temu-affiliate-readiness.md
-  - src/site/components/AffiliateGuideTemplate.astro
-  - src/site/components/ProductCard.astro
+  - site/src/site/components/AffiliateGuideTemplate.astro
+  - site/src/site/components/ProductCard.astro
 depends_on: []
 supersedes: []
 evidence:
@@ -44,7 +44,7 @@ next_step: "/103-sg-verify Temu affiliate readiness"
 
 ## Automated Proof
 
-- `pnpm test:once -- src/site/lib/affiliate.test.ts` — 104 tests passed.
+- `pnpm test:once -- site/src/site/lib/affiliate.test.ts` — 104 tests passed.
 - `pnpm typecheck` — passed.
 - `pnpm build:site` — passed.
 - `design_system_drift_check.py --changed --format markdown` — passed.

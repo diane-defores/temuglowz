@@ -15,7 +15,7 @@ security_impact: none
 docs_impact: yes
 linked_systems:
   - site/src/
-  - src/ui/temu-shell/
+  - app/src/ui/temu-shell/
   - shipglowz_data/editorial/claim-register.md
 depends_on: []
 supersedes: []

@@ -1,7 +1,7 @@
 ---
 artifact: editorial_map
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.1"
 project: "TemuGlowz"
 created: "2026-07-12"
 updated: "2026-07-12"
@@ -15,8 +15,9 @@ security_impact: none
 docs_impact: yes
 linked_systems:
   - site/src/pages/
-  - site/src/content/
   - site/src/components/
+  - site/src/site/components/
+  - site/src/site/data/
 depends_on:
   - artifact: shipglowz_data/editorial/README.md
     artifact_version: "1.0.0"
@@ -32,10 +33,11 @@ next_step: "/206-sg-audit-copy public guides"
 | Surface | Source | Job | Claim sensitivity | Update trigger |
 |---|---|---|---|---|
 | Home | `site/src/pages/index.astro` and shared components | Explain the local-first shopping-list product | high | product availability, pricing, or platform claim changes |
-| Blog index and articles | `site/src/pages/blog/`, `site/src/content/blog/` | Publish and list public editorial content | high | route, indexability, or article readiness changes |
-| Marketing pages | `site/src/pages/features.astro`, `site/src/pages/pricing.astro`, `site/src/pages/compare.astro` | Explain product value, offer, and alternatives | high | product, pricing, or comparison claim changes |
+| Blog placeholder | `site/src/pages/blog.astro` | State the current editorial surface without implying unavailable articles | high | article collection or blog routing changes |
+| App presentation | `site/src/pages/app.astro` | Explain how the shopping-list app fits the public site | high | app availability, platform, or sync claim changes |
+| Buying guides | `site/src/pages/guides/`, `site/src/site/components/`, `site/src/site/data/` | Publish curated guide pages from structured product data | high | guide routes, product evidence, disclosures, or schemas change |
 | Trust pages | `site/src/pages/terms.astro`, `site/src/pages/privacy.astro` | State current project and data posture conservatively | high | app data/auth/partnership posture changes |
-| Machine-readable summary | `public/llms.txt` | Describe only currently published guide surfaces | high | indexable guide set or trust posture changes |
+| Machine-readable summary | `site/public/llms.txt` | Describe only currently published guide surfaces | high | indexable guide set or trust posture changes |
 
 ## Maintenance Rule
 

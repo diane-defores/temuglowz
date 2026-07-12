@@ -1,10 +1,10 @@
 ---
 artifact: technical_workflow
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "0.1.1"
 project: TemuGlowz
 created: "2026-07-10"
-updated: "2026-07-10"
+updated: "2026-07-12"
 status: draft
 source_skill: 001-sg-build
 scope: authenticated-temu-product-enrichment
@@ -17,9 +17,10 @@ linked_systems:
   - shipglowz_data/technical/code-docs-map.md
   - shipglowz_data/technical/site/guide-pages-contract.md
   - shipglowz_data/workflow/TASKS.md
-  - src/pages/guides/gadgets-informatique.astro
-  - src/site/data/gadgets-informatique.json
-  - src/site/components/ProductCard.astro
+  - site/src/pages/guides/gadgets-informatique.astro
+  - site/src/site/data/gadgets-informatique.json
+  - site/src/site/components/ProductCard.astro
+  - site/tools/add-temu-product.ts
   - .agents/skills/temu-product-adder/SKILL.md
 depends_on:
   - artifact: "shipglowz_data/technical/site/guide-pages-contract.md"
@@ -113,7 +114,7 @@ If a field is not reliably observable, leave it unset instead of inventing it.
 
 The current CLI entry point is:
 
-- `tools/add-temu-product.ts`
+- `site/tools/add-temu-product.ts`
 
 It now has two explicit modes:
 
@@ -125,8 +126,8 @@ Use `prepare` first, even when the final goal is a guide update.
 Examples:
 
 ```bash
-node tools/add-temu-product.ts prepare --url "https://www.temu.com/goods.html?goods_id=601105166590393"
-node tools/add-temu-product.ts apply --input-file /tmp/product.json --page gadgets-informatique --section connectique-usb
+pnpm --filter @temuglowz/site product:add -- prepare --url "https://www.temu.com/goods.html?goods_id=601105166590393"
+pnpm --filter @temuglowz/site product:add -- apply --input-file /tmp/product.json --page gadgets-informatique --section connectique-usb
 ```
 
 Behavior contract:

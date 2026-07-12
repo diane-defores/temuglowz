@@ -14,9 +14,9 @@ risk_level: medium
 security_impact: none
 docs_impact: yes
 linked_systems:
-  - src/styles/global.css
-  - src/site/components/
-  - src/pages/
+  - site/src/styles/global.css
+  - site/src/site/components/
+  - app/src/app-pages/
 depends_on:
   - artifact: shipglowz_data/technical/site/guide-pages-contract.md
     artifact_version: "0.1.0"
@@ -32,11 +32,11 @@ next_step: "/103-sg-verify public guide visual proof"
 
 ## Canonical Source
 
-`src/styles/global.css` is the public-site token source. Its semantic CSS variables and Tailwind v4 `@theme` bridge own colors, radius, typography families, reduced-motion behavior, and global visual primitives.
+`site/src/styles/global.css` is the public-site token source. Its semantic CSS variables and Tailwind v4 `@theme` bridge own colors, radius, typography families, reduced-motion behavior, and global visual primitives.
 
 ## Component Bridge
 
-Public guide pages use `src/site/components/AffiliateGuideTemplate.astro` and `ProductCard.astro`. New guide presentation must extend these shared components rather than duplicate route markup or introduce page-local token values.
+Public guide pages use `site/src/site/components/AffiliateGuideTemplate.astro` and `ProductCard.astro`. New guide presentation must extend these shared components rather than duplicate route markup or introduce page-local token values.
 
 ## Rules
 

@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css'
-import { SITE_URL, siteUrl } from '../config/site'
+import Navbar from '../site/components/Navbar.vue'
 
 interface Props {
   title?: string
@@ -13,8 +13,8 @@ interface Props {
 }
 
 const {
-  title = 'SocialGlowz — All your social networks. One app.',
-  description = 'Manage multiple accounts on each network without ever logging out. Isolated profiles, separate sessions, zero distractions.',
+  title = 'TemuGlowz — Your Temu Orders. One Organized List.',
+  description = 'Archive your Temu shopping carts and orders locally, track price history, and organize products across multiple sessions.',
   path = '',
   image = '/og-image.png',
   noIndex = false,
@@ -22,33 +22,35 @@ const {
   lang = 'en',
 } = Astro.props
 
-const canonicalUrl = siteUrl(path)
-const ogImageUrl = image.startsWith('http') ? image : siteUrl(image)
+const canonicalUrl = new URL(path, 'https://temuglowz.com/').toString()
+const ogImageUrl = image.startsWith('http') ? image : new URL(image, 'https://temuglowz.com/').toString()
+const normalizedLang = lang.toLowerCase()
+const hreflang = normalizedLang.split('-')[0] || 'en'
 
 const defaultSchemas = [
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "SocialGlowz",
-    url: SITE_URL,
-    description: "All your social networks in one app.",
+    name: "TemuGlowz",
+    url: "https://temuglowz.com",
+    description: "Local-first Temu shopping list archive.",
   },
   {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "SocialGlowz",
-    url: SITE_URL,
-    logo: siteUrl('/favicon.svg'),
+    name: "TemuGlowz",
+    url: "https://temuglowz.com",
+    logo: "https://temuglowz.com/favicon.svg",
     sameAs: [],
   },
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "SocialGlowz",
-    url: SITE_URL,
-    applicationCategory: "SocialNetworkingApplication",
+    name: "TemuGlowz",
+    url: "https://temuglowz.com",
+    applicationCategory: "ShoppingApplication",
     operatingSystem: "Web",
-    description: "Manage social networks in one isolated profile-aware workspace.",
+    description: "Archive and organize your Temu shopping carts and orders locally.",
     offers: {
       "@type": "Offer",
       price: "0",
@@ -65,34 +67,23 @@ const allSchemas = [...defaultSchemas, ...jsonLd]
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="alternate" type="application/rss+xml" title="SocialGlowz Blog" href="/blog/feed.xml" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
-    <meta name="generator" content={Astro.generator} />
+    <meta name="generator" content="Astro" />
     <link rel="canonical" href={canonicalUrl} />
-    {(() => {
-      const enPath = path.startsWith('/fr') ? path.replace(/^\/fr/, '') || '/' : path || '/'
-      const frPath = path.startsWith('/fr') ? path : `/fr${path || ''}`
-      return <>
-        <link rel="alternate" hreflang="en" href={siteUrl(enPath)} />
-        <link rel="alternate" hreflang="fr" href={siteUrl(frPath)} />
-        <link rel="alternate" hreflang="x-default" href={siteUrl(enPath)} />
-      </>
-    })()}
+    <link rel="alternate" hreflang={hreflang} href={canonicalUrl} />
+    <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
 
-    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:site_name" content="SocialGlowz" />
+    <meta property="og:site_name" content="TemuGlowz" />
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={title} />
 
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -100,12 +91,10 @@ const allSchemas = [...defaultSchemas, ...jsonLd]
 
     {noIndex && <meta name="robots" content="noindex, nofollow" />}
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <!-- JSON-LD Structured Data -->
     {allSchemas.map((schema) => (
       <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
@@ -113,37 +102,15 @@ const allSchemas = [...defaultSchemas, ...jsonLd]
     <title>{title}</title>
   </head>
   <body>
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:bg-foreground focus:text-background focus:rounded-lg focus:text-sm focus:font-medium">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-foreground focus:text-background focus:rounded-lg focus:text-sm focus:font-medium">
       Skip to content
     </a>
     <div class="noise-overlay" aria-hidden="true"></div>
+    <Navbar appUrl="https://temuglowz.com" />
     <slot />
-    {
-      import.meta.env.PROD && (
-        <script is:inline async src="https://cdn.onthe.io/io.js/YyAMWtaLLPUi" />
-      )
-    }
     <script>
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-      // Lenis smooth scroll (skip if reduced motion)
-      if (!prefersReducedMotion) {
-        import('lenis').then(({ default: Lenis }) => {
-          const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            smoothWheel: true,
-          })
-          function raf(time: number) {
-            lenis.raf(time)
-            requestAnimationFrame(raf)
-          }
-          requestAnimationFrame(raf)
-        })
-      }
-
-      // IntersectionObserver for scroll-triggered animations
-      // If reduced motion, reveal everything immediately
       if (prefersReducedMotion) {
         document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('revealed'))
       } else {
