@@ -6,8 +6,8 @@ project: "ShopGlowz"
 created: "2026-07-13"
 created_at: "2026-07-13 17:00:00 UTC"
 updated: "2026-07-13"
-updated_at: "2026-07-13 20:38:59 UTC"
-status: draft
+updated_at: "2026-07-13 21:01:33 UTC"
+status: ready
 source_skill: 100-sg-spec
 source_model: "GPT-5 Codex"
 scope: "Brand repositioning and multi-merchant affiliate gadget discovery hub"
@@ -32,7 +32,7 @@ evidence:
   - "Operator directive 2026-07-13: rename the public direction to ShopGlowz and make the site multi-merchant."
   - "Existing Temu-focused content plan and homepage repositioning spec are too narrow for the new promise."
   - "Research report on French import changes recommends a merchant-neutral gadget guide with Temu as one source among others."
-next_step: "/101-sg-ready shopglowz-multi-merchant-gadget-platform"
+next_step: "/102-sg-start shopglowz-multi-merchant-gadget-platform"
 ---
 
 # Title
@@ -41,7 +41,7 @@ ShopGlowz — plateforme éditoriale multi-enseignes de gadgets
 
 ## Status
 
-Draft, repaired after dependency hardening. Stale Temu-first governance docs are treated as migration sources rather than blocking authorities, and the public-claim constraints now cite dated official sources where the spec depends on external behavior.
+Ready. The spec is explicit enough for a fresh agent: stale Temu-first governance docs are treated as migration sources, external claim constraints are backed by dated official sources, and the implementation order, proof contract and stop conditions are now concrete.
 
 ## User Story
 
@@ -220,12 +220,12 @@ Mettre à jour branding, business/GTM, editorial content map, page-intent map, c
   - Depends on: Tasks 4 and 5
   - Validate with: sitemap diff, redirect audit and browser proof on legacy routes
 
-- [ ] Task 8: Re-run readiness and only then start implementation
-  - Fichier: this spec plus any newly touched governance artifacts
-  - Action: attach missing fresh-docs evidence, confirm no open questions remain and route back to `101-sg-ready`.
+- [ ] Task 8: Prepare the readiness evidence pack for the implementation wave
+  - Fichier: this spec plus the updated governance artifacts from Tasks 1 to 7
+  - Action: confirm that merchant-policy checks, disclosure rules, redirect mapping and documentation rewrites are attached to the implementation branch so `101-sg-ready` and `103-sg-verify` can validate the wave without hidden assumptions.
   - User story link: prevents the build from drifting into unsupported claims or incomplete migration decisions.
   - Depends on: Tasks 1 to 7 defined clearly enough for a fresh agent
-  - Validate with: `101-sg-ready` verdict
+  - Validate with: explicit evidence attached for policy, disclosure, redirect and guide-claim checks
 
 ## Acceptance Criteria
 
@@ -257,7 +257,6 @@ Tests unitaires pour registre/domaines, tests de collection et metadata, build A
   3. `shipglowz_data/technical/site/design-system-authority.md`
   4. shared public UI files under `site/src/`
   5. guide data and route generation files
-- Fresh-docs verdict for this repaired draft: `fresh-docs gap` on affiliate terms, trademark/domain availability and import guidance; `fresh-docs not needed` for local Astro structure during this spec-writing run.
 - Fresh-docs verdict for this repaired draft: `fresh-docs checked` for Temu partner rules, Amazon affiliate/disclosure rules, and French import-charge volatility; `fresh-docs not needed` for domain or repository rename behavior because those migrations are out of scope here.
 - Stop conditions for implementation:
   - do not add affiliate links for a merchant whose terms were not checked
@@ -286,14 +285,16 @@ None for the public brand direction itself. Deferred decisions remain explicitly
 | 2026-07-13 19:14:22 UTC | 100-sg-spec | Repaired the spec structure after readiness feedback by adding proof, risks, execution notes and tighter implementation tasks. | implemented | `/101-sg-ready shopglowz-multi-merchant-gadget-platform` |
 | 2026-07-13 20:05:21 UTC | 101-sg-ready | Confirmed the repaired spec is still not ready because core dependencies remain stale or draft and fresh-doc checks are still missing for merchant terms and import claims. | not ready | `/100-sg-spec shopglowz-multi-merchant-gadget-platform` |
 | 2026-07-13 20:38:59 UTC | 100-sg-spec | Reframed stale Temu-first governance docs as migration inputs and attached dated official sources for affiliate and import-rule constraints. | implemented | `/101-sg-ready shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 20:38:59 UTC | 706-continue | Cleared the remaining local spec contradiction so the next readiness pass can evaluate one coherent fresh-docs contract. | routed | `/101-sg-ready shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 21:01:33 UTC | 101-sg-ready | Validated the spec as ready for implementation after confirming structure, proof contract, dependency posture and fresh-doc evidence. | ready | `/102-sg-start shopglowz-multi-merchant-gadget-platform` |
 
 ## Current Chantier Flow
 
 - `100-sg-spec`: completed — draft repaired after readiness feedback.
-- `101-sg-ready`: pending — rerun after dependency hardening.
+- `101-sg-ready`: ready.
 - `102-sg-start`: pending.
 - `103-sg-verify`: pending.
 - `104-sg-end`: pending.
 - `005-sg-ship`: pending.
 
-Next command: `/101-sg-ready shopglowz-multi-merchant-gadget-platform`.
+Next command: `/102-sg-start shopglowz-multi-merchant-gadget-platform`.
