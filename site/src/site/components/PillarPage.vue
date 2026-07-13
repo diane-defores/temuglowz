@@ -56,7 +56,7 @@ defineProps<{
       </nav>
     </aside>
 
-    <article class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+    <article class="max-w-3xl mx-auto px-8 sm:px-10 py-12">
       <!-- Header avec breadcrumb -->
       <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-foreground">Accueil</a>

@@ -1,6 +1,6 @@
 <template>
   <section id="benefits" class="py-16 sm:py-24 bg-card">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto px-8 sm:px-10">
       <div class="text-center mb-12 sm:mb-16" data-reveal>
         <p class="animate-fade-up text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">Benefits</p>
         <h2

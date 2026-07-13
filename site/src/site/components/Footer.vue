@@ -1,6 +1,6 @@
 <template>
   <footer class="border-t border-border bg-background">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+    <div class="max-w-6xl mx-auto px-8 sm:px-10 py-16">
       <div class="grid grid-cols-2 md:grid-cols-5 gap-8" data-reveal>
         <!-- Brand -->
         <div class="col-span-2 md:col-span-1 animate-fade-up">
