@@ -56,11 +56,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
 <template>
   <header class="fixed inset-x-0 top-4 z-50 mx-auto max-w-4xl animate-slide-down px-4">
     <nav aria-label="Navigation principale" class="relative flex items-center justify-between rounded-full border border-border bg-background/90 px-4 py-3 shadow-lg backdrop-blur-md">
-      <a href="/" class="flex items-center gap-2 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground" aria-label="TemuGlowz — Accueil">
+      <a href="/" class="flex items-center gap-2 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground" aria-label="ShopGlowz — Accueil">
         <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground" aria-hidden="true">
           <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.35 4.15L17.5 8.5l-4.15 1.35L12 14l-1.35-4.15L6.5 8.5l4.15-1.35L12 3Z"/><path d="m18.5 14 .75 2.25L21.5 17l-2.25.75L18.5 20l-.75-2.25L15.5 17l2.25-.75.75-2.25Z"/></svg>
         </span>
-        <span class="text-sm font-semibold text-foreground sm:text-base">TemuGlowz</span>
+        <span class="text-sm font-semibold text-foreground sm:text-base">ShopGlowz</span>
       </a>
 
       <div class="hidden items-center gap-1 md:flex">

@@ -1,10 +1,10 @@
 ---
 artifact: editorial_map
 metadata_schema_version: "1.0"
-artifact_version: "1.1.0"
-project: "TemuGlowz"
+artifact_version: "1.2.0"
+project: "ShopGlowz"
 created: "2026-07-12"
-updated: "2026-07-12"
+updated: "2026-07-13"
 status: reviewed
 source_skill: 300-sg-docs
 scope: public-content-routing
@@ -33,10 +33,10 @@ next_step: "/206-sg-audit-copy public guides"
 
 | Surface | Source | Job | Claim sensitivity | Update trigger |
 |---|---|---|---|---|
-| Home | `site/src/pages/index.astro` and shared components | Lead with independent, fun discovery of useful or unusual Temu gadgets by use case; route to substantive guides and keep the application secondary | high | catalogue positioning, published guide set, app emphasis, affiliate posture, or claim boundary changes |
-| Blog placeholder | `site/src/pages/blog.astro` | State the current editorial surface without implying unavailable articles | high | article collection or blog routing changes |
-| App presentation | `site/src/pages/app.astro` | Explain how the shopping-list app fits the public site | high | app availability, platform, or sync claim changes |
-| Buying guides | `site/src/pages/guides/`, `site/src/site/components/`, `site/src/site/data/` | Publish curated guide pages from structured product data | high | guide routes, product evidence, disclosures, or schemas change |
+| Home | `site/src/pages/index.astro` and shared components | Lead with independent, fun discovery of useful or unusual gadgets by use case; route to substantive guides and keep the application secondary | high | catalogue positioning, published guide set, merchant mix, app emphasis, affiliate posture, or claim boundary changes |
+| Blog / repères | `site/src/pages/blog.astro` and `site/src/content/articles/` | Publish practical explainers about merchants, importation, stock signals, returns, and buying context without implying live operational data | high | article collection, merchant scope, import rules, or routing changes |
+| App presentation | `site/src/pages/app.astro` | Explain how the shopping-list app fits the public site as a secondary utility path | high | app availability, platform, or sync claim changes |
+| Buying guides | `site/src/pages/guides/`, `site/src/site/components/`, `site/src/site/data/` | Publish curated guide pages from structured product data with merchant-neutral disclosure and volatility notes | high | guide routes, product evidence, merchant registry, disclosures, or schemas change |
 | Trust pages | `site/src/pages/terms.astro`, `site/src/pages/privacy.astro` | State current project and data posture conservatively | high | app data/auth/partnership posture changes |
 | Machine-readable summary | `site/public/llms.txt` | Describe only currently published guide surfaces | high | indexable guide set or trust posture changes |
 

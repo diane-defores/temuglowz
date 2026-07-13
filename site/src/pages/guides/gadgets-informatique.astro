@@ -14,7 +14,7 @@ const jsonLd = buildGuideJsonLd({
 ---
 
 <Layout
-  title={`${data.title} | Guides d’achat TemuGlowz`}
+  title={`${data.title} | Guides d’achat ShopGlowz`}
   description={data.metaDescription ?? data.description}
   path="/guides/gadgets-informatique"
   lang="fr"
@@ -61,7 +61,7 @@ const jsonLd = buildGuideJsonLd({
           {section.products.length > 0 ? (
             <div class="space-y-6">
               {section.products.map((product: any, productIndex: number) => (
-                <ProductCard {...product} highlighted={section.id === data.sections[0]?.id && productIndex === 0} />
+                <ProductCard {...product} checkedAt={product.checkedAt ?? data.updatedDate} highlighted={section.id === data.sections[0]?.id && productIndex === 0} />
               ))}
             </div>
           ) : (
@@ -96,7 +96,7 @@ const jsonLd = buildGuideJsonLd({
       <aside class="p-8 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent border border-primary/20 text-center" data-reveal>
         <h3 class="text-xl font-bold text-foreground mb-3">Besoin d’autres idées utiles ?</h3>
         <p class="text-muted-foreground mb-6">
-          Retrouvez nos autres sélections de produits pratiques sur Temu.
+          Retrouvez nos autres sélections de produits pratiques à comparer selon l’usage et le marchand.
         </p>
         <a href="/guides" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-card text-foreground font-medium border border-border hover:bg-muted transition-colors">
           Tous les guides

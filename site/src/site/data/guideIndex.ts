@@ -9,6 +9,7 @@ export interface GuideIndexEntry {
   updatedDate: string
   category: string
   readingHint: string
+  merchantFocus?: string
 }
 
 export const guideIndex: GuideIndexEntry[] = [
@@ -20,6 +21,7 @@ export const guideIndex: GuideIndexEntry[] = [
     updatedDate: kitchenGadgetsData.updatedDate,
     category: 'Cuisine',
     readingHint: 'Découper, ranger, nettoyer… des idées toutes simples pour se faciliter la vie.',
+    merchantFocus: 'Temu',
   },
   {
     slug: '/guides/summer-cooling',
@@ -29,5 +31,6 @@ export const guideIndex: GuideIndexEntry[] = [
     updatedDate: summerCoolingData.updatedDate,
     category: 'Été',
     readingHint: 'Ventilos de poche, accessoires frais et autres idées bienvenues quand le thermomètre grimpe.',
+    merchantFocus: 'Temu',
   },
 ]

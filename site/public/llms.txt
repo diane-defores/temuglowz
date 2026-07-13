@@ -1,6 +1,6 @@
-# TemuGlowz
+# ShopGlowz
 
-TemuGlowz is an independent project for people who want to organize Temu shopping links and compare curated product selections.
+ShopGlowz is an independent project for people who want to discover useful gadgets, compare curated selections, and understand what to verify before buying from different merchants.
 
 ## Public guides
 
@@ -12,11 +12,11 @@ TemuGlowz is an independent project for people who want to organize Temu shoppin
 - Ajustement de prix Temu : /blog/ajustement-prix-temu
 - Produit Temu en rupture : /blog/produit-temu-rupture-stock
 
-Only these published guides are intended as current public recommendation pages. Product details, prices, variants and availability can change; readers should verify them on Temu before ordering.
+Only these published guides are intended as current public recommendation pages. Product details, prices, variants and availability can change; readers should verify them on the merchant page before ordering.
 
 ## Editorial approach
 
-- TemuGlowz is not currently an official Temu partner.
+- ShopGlowz is not currently an official partner of the merchants it may cite.
 - Published selections are editorial curation, not hands-on product testing unless a page explicitly documents that evidence.
-- If TemuGlowz later uses affiliate links, the relationship and possible commission will be disclosed clearly near recommendations.
-- TemuGlowz does not claim verified sellers, live availability, guaranteed prices or paid placements without documented proof.
+- If ShopGlowz later uses affiliate links, the relationship and possible commission will be disclosed clearly near recommendations.
+- ShopGlowz does not claim verified sellers, live availability, guaranteed prices or paid placements without documented proof.

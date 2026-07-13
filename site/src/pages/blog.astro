@@ -4,11 +4,50 @@ import Layout from '../layouts/Layout.astro'
 import { getPublishedArticles } from '../site/data/publishedContent'
 
 const articles = await getPublishedArticles()
+
+const topicLabels: Record<string, string> = {
+  prix: 'Prix, promos et signaux d’urgence',
+  stock: 'Stock, alternatives et disponibilité',
+  marketplace: 'Vendeur, marketplace et expédition',
+  douane: 'Importation, frais et seuils',
+  livraison: 'Livraison, colis et suivi',
+  comparaison: 'Comparer deux fiches très proches',
+  paiement: 'Paiement et règles de panier',
+  retour: 'Retours, remboursement et exceptions',
+}
+
+const topicOrder = ['douane', 'marketplace', 'prix', 'stock', 'comparaison', 'livraison', 'paiement', 'retour']
+
+const groupedArticles = topicOrder
+  .map((topic) => ({
+    topic,
+    label: topicLabels[topic] ?? topic,
+    articles: articles.filter((article) => article.data.topic === topic),
+  }))
+  .filter((group) => group.articles.length > 0)
+
+const featuredQuestions = [
+  {
+    title: 'Comprendre qui vend réellement',
+    description: 'Marketplace, vendeur, marque, expédition : les rôles ne désignent pas la même chose selon l’enseigne.',
+    href: '#marketplace',
+  },
+  {
+    title: 'Éviter les mauvais réflexes sur le stock et le prix',
+    description: 'Prix barré, stock limité, produit indisponible : quels signaux sont informatifs et lesquels poussent juste à acheter trop vite ?',
+    href: '#prix',
+  },
+  {
+    title: 'Anticiper les frais d’importation',
+    description: 'Quand une commande traverse la frontière, le coût final peut changer. Il faut comprendre le cadre avant d’acheter.',
+    href: '#douane',
+  },
+]
 ---
 
 <Layout
-  title="Repères pratiques Temu | TemuGlowz"
-  description="Des repères simples pour comprendre prix, disponibilité et achats Temu sans promettre l’impossible."
+  title="Repères pratiques shopping | ShopGlowz"
+  description="Des repères simples pour comprendre prix, disponibilité, importation et achats en ligne sans promettre l’impossible."
   lang="fr-FR"
   path="/blog"
 >
@@ -26,6 +65,14 @@ const articles = await getPublishedArticles()
             <p class="text-lg text-muted-foreground leading-relaxed max-w-3xl">
               Prix qui change, produit indisponible, offres qui se ressemblent… voici les petites choses utiles à savoir pour décider calmement.
             </p>
+            <div class="mt-8 grid gap-4 md:grid-cols-3">
+              {featuredQuestions.map((item) => (
+                <a href={item.href} class="rounded-3xl border border-border bg-card/70 p-5 transition-colors hover:bg-muted">
+                  <strong class="block text-base text-foreground">{item.title}</strong>
+                  <p class="mt-2 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
+                </a>
+              ))}
+            </div>
           </div>
 
           <aside class="rounded-3xl border border-border bg-card/70 p-6" data-reveal>
@@ -47,29 +94,41 @@ const articles = await getPublishedArticles()
           </aside>
         </div>
 
-        <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-reveal>
-          {articles.map((article, index) => (
-            <article
-              class="animate-fade-up rounded-3xl border border-border bg-card/70 p-6"
-              style={`animation-delay: ${index * 100}ms`}
-            >
-              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-4">
-                {article.data.intent}
-              </p>
-              <h2 class="text-2xl font-semibold text-foreground mb-3" style="font-family: var(--font-instrument-sans);">
-                <a href={`/blog/${article.id}`} class="hover:text-muted-foreground transition-colors">
-                  {article.data.title}
-                </a>
-              </h2>
-              <p class="text-sm text-muted-foreground leading-relaxed mb-6">{article.data.description}</p>
-              <a href={`/blog/${article.id}`} class="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors">
-                Lire le repère
-                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M5 12h14" />
-                  <path d="m12 5 7 7-7 7" />
-                </svg>
-              </a>
-            </article>
+        <div class="mt-12 space-y-12" data-reveal>
+          {groupedArticles.map((group) => (
+            <section id={group.topic} class="scroll-mt-28">
+              <div class="mb-6">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Sujet</p>
+                <h2 class="mt-2 text-3xl font-semibold text-foreground" style="font-family: var(--font-instrument-sans);">
+                  {group.label}
+                </h2>
+              </div>
+              <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {group.articles.map((article, index) => (
+                  <article
+                    class="animate-fade-up rounded-3xl border border-border bg-card/70 p-6"
+                    style={`animation-delay: ${index * 100}ms`}
+                  >
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-4">
+                      {article.data.intent}
+                    </p>
+                    <h3 class="text-2xl font-semibold text-foreground mb-3" style="font-family: var(--font-instrument-sans);">
+                      <a href={`/blog/${article.id}`} class="hover:text-muted-foreground transition-colors">
+                        {article.data.title}
+                      </a>
+                    </h3>
+                    <p class="text-sm text-muted-foreground leading-relaxed mb-6">{article.data.description}</p>
+                    <a href={`/blog/${article.id}`} class="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors">
+                      Lire le repère
+                      <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14" />
+                        <path d="m12 5 7 7-7 7" />
+                      </svg>
+                    </a>
+                  </article>
+                ))}
+              </div>
+            </section>
           ))}
         </div>
       </div>

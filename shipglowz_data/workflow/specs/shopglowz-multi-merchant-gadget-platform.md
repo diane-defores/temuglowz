@@ -6,7 +6,7 @@ project: "ShopGlowz"
 created: "2026-07-13"
 created_at: "2026-07-13 17:00:00 UTC"
 updated: "2026-07-13"
-updated_at: "2026-07-13 21:01:33 UTC"
+updated_at: "2026-07-13 21:06:17 UTC"
 status: ready
 source_skill: 100-sg-spec
 source_model: "GPT-5 Codex"
@@ -171,28 +171,28 @@ Mettre à jour branding, business/GTM, editorial content map, page-intent map, c
 
 ## Implementation Tasks
 
-- [ ] Task 1: Update the brand authority and public positioning contract for ShopGlowz
+- [x] Task 1: Update the brand authority and public positioning contract for ShopGlowz
   - Fichier: `shipglowz_data/branding/branding.md`
   - Action: Replace the TemuGlowz-first brand posture with a ShopGlowz multi-merchant identity, trust language, vocabulary rules and public-surface ownership.
   - User story link: lets consumers understand the site as a gadget-discovery destination rather than a single-merchant tool.
   - Depends on: none
   - Validate with: metadata lint plus copy review against the current homepage intent
 
-- [ ] Task 2: Align editorial and claim-governance artifacts with the multi-merchant promise
+- [x] Task 2: Align editorial and claim-governance artifacts with the multi-merchant promise
   - Fichier: `shipglowz_data/editorial/content-map.md`, `shipglowz_data/editorial/claim-register.md`, `shipglowz_data/technical/site/page-intent-map.md`
   - Action: rewrite route intent, claim boundaries, volatility rules and machine-readable summaries around ShopGlowz and multi-merchant discovery.
   - User story link: keeps published guides understandable and trustworthy when multiple merchants are shown.
   - Depends on: Task 1
   - Validate with: doc consistency review and route-by-route claim scan
 
-- [ ] Task 3: Define the merchant registry and outbound-link contract
+- [x] Task 3: Define the merchant registry and outbound-link contract
   - Fichier: `site/src/site/data/` or the current data contract location, plus link helper modules under `site/src/`
   - Action: add a merchant-neutral structure for merchant id, affiliate status, checked date, source note, warehouse or origin note, and allowed outbound domains.
   - User story link: lets consumers compare where to buy without hidden assumptions about the merchant.
   - Depends on: Task 2
   - Validate with: unit tests or assertions for domain allowlist and required disclosure fields
 
-- [ ] Task 4: Rework shared public UI surfaces around ShopGlowz while preserving design-system authority
+- [x] Task 4: Rework shared public UI surfaces around ShopGlowz while preserving design-system authority
   - Fichier: `site/src/pages/index.astro`, `site/src/layouts/Layout.astro`, `site/src/components/Navbar.vue`, shared footer or guide template components
   - Action: replace TemuGlowz-first copy, navigation labels, metadata and CTA hierarchy with a ShopGlowz discovery-first experience that keeps the app secondary.
   - User story link: makes the homepage immediately useful to ordinary shoppers.
@@ -287,14 +287,20 @@ None for the public brand direction itself. Deferred decisions remain explicitly
 | 2026-07-13 20:38:59 UTC | 100-sg-spec | Reframed stale Temu-first governance docs as migration inputs and attached dated official sources for affiliate and import-rule constraints. | implemented | `/101-sg-ready shopglowz-multi-merchant-gadget-platform` |
 | 2026-07-13 20:38:59 UTC | 706-continue | Cleared the remaining local spec contradiction so the next readiness pass can evaluate one coherent fresh-docs contract. | routed | `/101-sg-ready shopglowz-multi-merchant-gadget-platform` |
 | 2026-07-13 21:01:33 UTC | 101-sg-ready | Validated the spec as ready for implementation after confirming structure, proof contract, dependency posture and fresh-doc evidence. | ready | `/102-sg-start shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 21:06:17 UTC | 706-continue | Confirmed the chantier is now unblocked and routed it to implementation rather than pretending pilotage alone could close it. | routed | `/102-sg-start shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 21:24:30 UTC | 001-sg-build | Implemented the first public ShopGlowz rebrand wave on active homepage/layout/guide surfaces and made outbound merchant links merchant-neutral with local tests and build proof. | partial | `/102-sg-start shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 21:31:20 UTC | 102-sg-start | Added the central merchant registry, exposed merchant identity and checked-date cues on guide cards, aligned guide hubs/article chrome, updated sitemap coverage, and reran local proof plus drift control. | partial | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 22:42:50 UTC | 102-sg-start | Aligned public trust pages and the app explainer with ShopGlowz branding, and softened guide datasets so Temu is treated as a documented vertical rather than the site identity. | partial | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 22:45:55 UTC | 102-sg-start | Reworked the blog index into a topic-based educational hub using existing sourced articles so import, marketplace, stock, price, delivery and comparison questions are easier to browse and index. | partial | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 22:49:30 UTC | 103-sg-verify | Verified the local proof and built output for the ShopGlowz public rebrand, but kept the chantier partial because browser/SEO proof and the remaining multi-merchant content tasks are still open. | partial | `/108-sg-browser shopglowz public pages` |
 
 ## Current Chantier Flow
 
 - `100-sg-spec`: completed — draft repaired after readiness feedback.
 - `101-sg-ready`: ready.
-- `102-sg-start`: pending.
-- `103-sg-verify`: pending.
+- `102-sg-start`: partial — brand, governance, merchant registry, outbound-link contract, trust pages, active public chrome, guide hub copy, educational hub structure, guide dataset softening, and sitemap coverage are implemented; new educational pages and deeper merchant-vertical migration still remain.
+- `103-sg-verify`: partial — local proof and built-output inspection pass, but browser proof, SEO/legacy-route proof, and completion of remaining implementation tasks are still required before ship readiness.
 - `104-sg-end`: pending.
 - `005-sg-ship`: pending.
 
-Next command: `/102-sg-start shopglowz-multi-merchant-gadget-platform`.
+Next command: `/108-sg-browser shopglowz public pages`.

@@ -1,5 +1,6 @@
 ---
-import { toTrustedTemuUrl } from '../lib/affiliate'
+import { toTrustedMerchantUrl } from '../lib/affiliate'
+import { getMerchantFromUrl } from '../lib/merchantRegistry'
 
 interface Props {
   rank: number;
@@ -11,6 +12,9 @@ interface Props {
   imageWidth?: number;
   imageHeight?: number;
   productUrl?: string;
+  checkedAt?: string;
+  warehouseNote?: string;
+  sourceNote?: string;
   description: string;
   rating?: number;
   pros?: string[];
@@ -33,6 +37,9 @@ const {
   imageWidth = 400,
   imageHeight = 300,
   productUrl,
+  checkedAt,
+  warehouseNote,
+  sourceNote,
   description,
   rating,
   pros = [],
@@ -40,11 +47,14 @@ const {
   bestFor,
   rationale,
   caution,
-  priceNote = 'Prix indicatif : vérifiez le prix, les variantes et la disponibilité sur Temu avant d’acheter.',
+  priceNote = 'Prix indicatif : vérifiez le prix, les variantes et la disponibilité sur la fiche marchand avant d’acheter.',
   highlighted = false,
 } = Astro.props;
 
-const trustedProductUrl = toTrustedTemuUrl(productUrl)
+const trustedProductUrl = toTrustedMerchantUrl(productUrl)
+const merchant = getMerchantFromUrl(trustedProductUrl)
+const merchantLabel = merchant?.name ?? 'Marchand'
+const volatilityNote = sourceNote ?? merchant?.note ?? 'Vérifiez les variantes, le vendeur, le stock et le prix au moment de l’achat.'
 
 const imageLoading = highlighted ? 'eager' : 'lazy'
 const imageFetchPriority = highlighted ? 'high' : 'auto'
@@ -75,7 +85,7 @@ const imageDecoding = highlighted ? 'sync' : 'async'
         />
       </picture>
       {rating && (
-        <div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 backdrop-blur-sm">
+        <div class="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-foreground px-2 py-1 text-xs text-background shadow-sm">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
           <span class="font-medium">{rating}/5</span>
         </div>
@@ -93,9 +103,9 @@ const imageDecoding = highlighted ? 'sync' : 'async'
               href={trustedProductUrl}
               target="_blank"
               rel="noopener noreferrer sponsored"
-              class="shrink-0 inline-flex items-center justify-center gap-1 px-2.5 py-1 rounded-full bg-primary text-background font-medium hover:bg-primary/90 transition-colors shadow-md shadow-primary/20 text-[10px] sm:px-4 sm:py-2 sm:text-xs"
+              class="shrink-0 inline-flex items-center justify-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-medium text-background shadow-md transition-colors hover:bg-primary sm:px-4 sm:py-2"
             >
-              Voir sur Temu
+              Voir chez {merchantLabel}
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3 sm:w-3.5 sm:h-3.5">
                 <path d="M7 17 17 7"></path>
                 <path d="M7 7h10v10"></path>
@@ -103,13 +113,20 @@ const imageDecoding = highlighted ? 'sync' : 'async'
             </a>
           )}
         </div>
+        {(merchant || checkedAt || warehouseNote) && (
+          <div class="mb-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
+            {merchant && <span class="inline-flex items-center rounded-full border border-border bg-background px-2 py-0.5">Marchand : {merchant.name}</span>}
+            {checkedAt && <span class="inline-flex items-center rounded-full border border-border bg-background px-2 py-0.5">Vérifié : {checkedAt}</span>}
+            {warehouseNote && <span class="inline-flex items-center rounded-full border border-border bg-background px-2 py-0.5">{warehouseNote}</span>}
+          </div>
+        )}
         <p class="text-xs text-muted-foreground line-clamp-2 sm:line-clamp-none sm:text-sm">{description}</p>
       </div>
 
       <div class="flex flex-wrap gap-1 sm:gap-2 mb-3 sm:mb-4">
-        {bestFor && <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-medium sm:text-xs">Idéal pour : {bestFor}</span>}
+        {bestFor && <span class="inline-flex items-center rounded-full border border-border bg-background px-2 py-1 text-xs font-medium text-foreground">Idéal pour : {bestFor}</span>}
         {pros.slice(0, 2).map((pro) => (
-          <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] sm:text-xs">{pro}</span>
+          <span class="inline-flex items-center rounded-full border border-border bg-background px-2 py-1 text-xs text-muted-foreground">{pro}</span>
         ))}
       </div>
 
@@ -121,9 +138,10 @@ const imageDecoding = highlighted ? 'sync' : 'async'
         </div>
         <div class="text-right">
           <p class="text-base font-bold text-foreground sm:text-xl">{price}</p>
-          <p class="text-[10px] text-muted-foreground sm:text-xs">{priceNote}</p>
+          <p class="text-xs text-muted-foreground">{priceNote}</p>
         </div>
       </div>
+      <p class="mt-2 text-xs leading-relaxed text-muted-foreground">{volatilityNote}</p>
     </div>
   </div>
 </article>

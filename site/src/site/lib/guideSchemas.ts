@@ -94,12 +94,12 @@ export function buildGuideJsonLd({ path, lang, data }: BuildGuideJsonLdOptions) 
     image: [leadImage],
     author: {
       '@type': 'Organization',
-      name: 'TemuGlowz',
+      name: 'ShopGlowz',
       url: SITE_URL,
     },
     publisher: {
       '@type': 'Organization',
-      name: 'TemuGlowz',
+      name: 'ShopGlowz',
       url: SITE_URL,
       logo: {
         '@type': 'ImageObject',

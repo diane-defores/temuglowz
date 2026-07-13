@@ -8,8 +8,8 @@ const articles = await getPublishedArticles()
 ---
 
 <Layout
-  title="Explorer des trouvailles et repères Temu | TemuGlowz"
-  description="Des gadgets malins à découvrir et des réponses simples pour acheter sur Temu avec plus de recul."
+  title="Explorer des trouvailles et repères shopping | ShopGlowz"
+  description="Des gadgets malins à découvrir et des réponses simples pour acheter en ligne avec plus de recul, sur plusieurs enseignes."
   path="/guides"
 >
   <main id="main-content" class="min-h-screen bg-background text-foreground">
@@ -17,7 +17,7 @@ const articles = await getPublishedArticles()
       <div class="max-w-6xl mx-auto">
         <div class="max-w-3xl mb-12" data-reveal>
           <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-sm text-muted-foreground mb-6">
-            Explorer TemuGlowz
+            Explorer ShopGlowz
           </span>
           <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4" style="font-family: var(--font-cal-sans);">
             Une petite caverne d’Ali Baba, avec les repères qui vont bien.
@@ -33,7 +33,7 @@ const articles = await getPublishedArticles()
             <h2 class="mt-3 text-3xl font-semibold" style="font-family: var(--font-instrument-sans);">Trouver le petit objet qui change tout</h2>
             <p class="mt-3 text-muted-foreground">Cuisine, chaleur, bureau : choisissez une envie, puis piochez tranquillement.</p>
             <div class="mt-6 grid gap-4 sm:grid-cols-2">
-              {guideIndex.map((guide) => <a href={guide.slug} class="rounded-2xl border border-border p-4 transition-colors hover:bg-muted"><span class="text-xs uppercase tracking-[0.16em] text-muted-foreground">{guide.category}</span><strong class="mt-2 block">{guide.homepageTitle}</strong></a>)}
+              {guideIndex.map((guide) => <a href={guide.slug} class="rounded-2xl border border-border p-4 transition-colors hover:bg-muted"><span class="text-xs uppercase tracking-[0.16em] text-muted-foreground">{guide.category}</span><strong class="mt-2 block">{guide.homepageTitle}</strong>{guide.merchantFocus && <span class="mt-2 inline-flex rounded-full border border-border bg-background px-2 py-1 text-xs text-muted-foreground">Verticale actuelle : {guide.merchantFocus}</span>}</a>)}
             </div>
           </section>
           <section class="rounded-3xl border border-border bg-card/70 p-6 sm:p-8">
@@ -62,6 +62,7 @@ const articles = await getPublishedArticles()
                   {guide.updatedDate}
                 </time>
               </div>
+              {guide.merchantFocus && <p class="mb-3 text-xs text-muted-foreground">Verticale actuelle : {guide.merchantFocus}</p>}
               <h2 class="text-2xl font-semibold text-foreground mb-3" style="font-family: var(--font-instrument-sans);">
                 <a href={guide.slug} class="hover:text-muted-foreground transition-colors">
                   {guide.title}

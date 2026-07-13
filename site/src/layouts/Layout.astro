@@ -13,8 +13,8 @@ interface Props {
 }
 
 const {
-  title = 'TemuGlowz — Des gadgets Temu utiles, malins et surprenants',
-  description = 'Découvrez des gadgets Temu pratiques, mignons ou inattendus pour la maison, les cadeaux, les vacances et le quotidien.',
+  title = 'ShopGlowz — Des gadgets utiles, malins et surprenants à découvrir',
+  description = 'Découvrez des gadgets pratiques, mignons ou inattendus pour la maison, les cadeaux, les vacances et le quotidien, avec plusieurs enseignes à comparer.',
   path = '',
   image = '/og-image.png',
   noIndex = false,
@@ -28,14 +28,14 @@ const defaultSchemas = [
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "TemuGlowz",
+    name: "ShopGlowz",
     url: "https://temuglowz.com",
-    description: "Des idées de gadgets Temu utiles, mignons et surprenants pour le quotidien.",
+    description: "Des idées de gadgets utiles, mignons et surprenants à comparer entre plusieurs enseignes.",
   },
   {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "TemuGlowz",
+    name: "ShopGlowz",
     url: "https://temuglowz.com",
     logo: "https://temuglowz.com/favicon.svg",
     sameAs: [],
@@ -62,7 +62,7 @@ const allSchemas = [...defaultSchemas, ...jsonLd]
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:site_name" content="TemuGlowz" />
+    <meta property="og:site_name" content="ShopGlowz" />
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1728" />
     <meta property="og:image:height" content="910" />

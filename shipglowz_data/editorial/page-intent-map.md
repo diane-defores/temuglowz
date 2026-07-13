@@ -1,10 +1,10 @@
 ---
 artifact: editorial_plan
 metadata_schema_version: "1.0"
-artifact_version: "1.2.0"
-project: "TemuGlowz"
+artifact_version: "1.3.0"
+project: "ShopGlowz"
 created: "2026-07-12"
-updated: "2026-07-12"
+updated: "2026-07-13"
 status: reviewed
 source_skill: 300-sg-docs
 scope: public-page-intents
@@ -28,15 +28,15 @@ next_step: "/206-sg-audit-copy public guides"
 
 ## Homepage
 
-Audience: French-speaking visitor looking for useful, cute, clever, or unusual Temu discoveries by use case.
+Audience: French-speaking visitor looking for useful, cute, clever, or unusual gadget discoveries by use case.
 
-Job: make TemuGlowz immediately understandable as an independent editorial catalogue, expose only substantive guide destinations, and explain the selection limits without turning the first visit into an application pitch.
+Job: make ShopGlowz immediately understandable as an independent editorial catalogue, expose only substantive guide destinations, and explain the selection limits without turning the first visit into an application pitch.
 
 Primary CTA: browse all guides or open a substantive published guide.
 
 Secondary CTA: discover the application through a discreet, accurately labelled `/app` link for visitors who need shopping-list organization.
 
-Required content: playful catalogue-first hero, use-case discovery cues, featured published guides, selection method, independent/non-test posture, and a reminder to verify volatile product details on Temu.
+Required content: playful catalogue-first hero, use-case discovery cues, featured published guides, selection method, independent/non-test posture, and a reminder to verify volatile product details on the merchant page.
 
 Voice: everyday, warm and desire-led. Talk about finds, small daily problems, gift ideas and the pleasure of discovering something clever. Keep governance terms such as “editorial catalogue”, “criteria”, “methodology”, “published selection” and “independent project” out of the main browsing journey; translate necessary safeguards into simple shopping advice.
 
@@ -44,11 +44,11 @@ Forbidden shortcuts: price tracking or alerts, automated extraction or monitorin
 
 ## Public guides
 
-Audience: French-speaking Temu shopper seeking comparison help, not a guarantee or live shopping feed.
+Audience: French-speaking shopper seeking comparison help, not a guarantee or live shopping feed.
 
 Job: make the selection basis, limitations, and next verification step understandable before the visitor clicks an outbound link.
 
-CTA: visit Temu only after verifying the product page, variant, price, availability, delivery and reviews.
+CTA: visit the merchant only after verifying the product page, variant, price, availability, delivery and reviews.
 
 Required content: visible material-connection disclosure, methodology, use case, rationale, caveat, indicative-price note, and source freshness context.
 

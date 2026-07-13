@@ -1,10 +1,10 @@
 ---
 artifact: branding_guidelines
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
-project: "TemuGlowz"
+artifact_version: "0.2.0"
+project: "ShopGlowz"
 created: "2026-07-12"
-updated: "2026-07-12"
+updated: "2026-07-13"
 status: draft
 source_skill: 300-sg-docs
 scope: brand-root
@@ -20,24 +20,24 @@ linked_systems:
 depends_on: []
 supersedes: []
 evidence:
-  - "Current site and app surfaces use TemuGlowz naming with independent-project trust language."
-next_review: "2026-08-12"
-next_step: "/500-sg-design-from-scratch TemuGlowz"
+  - "Public site direction switched from Temu-first branding to a multi-merchant gadget discovery brand on 2026-07-13."
+next_review: "2026-08-13"
+next_step: "/500-sg-design-from-scratch ShopGlowz"
 ---
 
-# TemuGlowz Brand Authority
+# ShopGlowz Brand Authority
 
 ## Brand posture
 
-Use clear, practical, trustworthy language. TemuGlowz is independent; never imply Temu endorsement or authorization without written proof.
+Use clear, practical, trustworthy language. ShopGlowz is independent; never imply endorsement, authorization, or official status from any merchant without written proof.
 
 ## Vocabulary
 
-Prefer “sélection”, “comparaison”, “observation”, and “à vérifier” when evidence is limited. Avoid “garanti”, “temps réel”, “testé”, “officiel”, or “partenaire” unless the claim register proves the term.
+Prefer “trouvailles”, “sélection”, “comparaison”, “repère”, “à vérifier”, and “fiche marchand” when evidence is limited. Avoid “garanti”, “temps réel”, “testé”, “officiel”, or “partenaire” unless the claim register proves the term.
 
 ## Surface authorities
 
-- Public site presentation: `site/src/styles/global.css` and shared Astro components.
+- Public site presentation: `site/src/styles/global.css`, shared Astro components, and `site/src/site/components/Navbar.vue`.
 - App UI: `shipglowz_data/technical/design-system-authority.md`.
 - Public trust and affiliate wording: `shipglowz_data/editorial/`.
 
