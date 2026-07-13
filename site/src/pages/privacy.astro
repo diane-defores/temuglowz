@@ -4,8 +4,9 @@ import Layout from '../layouts/Layout.astro'
 ---
 
 <Layout
-  title="TemuGlowz Privacy"
-  description="Privacy summary for TemuGlowz and its local-first shopping list workflow."
+  title="Confidentialité | TemuGlowz"
+  description="Résumé de la politique de confidentialité de TemuGlowz et de son fonctionnement de listes d’achat en local."
+  lang="fr-FR"
   path="/privacy"
 >
   <main id="main-content" class="min-h-screen bg-background text-foreground">
@@ -13,42 +14,42 @@ import Layout from '../layouts/Layout.astro'
       <div class="max-w-4xl mx-auto">
         <div class="mb-10" data-reveal>
           <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-sm text-muted-foreground mb-6">
-            Privacy
+            Confidentialité
           </span>
           <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4" style="font-family: var(--font-cal-sans);">
-            TemuGlowz privacy summary
+            Résumé de la confidentialité de TemuGlowz
           </h1>
           <p class="text-lg text-muted-foreground leading-relaxed">
-            TemuGlowz is built around local-first storage. This page summarizes the current data posture described in the repository and should be treated as a practical product overview, not legal advice.
+            TemuGlowz repose d’abord sur le stockage local. Cette page résume le fonctionnement actuel décrit dans le dépôt ; elle constitue une présentation pratique du produit et non un avis juridique.
           </p>
         </div>
 
         <div class="space-y-6" data-reveal>
           <section class="rounded-3xl border border-border bg-card/70 p-6">
-            <h2 class="text-2xl font-semibold text-foreground mb-3">Data the app is designed to keep</h2>
+            <h2 class="text-2xl font-semibold text-foreground mb-3">Données que l’application est conçue pour conserver</h2>
             <p class="text-muted-foreground leading-relaxed">
-              TemuGlowz stores user-created shopping lists, saved product links, local notes, quantities, selected options, and optional price or availability observations. The goal is to keep this information on the user side first instead of defaulting to cloud storage.
+              TemuGlowz conserve les listes d’achat créées par l’utilisateur, les liens produit enregistrés, les notes locales, les quantités, les options sélectionnées et, si vous le souhaitez, les observations de prix ou de disponibilité. L’objectif est de garder ces informations du côté de l’utilisateur plutôt que de privilégier par défaut un stockage cloud.
             </p>
           </section>
 
           <section class="rounded-3xl border border-border bg-card/70 p-6">
-            <h2 class="text-2xl font-semibold text-foreground mb-3">What TemuGlowz does not promise to collect</h2>
+            <h2 class="text-2xl font-semibold text-foreground mb-3">Ce que TemuGlowz ne prétend pas collecter</h2>
             <p class="text-muted-foreground leading-relaxed">
-              The current project documentation explicitly avoids claims around Temu cookie export, password capture, session dumping, stealth browser storage, or automated scraping of cart contents.
+              La documentation actuelle du projet n’avance aucune capacité d’export de cookies Temu, de capture de mots de passe, d’extraction de sessions, de stockage furtif dans le navigateur ou de récupération automatisée du contenu des paniers.
             </p>
           </section>
 
           <section class="rounded-3xl border border-border bg-card/70 p-6">
-            <h2 class="text-2xl font-semibold text-foreground mb-3">Cloud and sync status</h2>
+            <h2 class="text-2xl font-semibold text-foreground mb-3">État du cloud et de la synchronisation</h2>
             <p class="text-muted-foreground leading-relaxed">
-              Premium cloud sync scaffolding exists in the codebase, but the README states that identity, entitlement, and backend write paths are not production-enabled in this MVP. Local use remains the safest assumption.
+              Une structure de synchronisation cloud premium existe dans le code, mais le README précise que l’identité, les droits d’accès et les écritures backend ne sont pas activés en production dans ce MVP. L’usage local reste l’hypothèse la plus sûre.
             </p>
           </section>
 
           <section class="rounded-3xl border border-border bg-card/70 p-6">
-            <h2 class="text-2xl font-semibold text-foreground mb-3">Questions or changes</h2>
+            <h2 class="text-2xl font-semibold text-foreground mb-3">Questions ou évolutions</h2>
             <p class="text-muted-foreground leading-relaxed">
-              If TemuGlowz adds production cloud features later, this page should be updated to reflect the new storage, retention, and account behaviors before stronger privacy claims are made.
+              Si TemuGlowz ajoute ultérieurement des fonctions cloud en production, cette page devra être mise à jour pour décrire le stockage, la conservation et le fonctionnement des comptes avant toute affirmation plus forte en matière de confidentialité.
             </p>
           </section>
         </div>

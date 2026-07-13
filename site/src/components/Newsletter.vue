@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const status = ref('No spam, unsubscribe anytime.')
+const status = ref('Pas de spam, désinscription possible à tout moment.')
 const statusClass = ref('text-xs text-muted-foreground')
 const email = ref('')
 const submitting = ref(false)
 
 function submitForm(): void {
   if (!email.value || !email.value.includes('@')) {
-    status.value = 'Please enter a valid email address.'
+    status.value = 'Veuillez saisir une adresse e-mail valide.'
     statusClass.value = 'mt-4 text-xs text-red-400'
     return
   }
@@ -17,7 +17,7 @@ function submitForm(): void {
   statusClass.value = 'mt-4 text-xs text-muted-foreground'
 
   setTimeout(() => {
-    status.value = "You're in! We'll be in touch soon."
+    status.value = 'Inscription confirmée ! Nous vous donnerons bientôt des nouvelles.'
     statusClass.value = 'mt-4 text-xs text-emerald-400'
     email.value = ''
     submitting.value = false
@@ -29,19 +29,19 @@ function submitForm(): void {
   <section class="py-16 sm:py-24 bg-background">
     <div class="max-w-2xl mx-auto px-4 text-center" data-reveal>
       <h2 class="animate-fade-up text-2xl sm:text-3xl font-bold text-foreground mb-4" style="font-family: var(--font-instrument-sans);">
-        Stay in the Loop
+        Restez informé
       </h2>
       <p class="animate-fade-up delay-100 text-muted-foreground mb-8">
-        Get TemuGlowz product updates, release notes, and workflow ideas delivered to your inbox.
+        Recevez les actualités produit, notes de version et idées de méthode TemuGlowz dans votre boîte de réception.
       </p>
 
       <form class="animate-fade-up delay-200 flex flex-col sm:flex-row gap-3 max-w-md mx-auto" @submit.prevent="submitForm" novalidate>
-        <label for="newsletter-email" class="sr-only">Email address</label>
+        <label for="newsletter-email" class="sr-only">Adresse e-mail</label>
         <input
           id="newsletter-email"
           v-model="email"
           type="email"
-          placeholder="Enter your email"
+          placeholder="Votre adresse e-mail"
           required
           autocomplete="email"
           class="flex-1 px-4 py-3 rounded-full bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 text-sm"
@@ -51,7 +51,7 @@ function submitForm(): void {
           :disabled="submitting"
           class="shimmer-btn bg-white text-zinc-950 hover:bg-zinc-200 rounded-full px-6 py-3 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {{ submitting ? 'Subscribing…' : 'Subscribe' }}
+          {{ submitting ? 'Inscription…' : 'S’inscrire' }}
         </button>
       </form>
 

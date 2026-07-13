@@ -4,8 +4,9 @@ import Layout from '../layouts/Layout.astro'
 ---
 
 <Layout
-  title="TemuGlowz App"
-  description="Learn how TemuGlowz works today: a local-first Temu shopping list app with Android and development surfaces."
+  title="L’application TemuGlowz"
+  description="Découvrez le fonctionnement actuel de TemuGlowz : une application de listes d’achats Temu pensée pour le stockage local et Android."
+  lang="fr-FR"
   path="/app"
 >
   <main id="main-content" class="min-h-screen bg-background text-foreground">
@@ -14,25 +15,25 @@ import Layout from '../layouts/Layout.astro'
         <div class="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.8fr)] lg:items-start">
           <div data-reveal>
             <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-sm text-muted-foreground mb-6">
-              App overview
+              Présentation de l’application
             </span>
             <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4" style="font-family: var(--font-cal-sans);">
-              TemuGlowz is a local-first shopping list app for Temu links and product snapshots.
+              TemuGlowz est une application locale pour organiser vos liens Temu et vos fiches produit.
             </h1>
             <p class="text-lg text-muted-foreground leading-relaxed max-w-3xl mb-6">
-              The product is currently positioned around local storage, saved product links, shopping sessions, and manual price or availability observations. The repository includes Android and development surfaces; a public production web app is not promised on this site.
+              Le produit s’articule aujourd’hui autour du stockage local, des liens produit enregistrés, des sessions d’achat et des observations manuelles de prix ou de disponibilité. Le dépôt contient des surfaces Android et de développement ; ce site ne promet pas d’application web publique en production.
             </p>
             <div class="grid gap-4 sm:grid-cols-2">
               <div class="rounded-3xl border border-border bg-card/70 p-5">
-                <h2 class="text-lg font-semibold text-foreground mb-2">What it does</h2>
+                <h2 class="text-lg font-semibold text-foreground mb-2">Ce que l’application permet</h2>
                 <p class="text-sm text-muted-foreground leading-relaxed">
-                  Save Temu product links, organize them into named lists, and keep personal product notes without relying on cloud-first storage.
+                  Enregistrez des liens produit Temu, organisez-les dans des listes nommées et conservez vos notes personnelles sans dépendre d’un stockage cloud.
                 </p>
               </div>
               <div class="rounded-3xl border border-border bg-card/70 p-5">
-                <h2 class="text-lg font-semibold text-foreground mb-2">What it does not claim</h2>
+                <h2 class="text-lg font-semibold text-foreground mb-2">Ce que l’application ne prétend pas faire</h2>
                 <p class="text-sm text-muted-foreground leading-relaxed">
-                  No promise of automated cart scraping, official Temu partnership, or always-on public web access.
+                  Aucune promesse de récupération automatisée des paniers, de partenariat officiel avec Temu ou d’accès web public permanent.
                 </p>
               </div>
             </div>
@@ -40,25 +41,25 @@ import Layout from '../layouts/Layout.astro'
 
           <aside class="rounded-3xl border border-border bg-card/70 p-6" data-reveal>
             <h2 class="text-xl font-semibold text-foreground mb-3" style="font-family: var(--font-instrument-sans);">
-              Access paths today
+              Accéder au projet aujourd’hui
             </h2>
             <ul class="space-y-3 text-sm text-muted-foreground leading-relaxed mb-6">
-              <li>Review the source and current implementation on GitHub.</li>
-              <li>Use local development commands if you are testing the project directly.</li>
-              <li>Check the repository README for Android debug build guidance.</li>
+              <li>Consultez le code source et l’implémentation actuelle sur GitHub.</li>
+              <li>Utilisez les commandes de développement local pour tester directement le projet.</li>
+              <li>Consultez le README du dépôt pour créer une version Android de débogage.</li>
             </ul>
             <div class="flex flex-col gap-3">
               <a
                 href="https://github.com/dianedef/temu-shopping-lists"
                 class="shimmer-btn inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-medium text-zinc-950 hover:bg-zinc-200 transition-colors"
               >
-                View GitHub repository
+                Voir le dépôt GitHub
               </a>
               <a
                 href="https://github.com/dianedef/temu-shopping-lists#readme"
                 class="inline-flex items-center justify-center gap-2 rounded-full border border-border px-5 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors"
               >
-                Read setup notes
+                Lire les notes d’installation
               </a>
             </div>
           </aside>

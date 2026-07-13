@@ -10,10 +10,10 @@
             </div>
             <span class="font-semibold text-foreground">TemuGlowz</span>
           </a>
-          <p class="text-sm text-muted-foreground/70 mb-4">Local-first Temu shopping lists.</p>
+          <p class="text-sm text-muted-foreground/70 mb-4">Listes d’achat Temu pensées pour le local.</p>
           <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border">
             <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-glow"></span>
-            <span class="text-xs text-muted-foreground">Active development</span>
+            <span class="text-xs text-muted-foreground">Développement actif</span>
           </div>
         </div>
 
@@ -32,7 +32,7 @@
 
       <!-- Bottom -->
       <div class="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p class="text-sm text-muted-foreground/70">&copy; {{ currentYear }} TemuGlowz. All rights reserved.</p>
+        <p class="text-sm text-muted-foreground/70">&copy; {{ currentYear }} TemuGlowz. Tous droits réservés.</p>
         <div class="flex items-center gap-6">
           <a href="/guides" class="text-sm text-muted-foreground/70 hover:text-foreground transition-colors">Guides</a>
           <a href="https://github.com/dianedef/temu-shopping-lists" class="text-sm text-muted-foreground/70 hover:text-foreground transition-colors">GitHub</a>
@@ -44,20 +44,20 @@
 
 <script setup lang="ts">
 const footerLinks: Record<string, { label: string; href: string }[]> = {
-  Product: [
-    { label: 'Features', href: '/#features' },
-    { label: 'Pricing', href: '/#pricing' },
-    { label: 'App', href: '/app' },
+  Produit: [
+    { label: 'Fonctionnalités', href: '/#features' },
+    { label: 'Tarifs', href: '/#pricing' },
+    { label: 'Application', href: '/app' },
   ],
-  Resources: [
+  Ressources: [
     { label: 'Guides', href: '/guides' },
     { label: 'Blog', href: '/blog' },
-    { label: 'Downloads', href: 'https://github.com/dianedef/temu-shopping-lists/releases/latest' },
+    { label: 'Téléchargements', href: 'https://github.com/dianedef/temu-shopping-lists/releases/latest' },
     { label: 'GitHub', href: 'https://github.com/dianedef/temu-shopping-lists' },
   ],
-  Legal: [
-    { label: 'Privacy', href: '/privacy' },
-    { label: 'Terms', href: '/terms' },
+  Juridique: [
+    { label: 'Confidentialité', href: '/privacy' },
+    { label: 'Conditions d’utilisation', href: '/terms' },
   ],
 }
 const currentYear = new Date().getFullYear()

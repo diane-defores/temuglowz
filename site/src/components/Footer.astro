@@ -1,18 +1,18 @@
 ---
 const footerLinks: Record<string, { label: string; href: string }[]> = {
-  Product: [
-    { label: 'Features', href: '/#features' },
-    { label: 'Pricing', href: '/#pricing' },
-    { label: 'App', href: '/app' },
+  Produit: [
+    { label: 'Fonctionnalités', href: '/#features' },
+    { label: 'Tarifs', href: '/#pricing' },
+    { label: 'Application', href: '/app' },
   ],
-  Resources: [
+  Ressources: [
     { label: 'Guides', href: '/guides' },
     { label: 'Blog', href: '/blog' },
     { label: 'GitHub', href: 'https://github.com/dianedef/temu-shopping-lists' },
   ],
-  Legal: [
-    { label: 'Privacy', href: '/privacy' },
-    { label: 'Terms', href: '/terms' },
+  Juridique: [
+    { label: 'Confidentialité', href: '/privacy' },
+    { label: 'Conditions d’utilisation', href: '/terms' },
   ],
 }
 const currentYear = new Date().getFullYear()
@@ -28,10 +28,10 @@ const currentYear = new Date().getFullYear()
           </div>
           <span class="font-semibold text-foreground">TemuGlowz</span>
         </a>
-        <p class="text-sm text-muted-foreground/70 mb-4">Your Temu orders, organized. Local-first, always.</p>
+        <p class="text-sm text-muted-foreground/70 mb-4">Vos achats Temu, enfin organisés. Le local, toujours.</p>
         <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border">
           <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-glow"></span>
-          <span class="text-xs text-muted-foreground">Active development</span>
+          <span class="text-xs text-muted-foreground">Développement actif</span>
         </div>
       </div>
 
@@ -52,7 +52,7 @@ const currentYear = new Date().getFullYear()
     </div>
 
     <div class="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p class="text-sm text-muted-foreground/70">&copy; {currentYear} TemuGlowz. All rights reserved.</p>
+      <p class="text-sm text-muted-foreground/70">&copy; {currentYear} TemuGlowz. Tous droits réservés.</p>
       <div class="flex items-center gap-6">
         <a href="https://github.com/dianedef/temu-shopping-lists" class="text-sm text-muted-foreground/70 hover:text-foreground transition-colors">GitHub</a>
       </div>

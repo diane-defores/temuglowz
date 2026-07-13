@@ -3,33 +3,33 @@ import { ref } from 'vue'
 
 const plans = [
   {
-    name: 'Free',
-    description: 'Perfect for getting started',
+    name: 'Gratuit',
+    description: 'Parfait pour commencer',
     monthly: 0,
     yearly: 0,
     annual: 0,
-    features: ['2 shopping sessions', '50 products per session', 'Basic price tracking', 'Local storage only', 'Community support'],
-    cta: 'Get Started',
+    features: ['2 sessions d’achat', '50 produits par session', 'Suivi de prix de base', 'Stockage local uniquement', 'Assistance communautaire'],
+    cta: 'Commencer',
     highlighted: false,
   },
   {
     name: 'Pro',
-    description: 'For serious deal hunters',
+    description: 'Pour les chasseurs de bonnes affaires',
     monthly: 9,
     yearly: 6,
     annual: 72,
-    features: ['Unlimited sessions', 'Unlimited products', 'Full price history', 'Price alerts', 'Priority email support'],
-    cta: 'Start Free Trial',
+    features: ['Sessions illimitées', 'Produits illimités', 'Historique complet des prix', 'Alertes de prix', 'Assistance e-mail prioritaire'],
+    cta: 'Démarrer l’essai gratuit',
     highlighted: true,
   },
   {
     name: 'Team',
-    description: 'For small teams',
+    description: 'Pour les petites équipes',
     monthly: 19,
     yearly: 15,
     annual: 180,
-    features: ['Everything in Pro', 'Shared lists', 'Team management', 'Priority support'],
-    cta: 'Contact Sales',
+    features: ['Tout le contenu Pro', 'Listes partagées', 'Gestion d’équipe', 'Assistance prioritaire'],
+    cta: 'Contacter l’équipe',
     highlighted: false,
   },
 ]
@@ -50,10 +50,10 @@ function priceFor(plan: typeof plans[0]): string {
     <div class="max-w-6xl mx-auto px-4">
       <div class="text-center mb-12" data-reveal>
         <h2 class="animate-fade-up text-3xl sm:text-4xl font-bold text-foreground mb-4" style="font-family: var(--font-instrument-sans);">
-          Simple, Transparent Pricing
+          Des tarifs simples et transparents
         </h2>
         <p class="animate-fade-up delay-100 text-muted-foreground max-w-2xl mx-auto mb-8">
-          Start free, upgrade when you need more sessions and advanced tracking.
+          Commencez gratuitement, puis passez à une formule supérieure quand vous avez besoin de plus de sessions et d’un suivi avancé.
         </p>
 
         <div class="inline-flex items-center p-1 rounded-full bg-card border border-border">
@@ -61,13 +61,13 @@ function priceFor(plan: typeof plans[0]): string {
             @click="setCycle('monthly')"
             :class="['relative px-4 py-2 text-sm font-medium rounded-full transition-colors', cycle === 'monthly' ? 'text-foreground bg-muted' : 'text-muted-foreground']"
           >
-            Monthly
+            Mensuel
           </button>
           <button
             @click="setCycle('yearly')"
             :class="['relative px-4 py-2 text-sm font-medium rounded-full transition-colors', cycle === 'yearly' ? 'text-foreground bg-muted' : 'text-muted-foreground']"
           >
-            Yearly
+            Annuel
             <span class="ml-2 px-2 py-0.5 text-xs bg-emerald-500/20 text-emerald-400 rounded-full">-33%</span>
           </button>
         </div>
@@ -91,7 +91,7 @@ function priceFor(plan: typeof plans[0]): string {
           </div>
 
           <div v-if="plan.highlighted" class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-foreground text-background text-xs font-medium rounded-full">
-            Most Popular
+            Le plus populaire
           </div>
 
           <div class="mb-6">
@@ -102,10 +102,10 @@ function priceFor(plan: typeof plans[0]): string {
           <div class="mb-6">
             <div class="flex items-baseline gap-1">
               <span class="text-4xl font-bold text-foreground">{{ priceFor(plan) }}</span>
-              <span v-if="plan.monthly > 0" class="text-muted-foreground text-sm">/month</span>
+              <span v-if="plan.monthly > 0" class="text-muted-foreground text-sm">/mois</span>
             </div>
             <p v-if="plan.annual > 0 && cycle === 'yearly'" class="text-xs text-muted-foreground mt-1">
-              Billed annually (€{{ plan.annual }}/year)
+              Facturé annuellement ({{ plan.annual }} € / an)
             </p>
           </div>
 
@@ -128,7 +128,7 @@ function priceFor(plan: typeof plans[0]): string {
         </div>
       </div>
       <div class="mt-10 max-w-2xl mx-auto px-4 py-4 rounded-xl bg-card/50 border border-border text-sm text-muted-foreground" data-reveal>
-        <p><span class="font-medium text-foreground">Why subscriptions?</span> TemuGlowz needs ongoing maintenance for Temu API changes, price tracking updates, and cross-platform compatibility.</p>
+        <p><span class="font-medium text-foreground">Pourquoi des abonnements ?</span> TemuGlowz nécessite une maintenance continue pour suivre les évolutions de Temu, du suivi des prix et de la compatibilité multiplateforme.</p>
       </div>
     </div>
   </section>

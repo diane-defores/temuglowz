@@ -5,8 +5,8 @@ artifact_version: "1.0.0"
 project: "temuglowz"
 created: "2026-07-12"
 created_at: "2026-07-12 15:21:07 UTC"
-updated: "2026-07-12"
-updated_at: "2026-07-12 15:39:37 UTC"
+updated: "2026-07-13"
+updated_at: "2026-07-13 10:55:18 UTC"
 status: ready
 source_skill: 100-sg-spec
 source_model: "GPT-5 Codex"
@@ -125,7 +125,7 @@ Run a staged, evidence-first readiness program focused on the public Astro site.
 - Public product language may describe curation, observed criteria and limitations; it must not say tested, approved, guaranteed, live-priced, or endorsed without evidence.
 - Product content is static/public and must remain crawlable without unnecessary client hydration.
 - Affiliate CTAs retain `target="_blank"` and `rel="noopener noreferrer sponsored"`; safety validation must reject unsafe schemes and non-approved hosts.
-- The public site has no confirmed production URL in `CLAUDE.md`; no GO verdict may use local build proof as a substitute for live-route proof.
+- The reviewed public target is `https://temuglowz-site.vercel.app/`; no GO verdict may use only an HTTP response as a substitute for live browser-route proof.
 - UI changes must use the declared design-system authority and drift check.
 - Fresh-docs checked: Temu's current affiliate page states applicants provide the promotion channel link(s); FTC guidance calls for clear, conspicuous disclosure near affiliate recommendations; Google's reviews guidance rewards original, insightful analysis rather than thin summaries.
 
@@ -302,6 +302,9 @@ None required to initialize the readiness program. The exact country/channel URL
 | 2026-07-12 15:23:48 UTC | 101-sg-ready | GPT-5 Codex | Confirmed structure, task ordering, adversarial safeguards, static-site exception, current official-source freshness and executable proof obligations. | ready | /102-sg-start shipglowz_data/workflow/specs/temuglowz-temu-affiliate-readiness.md |
 | 2026-07-12 15:39:00 UTC | 102-sg-start | GPT-5 Codex | Implemented the local public-guide trust, indexability, claim, outbound-link and governance slices; recorded the executed checklist and audit baseline. | partial | /103-sg-verify shipglowz_data/workflow/specs/temuglowz-temu-affiliate-readiness.md |
 | 2026-07-12 15:39:37 UTC | 001-sg-build | GPT-5 Codex | Orchestrated the ready chantier through its autonomous local implementation, validation and evidence capture; stopped before browser/production proof and any Temu contact. | partial | /103-sg-verify shipglowz_data/workflow/specs/temuglowz-temu-affiliate-readiness.md |
+| 2026-07-13 08:53:41 UTC | 405-sg-prod / 108-sg-browser | GPT-5 Codex | Confirmed the supplied production target returns 200 for public, guide, legal, sitemap and robots routes; verified the deployed guide disclosure, sponsored links, noindexed draft route and sitemap exclusion. Browser proof could not run because the active Playwright MCP process still points to a missing Chromium 1217 executable despite a valid current configuration. | partial | reload Playwright MCP, then /103-sg-verify shipglowz_data/workflow/specs/temuglowz-temu-affiliate-readiness.md |
+| 2026-07-13 10:55:18 UTC | 108-sg-browser | GPT-5 Codex | After the MCP reload, completed desktop/mobile public-route smoke: both promoted guides, guide index, terms and privacy rendered with no observed console errors or failed critical requests; the mobile kitchen guide had no horizontal overflow and exposed a visible keyboard focus path. Corrected the remaining English guide-index copy locally. | partial | ship the localized guide index, then /103-sg-verify shipglowz_data/workflow/specs/temuglowz-temu-affiliate-readiness.md |
+| 2026-07-13 11:02:00 UTC | 407-sg-audit-translate | GPT-5 Codex | Audited the public Astro locale surface and localized active French copy, page language, canonical/hreflang metadata, trust pages and sitemap; kept the empty computing guide noindexed and excluded it from promotion sources. | partial | deploy the localized build, then /103-sg-verify shipglowz_data/workflow/specs/temuglowz-temu-affiliate-readiness.md |
 
 ## Current Chantier Flow
 
@@ -309,8 +312,8 @@ None required to initialize the readiness program. The exact country/channel URL
 |---|---|---|
 | 100-sg-spec | completed | Readiness scope, gates, dependencies and stop conditions recorded. |
 | 101-sg-ready | ready | Independent readiness gate passed; public-site audits and remediation may start. |
-| 102-sg-start | partial | Local implementation and static proof complete; source evidence, browser and production proof remain. |
-| 103-sg-verify | pending | Independent GO/NO-GO review after external proof gaps are resolved or recorded. |
+| 102-sg-start | partial | Local implementation and static proof complete; source evidence and browser proof remain. French canonicalization applied locally. |
+| 103-sg-verify | partial | Production and browser smoke captured; deploy parity for the final localization and product-source proof remain. |
 | 104-sg-end | pending | Close readiness dossier when outcome is verified. |
 | 005-sg-ship | pending | Ship only approved repository changes; outreach is a separate external action. |
 

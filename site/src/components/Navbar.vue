@@ -6,10 +6,10 @@ defineProps<{
 }>()
 
 const navItems = [
-  { label: 'Benefits', href: '/#benefits' },
-  { label: 'Features', href: '/#features' },
-  { label: 'Pricing', href: '/#pricing' },
-  { label: 'Use Cases', href: '/#reviews' },
+  { label: 'Avantages', href: '/#benefits' },
+  { label: 'Fonctionnalités', href: '/#features' },
+  { label: 'Tarifs', href: '/#pricing' },
+  { label: 'Cas d’usage', href: '/#reviews' },
 ]
 
 const isDark = ref(true)
@@ -106,7 +106,7 @@ onMounted(() => {
         <button
           @click="toggleTheme"
           class="p-2 text-muted-foreground hover:text-foreground transition-colors"
-          :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+          :aria-label="isDark ? 'Passer au mode clair' : 'Passer au mode sombre'"
         >
           <svg v-if="isDark" class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="5"/>
@@ -117,20 +117,20 @@ onMounted(() => {
           </svg>
         </button>
         <a :href="appUrl ?? '/app'" class="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2">
-          Open App
+          Ouvrir l’application
         </a>
         <a
           :href="appUrl ?? '/app'"
           class="shimmer-btn bg-white text-zinc-950 hover:bg-zinc-200 rounded-full px-4 py-2 text-sm font-medium transition-colors"
         >
-          Get Started
+          Commencer
         </a>
       </div>
 
       <button
         id="mobile-menu-btn"
         class="md:hidden p-2 text-muted-foreground hover:text-foreground"
-        aria-label="Toggle menu"
+        aria-label="Ouvrir le menu"
         aria-expanded="false"
         aria-controls="mobile-menu"
       >
@@ -159,7 +159,7 @@ onMounted(() => {
           <svg v-else class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
-          {{ isDark ? 'Light Mode' : 'Dark Mode' }}
+          {{ isDark ? 'Mode clair' : 'Mode sombre' }}
         </button>
         <a
           v-for="item in navItems"
@@ -170,8 +170,8 @@ onMounted(() => {
           {{ item.label }}
         </a>
         <hr class="border-border my-2"/>
-        <a :href="appUrl ?? '/app'" class="px-4 py-3 text-sm text-muted-foreground hover:text-foreground transition-colors">Open App</a>
-        <a :href="appUrl ?? '/app'" class="shimmer-btn bg-white text-zinc-950 hover:bg-zinc-200 rounded-full px-4 py-3 text-sm font-medium text-center transition-colors">Get Started</a>
+        <a :href="appUrl ?? '/app'" class="px-4 py-3 text-sm text-muted-foreground hover:text-foreground transition-colors">Ouvrir l’application</a>
+        <a :href="appUrl ?? '/app'" class="shimmer-btn bg-white text-zinc-950 hover:bg-zinc-200 rounded-full px-4 py-3 text-sm font-medium text-center transition-colors">Commencer</a>
       </div>
     </div>
   </header>
