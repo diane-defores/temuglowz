@@ -5,8 +5,8 @@ artifact_version: "1.1.0"
 project: "TemuGlowz"
 created: "2026-07-12"
 created_at: "2026-07-12 21:48:39 UTC"
-updated: "2026-07-12"
-updated_at: "2026-07-13 07:15:00 UTC"
+updated: "2026-07-13"
+updated_at: "2026-07-13 07:21:09 UTC"
 status: reviewed
 source_skill: 100-sg-spec
 source_model: "GPT-5 Codex"
@@ -218,16 +218,18 @@ None.
 | 2026-07-13 07:09:31 UTC | 005-sg-ship | gpt-5.4-mini | Shipped the bounded Node runtime repair and closure bookkeeping on `preview` as commit `d024877`; checks passed and push succeeded. | shipped | `/405-sg-prod` then `/107-sg-test --retest BUG-2026-07-12-001` |
 | 2026-07-13 07:13:38 UTC | 405-sg-prod | gpt-5 | Verified Vercel preview for HEAD `3036de9` (`READY`, exact preview build, Astro 9 pages, Node 22.x) and production `https://temuglowz-site.vercel.app/` (`READY`, SHA `8134e45`, HTTP 200, no redirect, public TemuGlowz markers); GitHub site and Android checks for `d024877` are green; static runtime logs returned no events/errors. | implemented | `/107-sg-test --retest BUG-2026-07-12-001` |
 | 2026-07-13 07:15:00 UTC | 405-sg-prod | gpt-5 | Retested the pushed repair at `d0248771a3e14965be69691e75aa5cf4c474b8e8`: Vercel preview `https://temuglowz-site-nss2jg757-diane-ds-projects.vercel.app/` is READY with Astro and Node 24.x runtime; production `https://temuglowz-site.vercel.app/` returns HTTP 200 with zero redirects and public `TemuGlowz` content; GitHub Site Checks run `29231129575` and Android run `29231129638` are successful. | success | `/103-sg-verify` then `/104-sg-end`; final closure intentionally remains pending |
+| 2026-07-13 07:18:53 UTC | 103-sg-verify | GPT-5 | Verified the Node 22.12 repair against the user story and closure criteria. | verified: local typecheck/lint/tests pass; GitHub Site Checks and Android checks pass on exact SHA `d0248771a3e14965be69691e75aa5cf4c474b8e8`; Vercel preview is READY; production is HTTP 200 with zero redirects and `TemuGlowz` marker. | verified | `/104-sg-end` |
+| 2026-07-13 07:21:09 UTC | 104-sg-end | GPT-5 | Closed the Node runtime repair and the workspace-migration chantier after the current 103 verification gate. | closed: implementation, local checks, hosted CI retest, Vercel preview, production HTTP/content proof, bug record, tracker, and changelog framing are synchronized. | closed | `/005-sg-ship` |
 
 ## Current Chantier Flow
 
 - `100-sg-spec`: complete
 - `101-sg-ready`: ready
 - `102-sg-start`: implemented
-- `103-sg-verify`: pending current verification record for the repaired CI behavior; the earlier migration verification remains preserved above
-- `104-sg-end`: deferred; final closure cannot be represented until the current `103-sg-verify` result is explicit
-- `005-sg-ship`: shipped; commit `d024877` pushed to `origin/preview`
+- `103-sg-verify`: verified; the Node runtime repair satisfies the current proof contract and the earlier migration verification remains preserved above
+- `104-sg-end`: closed; current 103 verification and all closure criteria are explicit
+- `005-sg-ship`: pending documentary closure push
 - Post-ship verification (`405-sg-prod`): complete; exact preview deployment for HEAD `3036de9` is READY and built successfully with Node 22.x, production is READY/live on `8134e45`, public HTTP/content checks pass, and static runtime logs show no events/errors.
-- `106-sg-fix`: fixed-pending-verify; CI runtime and package engine constraints are aligned on Node 22.12, local site proof passes, and hosted `405-sg-prod` evidence is successful. Current `103-sg-verify` and `104-sg-end` records remain required before closure.
+- `106-sg-fix`: closed; CI runtime and package engine constraints are aligned on Node 22.12, local site proof passes, and hosted `405-sg-prod` evidence is successful. `103-sg-verify` and `104-sg-end` are complete.
 - Remaining out of scope: `BUG-2026-06-11-001` stays open (`high`, `fix-attempted`) pending separate Android retest.
-- Next: `/103-sg-verify` then `/104-sg-end` to represent current verification and closure; no `107-sg-test` run is claimed by this handoff.
+- Next: `/005-sg-ship` for the bounded documentary closure push; no `107-sg-test` run is claimed because it was not required by the verified proof contract.
