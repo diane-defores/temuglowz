@@ -1,0 +1,33 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import Footer from './Footer.astro'
+import Layout from '../layouts/Layout.astro'
+
+interface Props { article: CollectionEntry<'articles'> }
+const { article } = Astro.props
+const { data } = article
+const canonicalPath = `/blog/${article.id}`
+const jsonLd = [{
+  '@context': 'https://schema.org', '@type': 'Article', headline: data.title,
+  description: data.description, datePublished: data.publishDate.toISOString(), dateModified: data.updatedDate.toISOString(),
+  mainEntityOfPage: `https://temuglowz.com${canonicalPath}`,
+}, { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+  { '@type': 'ListItem', position: 1, name: 'Explorer', item: 'https://temuglowz.com/guides' },
+  { '@type': 'ListItem', position: 2, name: 'Repères', item: 'https://temuglowz.com/blog' },
+  { '@type': 'ListItem', position: 3, name: data.title, item: `https://temuglowz.com${canonicalPath}` },
+] }]
+---
+<Layout title={`${data.title} | TemuGlowz`} description={data.description} path={canonicalPath} jsonLd={jsonLd}>
+  <main id="main-content" class="min-h-screen bg-background px-4 pb-12 pt-24 text-foreground">
+    <article class="mx-auto max-w-3xl">
+      <nav class="mb-8 flex gap-2 text-sm text-muted-foreground" aria-label="Fil d’Ariane"><a href="/guides">Explorer</a><span>›</span><a href="/blog">Repères</a><span>›</span><span>{data.title}</span></nav>
+      <p class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Repère pratique · source vérifiée le {data.sourceCheckedAt.toLocaleDateString('fr-FR')}</p>
+      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl" style="font-family: var(--font-cal-sans);">{data.title}</h1>
+      <p class="mt-5 text-lg leading-relaxed text-muted-foreground">{data.description}</p>
+      <div class="prose prose-zinc mt-10 max-w-none leading-relaxed dark:prose-invert"><slot /></div>
+      <aside class="mt-10 rounded-3xl border border-border bg-card/70 p-6"><h2 class="text-lg font-semibold">Sources et limites</h2><p class="mt-2 text-sm leading-relaxed text-muted-foreground">Informations consultées le {data.sourceCheckedAt.toLocaleDateString('fr-FR')}. Les options, prix et disponibilités peuvent varier selon l’article, le vendeur, le pays et l’interface.</p><ul class="mt-4 space-y-2 text-sm">{data.sources.map((source) => <li><a class="underline decoration-border underline-offset-4 hover:text-muted-foreground" href={source.url} rel="noopener noreferrer">{source.label}</a></li>)}</ul></aside>
+      {data.relatedGuideSlugs.length > 0 && <p class="mt-8 text-sm text-muted-foreground">À explorer : {data.relatedGuideSlugs.map((slug, index) => <><a href={slug} class="underline decoration-border underline-offset-4 hover:text-foreground">nos trouvailles liées</a>{index < data.relatedGuideSlugs.length - 1 ? ', ' : ''}</>)}</p>}
+    </article>
+    <Footer />
+  </main>
+</Layout>

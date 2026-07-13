@@ -1,12 +1,14 @@
 ---
 import Footer from '../components/Footer.astro'
 import Layout from '../layouts/Layout.astro'
-import { guideIndex } from '../site/data/guideIndex'
+import { getPublishedArticles } from '../site/data/publishedContent'
+
+const articles = await getPublishedArticles()
 ---
 
 <Layout
-  title="Blog TemuGlowz"
-  description="Suivez les notes produit, les méthodes d’achat et les mises à jour des guides TemuGlowz."
+  title="Repères pratiques Temu | TemuGlowz"
+  description="Des repères simples pour comprendre prix, disponibilité et achats Temu sans promettre l’impossible."
   lang="fr-FR"
   path="/blog"
 >
@@ -16,27 +18,27 @@ import { guideIndex } from '../site/data/guideIndex'
         <div class="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.9fr)] lg:items-start">
           <div data-reveal>
             <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-sm text-muted-foreground mb-6">
-              Espace éditorial
+              Repères pratiques
             </span>
             <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4" style="font-family: var(--font-cal-sans);">
-              Les actualités et guides TemuGlowz.
+              Des réponses simples avant d’acheter.
             </h1>
             <p class="text-lg text-muted-foreground leading-relaxed max-w-3xl">
-              Retrouvez ici les contenus éditoriaux de TemuGlowz : guides produit pratiques, notes de méthode et conseils d’achat liés aux évolutions du projet. La publication actuelle privilégie les guides, tandis que les articles plus longs sont encore en préparation.
+              Prix qui change, produit indisponible, offres qui se ressemblent… voici les petites choses utiles à savoir pour décider calmement.
             </p>
           </div>
 
           <aside class="rounded-3xl border border-border bg-card/70 p-6" data-reveal>
             <h2 class="text-xl font-semibold text-foreground mb-3" style="font-family: var(--font-instrument-sans);">
-              Ce que vous trouverez ici
+              Dans cet espace
             </h2>
             <ul class="space-y-3 text-sm text-muted-foreground leading-relaxed">
-              <li>Des sélections de produits Temu pour des usages précis.</li>
-              <li>Des notes sur les méthodes d’achat liées à l’application TemuGlowz.</li>
-              <li>Les annonces de nouveaux guides et de futures catégories.</li>
+              <li>Des explications sourcées, écrites pour les acheteurs.</li>
+              <li>Des limites claires quand une règle dépend du vendeur ou de l’interface.</li>
+              <li>Des liens vers des trouvailles utiles quand elles ont du sens.</li>
             </ul>
             <a href="/guides" class="inline-flex items-center gap-2 mt-6 rounded-full border border-border px-5 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors">
-              Voir tous les guides
+              Explorer les trouvailles
               <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M5 12h14" />
                 <path d="m12 5 7 7-7 7" />
@@ -46,22 +48,22 @@ import { guideIndex } from '../site/data/guideIndex'
         </div>
 
         <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-reveal>
-          {guideIndex.map((guide, index) => (
+          {articles.map((article, index) => (
             <article
               class="animate-fade-up rounded-3xl border border-border bg-card/70 p-6"
               style={`animation-delay: ${index * 100}ms`}
             >
               <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-4">
-                Guide publié
+                {article.data.intent}
               </p>
               <h2 class="text-2xl font-semibold text-foreground mb-3" style="font-family: var(--font-instrument-sans);">
-                <a href={guide.slug} class="hover:text-muted-foreground transition-colors">
-                  {guide.title}
+                <a href={`/blog/${article.id}`} class="hover:text-muted-foreground transition-colors">
+                  {article.data.title}
                 </a>
               </h2>
-              <p class="text-sm text-muted-foreground leading-relaxed mb-6">{guide.readingHint}</p>
-              <a href={guide.slug} class="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors">
-                Ouvrir l’article
+              <p class="text-sm text-muted-foreground leading-relaxed mb-6">{article.data.description}</p>
+              <a href={`/blog/${article.id}`} class="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors">
+                Lire le repère
                 <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M5 12h14" />
                   <path d="m12 5 7 7-7 7" />

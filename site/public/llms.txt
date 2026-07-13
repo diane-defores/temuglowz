@@ -7,6 +7,11 @@ TemuGlowz is an independent project for people who want to organize Temu shoppin
 - Kitchen gadgets: /guides/kitchen-gadgets
 - Summer cooling: /guides/summer-cooling
 
+## Repères pratiques
+
+- Ajustement de prix Temu : /blog/ajustement-prix-temu
+- Produit Temu en rupture : /blog/produit-temu-rupture-stock
+
 Only these published guides are intended as current public recommendation pages. Product details, prices, variants and availability can change; readers should verify them on Temu before ordering.
 
 ## Editorial approach

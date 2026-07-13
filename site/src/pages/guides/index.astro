@@ -2,11 +2,14 @@
 import Footer from '../../components/Footer.astro'
 import Layout from '../../layouts/Layout.astro'
 import { guideIndex } from '../../site/data/guideIndex'
+import { getPublishedArticles } from '../../site/data/publishedContent'
+
+const articles = await getPublishedArticles()
 ---
 
 <Layout
-  title="Guides d’achat Temu | TemuGlowz"
-  description="Découvrez les guides d’achat Temu de TemuGlowz : cuisine, fraîcheur estivale et accessoires informatiques pratiques."
+  title="Explorer des trouvailles et repères Temu | TemuGlowz"
+  description="Des gadgets malins à découvrir et des réponses simples pour acheter sur Temu avec plus de recul."
   path="/guides"
 >
   <main id="main-content" class="min-h-screen bg-background text-foreground">
@@ -14,17 +17,38 @@ import { guideIndex } from '../../site/data/guideIndex'
       <div class="max-w-6xl mx-auto">
         <div class="max-w-3xl mb-12" data-reveal>
           <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-sm text-muted-foreground mb-6">
-            Guides d’achat
+            Explorer TemuGlowz
           </span>
           <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4" style="font-family: var(--font-cal-sans);">
-            Des guides Temu pour comparer les options et choisir plus clairement.
+            Une petite caverne d’Ali Baba, avec les repères qui vont bien.
           </h1>
           <p class="text-lg text-muted-foreground leading-relaxed">
-            Découvrez nos guides pour des catégories Temu utiles au quotidien. Chaque page aide à comparer les options, comprendre les compromis et préparer une sélection plus pertinente.
+            D’un côté, des gadgets utiles, mignons ou simplement bien pensés. De l’autre, des réponses claires quand un prix bouge ou qu’un produit disparaît.
           </p>
         </div>
 
-        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-reveal>
+        <div class="grid gap-6 lg:grid-cols-2" data-reveal>
+          <section class="rounded-3xl border border-border bg-card/70 p-6 sm:p-8">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Des idées pour…</p>
+            <h2 class="mt-3 text-3xl font-semibold" style="font-family: var(--font-instrument-sans);">Trouver le petit objet qui change tout</h2>
+            <p class="mt-3 text-muted-foreground">Cuisine, chaleur, bureau : choisissez une envie, puis piochez tranquillement.</p>
+            <div class="mt-6 grid gap-4 sm:grid-cols-2">
+              {guideIndex.map((guide) => <a href={guide.slug} class="rounded-2xl border border-border p-4 transition-colors hover:bg-muted"><span class="text-xs uppercase tracking-[0.16em] text-muted-foreground">{guide.category}</span><strong class="mt-2 block">{guide.homepageTitle}</strong></a>)}
+            </div>
+          </section>
+          <section class="rounded-3xl border border-border bg-card/70 p-6 sm:p-8">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Un doute avant d’acheter ?</p>
+            <h2 class="mt-3 text-3xl font-semibold" style="font-family: var(--font-instrument-sans);">On vous aide à y voir plus clair</h2>
+            <p class="mt-3 text-muted-foreground">Pas de formule magique : juste ce qui est documenté, et ce qu’il faut vérifier vous-même.</p>
+            <div class="mt-6 space-y-3">
+              {articles.map((article) => <a href={`/blog/${article.id}`} class="block rounded-2xl border border-border p-4 transition-colors hover:bg-muted"><span class="text-xs uppercase tracking-[0.16em] text-muted-foreground">{article.data.topic}</span><strong class="mt-1 block">{article.data.title}</strong></a>)}
+            </div>
+          </section>
+        </div>
+
+        <section class="mt-12" data-reveal>
+          <div class="mb-6 flex items-end justify-between gap-4"><div><p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Toutes les trouvailles</p><h2 class="mt-2 text-3xl font-semibold" style="font-family: var(--font-instrument-sans);">À explorer selon l’humeur</h2></div><a href="/blog" class="text-sm underline decoration-border underline-offset-4">Voir tous les repères</a></div>
+          <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {guideIndex.map((guide, index) => (
             <article
               class="animate-fade-up rounded-3xl border border-border bg-card/70 p-6"
@@ -57,7 +81,8 @@ import { guideIndex } from '../../site/data/guideIndex'
               </a>
             </article>
           ))}
-        </div>
+          </div>
+        </section>
       </div>
     </section>
 

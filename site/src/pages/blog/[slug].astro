@@ -1,0 +1,14 @@
+---
+import ExplorerArticleLayout from '../../components/ExplorerArticleLayout.astro'
+import { render } from 'astro:content'
+import { getPublishedArticles } from '../../site/data/publishedContent'
+
+export async function getStaticPaths() {
+  const articles = await getPublishedArticles()
+  return articles.map((article) => ({ params: { slug: article.id }, props: { article } }))
+}
+
+const { article } = Astro.props
+const { Content } = await render(article)
+---
+<ExplorerArticleLayout {article}><Content /></ExplorerArticleLayout>

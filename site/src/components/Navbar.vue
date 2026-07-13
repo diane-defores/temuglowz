@@ -6,10 +6,9 @@ defineProps<{
 }>()
 
 const navItems = [
-  { label: 'Avantages', href: '/#benefits' },
-  { label: 'Fonctionnalités', href: '/#features' },
-  { label: 'Tarifs', href: '/#pricing' },
-  { label: 'Cas d’usage', href: '/#reviews' },
+  { label: 'Explorer', href: '/guides' },
+  { label: 'Repères', href: '/blog' },
+  { label: 'Comment on choisit', href: '/#method' },
 ]
 
 const isDark = ref(false)
