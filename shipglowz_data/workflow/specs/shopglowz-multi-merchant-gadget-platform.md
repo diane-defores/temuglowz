@@ -293,14 +293,16 @@ None for the public brand direction itself. Deferred decisions remain explicitly
 | 2026-07-13 22:42:50 UTC | 102-sg-start | Aligned public trust pages and the app explainer with ShopGlowz branding, and softened guide datasets so Temu is treated as a documented vertical rather than the site identity. | partial | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
 | 2026-07-13 22:45:55 UTC | 102-sg-start | Reworked the blog index into a topic-based educational hub using existing sourced articles so import, marketplace, stock, price, delivery and comparison questions are easier to browse and index. | partial | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
 | 2026-07-13 22:49:30 UTC | 103-sg-verify | Verified the local proof and built output for the ShopGlowz public rebrand, but kept the chantier partial because browser/SEO proof and the remaining multi-merchant content tasks are still open. | partial | `/108-sg-browser shopglowz public pages` |
+| 2026-07-13 22:55:20 UTC | 108-sg-browser | Browser-checked the local static site on homepage, guides hub, a product guide, and a legacy Temu article route; visible branding, disclosure, merchant cues, and console cleanliness passed for those scenarios. | pass | `/406-sg-seo shopglowz public rebrand` |
+| 2026-07-13 22:59:30 UTC | 406-sg-seo | Audited sitemap, canonicals, robots, llms.txt, and published-route parity; found a sitemap/noindex contradiction on `guides/gadgets-informatique` and incomplete machine-readable coverage in `llms.txt`. | partial | `/102-sg-start shopglowz-multi-merchant-gadget-platform` |
 
 ## Current Chantier Flow
 
 - `100-sg-spec`: completed — draft repaired after readiness feedback.
 - `101-sg-ready`: ready.
 - `102-sg-start`: partial — brand, governance, merchant registry, outbound-link contract, trust pages, active public chrome, guide hub copy, educational hub structure, guide dataset softening, and sitemap coverage are implemented; new educational pages and deeper merchant-vertical migration still remain.
-- `103-sg-verify`: partial — local proof and built-output inspection pass, but browser proof, SEO/legacy-route proof, and completion of remaining implementation tasks are still required before ship readiness.
+- `103-sg-verify`: partial — local proof, built-output inspection, and local browser proof pass, but SEO/legacy-route proof and completion of remaining implementation tasks are still required before ship readiness.
 - `104-sg-end`: pending.
 - `005-sg-ship`: pending.
 
-Next command: `/108-sg-browser shopglowz public pages`.
+Next command: `/102-sg-start shopglowz-multi-merchant-gadget-platform`.
