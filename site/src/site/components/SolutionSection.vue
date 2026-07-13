@@ -14,11 +14,15 @@
         <div
           v-for="(solution, index) in solutions"
           :key="solution.title"
-          :class="`animate-fade-up delay-${(index + 1) * 100} group relative p-6 rounded-2xl bg-card border border-border hover:border-foreground/25 hover:scale-[1.02] transition-all duration-300 text-center`"
+          :class="`animate-fade-up delay-${(index + 1) * 100} group relative flex flex-col justify-between rounded-2xl bg-card border border-border p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-lg`"
         >
-          <span class="text-4xl sm:text-5xl block mb-4">{{ solution.icon }}</span>
-          <h3 class="text-xl sm:text-2xl font-semibold text-foreground mb-3">{{ solution.title }}</h3>
-          <p class="text-base text-muted-foreground leading-relaxed">{{ solution.description }}</p>
+          <div>
+            <h3 class="text-xl sm:text-2xl font-semibold text-foreground mb-3">{{ solution.title }}</h3>
+            <p class="text-base text-muted-foreground leading-relaxed">{{ solution.description }}</p>
+          </div>
+          <div class="mt-6 flex items-center justify-center">
+            <span class="text-4xl sm:text-5xl leading-none opacity-80 group-hover:scale-110 transition-transform duration-300">{{ solution.icon }}</span>
+          </div>
         </div>
       </div>
     </div>

@@ -9,87 +9,81 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-reveal>
       <!-- Local Archive (large card) -->
-      <div class="md:col-span-2 animate-fade-up group relative p-6 rounded-2xl bg-card border border-border hover:border-foreground/25 hover:scale-[1.02] transition-all duration-300 overflow-hidden">
-        <div class="flex items-start justify-between">
-          <div>
-            <h3 class="text-lg sm:text-xl font-semibold text-foreground mb-2">Archive locale</h3>
-            <p class="text-sm text-muted-foreground mb-4 leading-relaxed">
-              Vos paniers, commandes et fiches produit Temu restent sur votre appareil. Pas de dépendance au cloud, pas de connexion obligatoire, pas de données hors de votre contrôle.
-            </p>
-          </div>
-          <div class="hidden sm:block w-[260px] shrink-0">
-            <div class="flex flex-col gap-1">
-              <div class="flex items-center gap-2 px-2 py-1 rounded-md bg-muted/50">
-                <div class="w-1.5 h-1.5 rounded-full shrink-0 bg-emerald-500"></div>
-                <span class="text-[10px] text-muted-foreground truncate">Order #TB-2024-001</span>
-              </div>
-              <div class="flex items-center gap-2 px-2 py-1 rounded-md bg-muted/50">
-                <div class="w-1.5 h-1.5 rounded-full shrink-0 bg-blue-500"></div>
-                <span class="text-[10px] text-muted-foreground truncate">Summer Cooling List</span>
-              </div>
-              <div class="flex items-center gap-2 px-2 py-1 rounded-md bg-muted/50">
-                <div class="w-1.5 h-1.5 rounded-full shrink-0 bg-purple-500"></div>
-                <span class="text-[10px] text-muted-foreground truncate">Kitchen Gadgets Drop</span>
-              </div>
-              <div class="flex items-center gap-2 px-2 py-1 rounded-md bg-muted/50">
-                <div class="w-1.5 h-1.5 rounded-full shrink-0 bg-amber-500"></div>
-                <span class="text-[10px] text-muted-foreground truncate">Wishlist Q3</span>
-              </div>
-            </div>
+      <div class="md:col-span-2 animate-fade-up group relative flex flex-col justify-between rounded-2xl bg-card border border-border p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-lg overflow-hidden">
+        <div>
+          <h3 class="text-lg sm:text-xl font-semibold text-foreground mb-2">Archive locale</h3>
+          <p class="text-sm text-muted-foreground leading-relaxed">
+            Vos paniers, commandes et fiches produit Temu restent sur votre appareil. Pas de dépendance au cloud, pas de connexion obligatoire, pas de données hors de votre contrôle.
+          </p>
+        </div>
+        <div class="mt-6 flex items-center justify-between gap-4">
+          <span class="inline-block bg-foreground/10 text-foreground rounded-full px-3 py-1 text-sm">Vos données, votre appareil</span>
+          <div class="hidden sm:flex items-center gap-1 text-primary/70">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5"><path d="m12 3 1.35 4.15L17.5 8.5l-4.15 1.35L12 14l-1.35-4.15L6.5 8.5l4.15-1.35L12 3Z"/><path d="m18.5 14 .75 2.25L21.5 17l-2.25.75L18.5 20l-.75-2.25L15.5 17l2.25-.75.75-2.25Z"/></svg>
           </div>
         </div>
-        <span class="inline-block bg-foreground/10 text-foreground rounded-full px-3 py-1 text-sm mt-2">Vos données, votre appareil</span>
       </div>
 
       <!-- Price Tracking -->
-      <div class="animate-fade-up delay-100 group relative p-6 rounded-2xl bg-card border border-border hover:border-foreground/25 hover:scale-[1.02] transition-all duration-300">
-        <h3 class="text-lg sm:text-xl font-semibold text-foreground mb-2">Historique des prix</h3>
-        <p class="text-sm text-muted-foreground mb-4 leading-relaxed">
-          Suivez les variations de prix. Sachez quand une offre est réelle et quand il ne s’agit que de bruit.
-        </p>
-        <svg viewBox="0 0 100 70" class="w-full h-24">
-          <defs>
-            <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="rgb(255,255,255)" stop-opacity="0.2" />
-              <stop offset="100%" stop-color="rgb(255,255,255)" stop-opacity="0" />
-            </linearGradient>
-          </defs>
-          <path d="M 0 60 L 20 45 L 40 55 L 60 30 L 80 40 L 100 15 L 100 70 L 0 70 Z" fill="url(#chartGradient)" class="opacity-50" />
-          <path d="M 0 60 L 20 45 L 40 55 L 60 30 L 80 40 L 100 15" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" class="draw-line" />
-        </svg>
-        <span class="inline-block bg-foreground/10 text-foreground rounded-full px-3 py-1 text-sm">Voir la tendance</span>
+      <div class="animate-fade-up delay-100 group relative flex flex-col justify-between rounded-2xl bg-card border border-border p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-lg">
+        <div>
+          <h3 class="text-lg sm:text-xl font-semibold text-foreground mb-2">Historique des prix</h3>
+          <p class="text-sm text-muted-foreground leading-relaxed">
+            Suivez les variations de prix. Sachez quand une offre est réelle et quand il ne s’agit que de bruit.
+          </p>
+        </div>
+        <div class="mt-6 flex items-center justify-between">
+          <span class="inline-block bg-foreground/10 text-foreground rounded-full px-3 py-1 text-sm">Voir la tendance</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-primary/70 group-hover:scale-110 transition-transform duration-300"><path d="m3 17 6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>
+        </div>
       </div>
 
       <!-- Product Context -->
-      <div class="animate-fade-up delay-200 group relative p-6 rounded-2xl bg-card border border-border hover:border-foreground/25 hover:scale-[1.02] transition-all duration-300">
-        <h3 class="text-lg sm:text-xl font-semibold text-foreground mb-2">Contexte produit</h3>
-        <p class="text-sm text-muted-foreground mb-4 leading-relaxed">
-          Gardez le titre, l’image, les notes, les options, la disponibilité et l’historique des observations au même endroit.
-        </p>
-        <span class="inline-block bg-foreground/10 text-foreground rounded-full px-3 py-1 text-sm">Vue complète du produit</span>
+      <div class="animate-fade-up delay-200 group relative flex flex-col justify-between rounded-2xl bg-card border border-border p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-lg">
+        <div>
+          <h3 class="text-lg sm:text-xl font-semibold text-foreground mb-2">Contexte produit</h3>
+          <p class="text-sm text-muted-foreground leading-relaxed">
+            Gardez le titre, l’image, les notes, les options, la disponibilité et l’historique des observations au même endroit.
+          </p>
+        </div>
+        <div class="mt-6 flex items-center justify-between">
+          <span class="inline-block bg-foreground/10 text-foreground rounded-full px-3 py-1 text-sm">Vue complète du produit</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-primary/70 group-hover:scale-110 transition-transform duration-300"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+        </div>
       </div>
 
       <!-- Multi-Device -->
-      <div class="animate-fade-up delay-300 group relative p-6 rounded-2xl bg-card border border-border hover:border-foreground/25 hover:scale-[1.02] transition-all duration-300">
-        <h3 class="text-lg sm:text-xl font-semibold text-foreground mb-2">Ordinateur + Android</h3>
-        <p class="text-sm text-muted-foreground mb-4 leading-relaxed">
-          Retrouvez votre méthode d’achat sur ordinateur et Android grâce à une base de code commune.
-        </p>
-        <span class="inline-block bg-foreground/10 text-foreground rounded-full px-3 py-1 text-sm">Prêt pour plusieurs appareils</span>
+      <div class="animate-fade-up delay-300 group relative flex flex-col justify-between rounded-2xl bg-card border border-border p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-lg">
+        <div>
+          <h3 class="text-lg sm:text-xl font-semibold text-foreground mb-2">Ordinateur + Android</h3>
+          <p class="text-sm text-muted-foreground leading-relaxed">
+            Retrouvez votre méthode d’achat sur ordinateur et Android grâce à une base de code commune.
+          </p>
+        </div>
+        <div class="mt-6 flex items-center justify-between">
+          <span class="inline-block bg-foreground/10 text-foreground rounded-full px-3 py-1 text-sm">Prêt pour plusieurs appareils</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-primary/70 group-hover:scale-110 transition-transform duration-300"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+        </div>
       </div>
 
       <!-- Privacy First -->
-      <div class="animate-fade-up delay-400 group relative p-6 rounded-2xl bg-card border border-border hover:border-foreground/25 hover:scale-[1.02] transition-all duration-300">
-        <h3 class="text-lg sm:text-xl font-semibold text-foreground mb-2">Confidentialité d’abord</h3>
-        <p class="text-sm text-muted-foreground mb-4 leading-relaxed">
-          Pas de cookies, pas d’extraction de session, pas de stockage d’identifiants. Vous êtes la seule personne à accéder à vos données.
-        </p>
-        <div class="flex items-center gap-2 mb-4">
-          <span class="px-2 py-1 text-xs bg-muted rounded text-muted-foreground">Local</span>
-          <span class="px-2 py-1 text-xs bg-muted rounded text-muted-foreground">Sans cloud</span>
-          <span class="px-2 py-1 text-xs bg-muted rounded text-muted-foreground">Sync facultative</span>
+      <div class="animate-fade-up delay-400 group relative flex flex-col justify-between rounded-2xl bg-card border border-border p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-lg">
+        <div>
+          <h3 class="text-lg sm:text-xl font-semibold text-foreground mb-2">Confidentialité d’abord</h3>
+          <p class="text-sm text-muted-foreground leading-relaxed">
+            Pas de cookies, pas d’extraction de session, pas de stockage d’identifiants. Vous êtes la seule personne à accéder à vos données.
+          </p>
+          <div class="flex flex-wrap items-center gap-2 mt-4">
+            <span class="px-2 py-1 text-xs bg-muted rounded text-muted-foreground">Local</span>
+            <span class="px-2 py-1 text-xs bg-muted rounded text-muted-foreground">Sans cloud</span>
+            <span class="px-2 py-1 text-xs bg-muted rounded text-muted-foreground">Sync facultative</span>
+          </div>
         </div>
-        <span class="inline-block bg-foreground/10 text-foreground rounded-full px-3 py-1 text-sm">Préserver votre confidentialité</span>
+        <div class="mt-6 flex items-center justify-between">
+          <span class="inline-block bg-foreground/10 text-foreground rounded-full px-3 py-1 text-sm">Préserver votre confidentialité</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-primary/70 group-hover:scale-110 transition-transform duration-300"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
       </div>
     </div>
   </div>

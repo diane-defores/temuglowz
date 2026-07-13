@@ -38,13 +38,15 @@ const solutions = [
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4" data-reveal>
       {solutions.map((solution, index) => (
         <div
-          class={`animate-fade-up delay-${(index + 1) * 100} group relative p-6 rounded-2xl bg-card border border-border hover:border-foreground/25 hover:scale-[1.02] transition-all duration-300`}
+          class={`animate-fade-up delay-${(index + 1) * 100} group relative flex flex-col justify-between rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 overflow-hidden p-6 sm:p-8`}
         >
-          <div class="flex items-center gap-3 mb-4">
-            <span class="text-3xl sm:text-4xl">{solution.icon}</span>
-            <h3 class="text-xl sm:text-2xl font-semibold text-foreground">{solution.title}</h3>
+          <div>
+            <h3 class="text-xl sm:text-2xl font-semibold text-foreground mb-3">{solution.title}</h3>
+            <p class="text-base text-muted-foreground leading-relaxed">{solution.description}</p>
           </div>
-          <p class="text-base text-muted-foreground leading-relaxed">{solution.description}</p>
+          <div class="mt-6 flex items-center justify-end">
+            <span class="text-4xl sm:text-5xl leading-none opacity-80 group-hover:scale-110 transition-transform duration-300">{solution.icon}</span>
+          </div>
         </div>
       ))}
     </div>

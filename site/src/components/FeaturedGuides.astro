@@ -30,17 +30,21 @@ const { guides } = Astro.props
     {guides.length > 0 ? (
       <div class="mt-10 grid gap-5 md:grid-cols-2">
         {guides.map((guide, index) => (
-          <article class="group relative overflow-hidden rounded-3xl border border-border bg-card p-7 sm:p-9">
-            <div class="flex items-start justify-between gap-4">
-              <span class="rounded-full bg-muted px-3 py-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">{guide.category}</span>
-              <DiscoveryIcon name={index === 0 ? 'kitchen' : 'wind'} />
-            </div>
-            <h3 class="mt-10 text-2xl font-semibold text-foreground sm:text-3xl">{guide.homepageTitle || guide.title}</h3>
-            <p class="mt-4 leading-relaxed text-muted-foreground">{guide.readingHint || guide.description}</p>
-            <a href={guide.slug} class="mt-8 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">
+          <article class="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-border bg-card p-7 sm:p-9 transition-all duration-300 hover:border-primary/30 hover:shadow-lg">
+          <div>
+            <span class="rounded-full bg-muted px-3 py-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">{guide.category}</span>
+            <h3 class="mt-4 text-2xl font-semibold text-foreground sm:text-3xl">{guide.homepageTitle || guide.title}</h3>
+            <p class="mt-3 leading-relaxed text-muted-foreground">{guide.readingHint || guide.description}</p>
+          </div>
+          <div class="mt-6 flex items-center justify-between gap-4">
+            <a href={guide.slug} class="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">
               Je veux voir <span aria-hidden="true">→</span>
             </a>
-          </article>
+            <div class="shrink-0 text-primary/80 group-hover:scale-110 transition-transform duration-300">
+              <DiscoveryIcon name={index === 0 ? 'kitchen' : 'wind'} />
+            </div>
+          </div>
+        </article>
         ))}
       </div>
     ) : (
