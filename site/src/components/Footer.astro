@@ -18,14 +18,14 @@ const currentYear = new Date().getFullYear()
 ---
 
 <footer class="border-t border-border bg-background">
-  <div class="mx-auto max-w-6xl px-4 py-14">
-    <div class="grid gap-10 md:grid-cols-[minmax(0,1.3fr)_repeat(2,minmax(0,0.7fr))]">
-      <div>
-        <a href="/" class="inline-flex items-center gap-2 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">
+  <div class="mx-auto max-w-6xl px-4 py-10 text-center sm:text-left">
+    <div class="grid gap-8 sm:gap-10 md:grid-cols-[minmax(0,1.3fr)_repeat(2,minmax(0,0.7fr))]">
+      <div class="sm:col-span-2 md:col-span-1">
+        <a href="/" class="inline-flex items-center justify-center gap-2 sm:justify-start rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">
           <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground"><DiscoveryIcon name="sparkles" class="h-4 w-4" /></span>
           <span class="font-semibold text-foreground">TemuGlowz</span>
         </a>
-        <p class="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">Des gadgets utiles, mignons, surprenants… et plein d’idées auxquelles on n’aurait pas forcément pensé.</p>
+        <p class="mt-4 max-w-sm mx-auto sm:mx-0 text-sm leading-relaxed text-muted-foreground">Des gadgets utiles, mignons, surprenants… et plein d’idées auxquelles on n’aurait pas forcément pensé.</p>
         <a href="/app" class="mt-5 inline-flex text-sm text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">À propos de l’application</a>
       </div>
 
@@ -41,7 +41,7 @@ const currentYear = new Date().getFullYear()
       ))}
     </div>
 
-    <div class="mt-12 flex flex-col gap-3 border-t border-border pt-7 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+    <div class="mt-10 flex flex-col gap-3 border-t border-border pt-7 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
       <p>&copy; {currentYear} TemuGlowz.</p>
       <p>TemuGlowz est un site indépendant et n’est pas un site officiel de Temu.</p>
     </div>

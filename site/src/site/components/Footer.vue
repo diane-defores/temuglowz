@@ -1,10 +1,10 @@
 <template>
   <footer class="border-t border-border bg-background">
-    <div class="max-w-6xl mx-auto px-8 sm:px-10 py-16">
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-8" data-reveal>
+    <div class="max-w-6xl mx-auto px-6 sm:px-10 py-10 text-center sm:text-left">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-8 text-left" data-reveal>
         <!-- Brand -->
-        <div class="col-span-2 md:col-span-1 animate-fade-up">
-          <a href="/" class="flex items-center gap-2 mb-4">
+        <div class="col-span-2 md:col-span-1 flex flex-col items-center sm:items-start animate-fade-up">
+          <a href="/" class="flex items-center justify-center sm:justify-start gap-2 mb-4">
             <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
               <svg viewBox="0 0 32 32" class="w-5 h-5" fill="none" aria-hidden="true"><path d="M12 9.5v13l11-6.5L12 9.5Z" fill="#18181b"/><rect x="20" y="14" width="2.5" height="9" rx="1.25" fill="#18181b"/></svg>
             </div>
@@ -31,7 +31,7 @@
       </div>
 
       <!-- Bottom -->
-      <div class="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="mt-10 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
         <p class="text-sm text-muted-foreground/70">&copy; {{ currentYear }} TemuGlowz. Tous droits réservés.</p>
         <div class="flex items-center gap-6">
           <a href="/guides" class="text-sm text-muted-foreground/70 hover:text-foreground transition-colors">Guides</a>

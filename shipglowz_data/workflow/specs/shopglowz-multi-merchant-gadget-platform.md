@@ -6,8 +6,8 @@ project: "ShopGlowz"
 created: "2026-07-13"
 created_at: "2026-07-13 17:00:00 UTC"
 updated: "2026-07-13"
-updated_at: "2026-07-13 18:51:02 UTC"
-status: reviewed
+updated_at: "2026-07-13 20:38:59 UTC"
+status: draft
 source_skill: 100-sg-spec
 source_model: "GPT-5 Codex"
 scope: "Brand repositioning and multi-merchant affiliate gadget discovery hub"
@@ -23,12 +23,6 @@ linked_systems:
   - "SEO routes, sitemap and llms.txt"
   - "Affiliate link policy and merchant programs"
 depends_on:
-  - artifact: "shipglowz_data/branding/branding.md"
-    artifact_version: "0.1.0"
-    required_status: draft
-  - artifact: "shipglowz_data/editorial/content-map.md"
-    artifact_version: "1.1.0"
-    required_status: reviewed
   - artifact: "shipglowz_data/technical/site/design-system-authority.md"
     artifact_version: "1.0.0"
     required_status: reviewed
@@ -38,7 +32,7 @@ evidence:
   - "Operator directive 2026-07-13: rename the public direction to ShopGlowz and make the site multi-merchant."
   - "Existing Temu-focused content plan and homepage repositioning spec are too narrow for the new promise."
   - "Research report on French import changes recommends a merchant-neutral gadget guide with Temu as one source among others."
-next_step: "/100-sg-spec shopglowz-multi-merchant-gadget-platform"
+next_step: "/101-sg-ready shopglowz-multi-merchant-gadget-platform"
 ---
 
 # Title
@@ -47,7 +41,7 @@ ShopGlowz — plateforme éditoriale multi-enseignes de gadgets
 
 ## Status
 
-Reviewed, not ready. The public brand change is approved in principle, but the spec still needs missing readiness sections and fresh external-document checks before implementation.
+Draft, repaired after dependency hardening. Stale Temu-first governance docs are treated as migration sources rather than blocking authorities, and the public-claim constraints now cite dated official sources where the spec depends on external behavior.
 
 ## User Story
 
@@ -103,11 +97,54 @@ Créer une couche de marque et de données neutre vis-à-vis des marchands, puis
 
 ## Test Contract
 
-Vérifier la neutralité de marque, la validation des domaines marchands, la présence des disclosures, la parité sitemap/canonicals/redirections, l'absence de claims temps réel et le build Astro sans erreur.
+- Surface: Astro static public site plus governance and editorial artifacts.
+- Proof profile: mixed.
+- Proof order:
+  1. metadata lint and markdown integrity
+  2. unit or helper validation for merchant registry and domain allowlist
+  3. content/build validation for Astro collections, routes, metadata and sitemap
+  4. browser proof for homepage, category path, guide path and legacy-route behavior
+  5. SEO proof for canonicals, redirects and machine-readable files
+- Automated proof required:
+  - `python3 /home/claude/shipglowz/tools/shipglowz_metadata_lint.py shipglowz_data/workflow/specs/shopglowz-multi-merchant-gadget-platform.md`
+  - project lint/type/build commands for the site once implementation exists
+  - targeted tests for merchant registry, disclosure enforcement and domain allowlist once added
+- Manual proof required:
+  - desktop and mobile browser check for homepage positioning and merchant disclosure visibility
+  - legacy TemuGlowz route to redirected or equivalent ShopGlowz destination
+  - visual proof that public pages still consume shared design tokens rather than page-local literals
+- Required scenario ids:
+  - `brand-home-shopglowz`
+  - `merchant-card-disclosure`
+  - `legacy-route-parity`
+  - `guide-volatility-note`
+  - `seo-machine-readable-parity`
+- Required results:
+  - no primary public page leads with TemuGlowz branding
+  - each outbound merchant surface shows merchant identity, checked date and volatility/disclosure text
+  - legacy indexed routes resolve to live content or documented redirect targets
+  - sitemap, metadata and `llms.txt` describe the new multi-merchant scope without unsupported claims
+- Checklist path: `shipglowz_data/workflow/test-checklists/shopglowz-public-rebrand-and-multi-merchant.md`
+- Exceptions:
+  - `exception-with-proof`: affiliate-program activation checks remain documentary until each program is actually approved
+  - `exception-without-proof`: none
 
 ## Dependencies
 
-Fresh-docs required before readiness for each affiliate program, current merchant terms, domain/trademark availability, and current French/EU import guidance. Existing Temu research is evidence, not a universal merchant policy.
+- Internal authority still used by implementation:
+  - `shipglowz_data/technical/site/design-system-authority.md` `1.0.0` reviewed remains the canonical source for public-site visual tokens and shared component boundaries.
+- Migration-source artifacts, not blocking authorities:
+  - `shipglowz_data/branding/branding.md` `0.1.0` draft is intentionally stale and must be rewritten by Task 1; it is migration input, not a prerequisite contract for readiness.
+  - `shipglowz_data/editorial/content-map.md` `1.1.0` reviewed is intentionally Temu-first and must be rewritten by Task 2; it is migration input, not a blocking authority for this spec.
+- Fresh-docs checked for contract-level external behavior:
+  - Temu partner platform terms confirm partner usage is governed by current platform rules and prohibited conduct boundaries; source consulted: Temu Partner Platform documentation page `https://partner.temu.com/documentation?menu_code=d8425dcd25b04658843e622e178a3b42`.
+  - Amazon Associates operating agreement and policies confirm participation and disclosure obligations are program-governed and current-policy dependent; sources consulted: `https://affiliate-program.amazon.com/help/operating/agreement`, `https://affiliate-program.amazon.com/help/operating/policies`, and the disclosure help page `https://affiliate-program.amazon.com/help/node/topic/GHQNZAU6669EZS98`.
+  - French import-charge context is officially volatile and date-sensitive; sources consulted: Douanes pages `https://www.douane.gouv.fr/actualites/taxe-sur-les-petits-colis-point-dinformation-sur-sa-mise-en-oeuvre` and `https://www.douane.gouv.fr/fiche/anticiper-les-frais-de-douane-dun-colis`.
+- Fresh-docs not needed at this stage:
+  - domain and repository rename behavior, because technical identifier migration remains explicitly out of scope for this chantier
+  - Astro framework behavior, because the spec does not propose a framework migration or non-standard routing behavior and the current repo already defines the local implementation surface
+- Ongoing implementation precondition:
+  - every additional merchant introduced after this spec must have its own official affiliate or outbound-link policy checked before publication; no merchant may be added by analogy from Temu or Amazon.
 
 ## Invariants
 
@@ -134,14 +171,61 @@ Mettre à jour branding, business/GTM, editorial content map, page-intent map, c
 
 ## Implementation Tasks
 
-1. Mettre à jour les contrats de marque et de positionnement vers ShopGlowz.
-2. Créer le registre marchand et l'abstraction de liens/cartes produit.
-3. Réécrire layout, navigation, accueil, footer, metadata et données structurées.
-4. Migrer le contenu Temu vers une verticale marchande et créer les catégories d'usage.
-5. Produire les guides importation/stock/vendeurs/origine/algorithme avec sources datées.
-6. Auditer les URL, générer redirections/canonicals, sitemap et llms.txt.
-7. Vérifier les programmes affiliés et appliquer les disclosures seulement après validation.
-8. Exécuter typecheck, build, tests de liens/domaines et preuve navigateur avant clôture.
+- [ ] Task 1: Update the brand authority and public positioning contract for ShopGlowz
+  - Fichier: `shipglowz_data/branding/branding.md`
+  - Action: Replace the TemuGlowz-first brand posture with a ShopGlowz multi-merchant identity, trust language, vocabulary rules and public-surface ownership.
+  - User story link: lets consumers understand the site as a gadget-discovery destination rather than a single-merchant tool.
+  - Depends on: none
+  - Validate with: metadata lint plus copy review against the current homepage intent
+
+- [ ] Task 2: Align editorial and claim-governance artifacts with the multi-merchant promise
+  - Fichier: `shipglowz_data/editorial/content-map.md`, `shipglowz_data/editorial/claim-register.md`, `shipglowz_data/technical/site/page-intent-map.md`
+  - Action: rewrite route intent, claim boundaries, volatility rules and machine-readable summaries around ShopGlowz and multi-merchant discovery.
+  - User story link: keeps published guides understandable and trustworthy when multiple merchants are shown.
+  - Depends on: Task 1
+  - Validate with: doc consistency review and route-by-route claim scan
+
+- [ ] Task 3: Define the merchant registry and outbound-link contract
+  - Fichier: `site/src/site/data/` or the current data contract location, plus link helper modules under `site/src/`
+  - Action: add a merchant-neutral structure for merchant id, affiliate status, checked date, source note, warehouse or origin note, and allowed outbound domains.
+  - User story link: lets consumers compare where to buy without hidden assumptions about the merchant.
+  - Depends on: Task 2
+  - Validate with: unit tests or assertions for domain allowlist and required disclosure fields
+
+- [ ] Task 4: Rework shared public UI surfaces around ShopGlowz while preserving design-system authority
+  - Fichier: `site/src/pages/index.astro`, `site/src/layouts/Layout.astro`, `site/src/components/Navbar.vue`, shared footer or guide template components
+  - Action: replace TemuGlowz-first copy, navigation labels, metadata and CTA hierarchy with a ShopGlowz discovery-first experience that keeps the app secondary.
+  - User story link: makes the homepage immediately useful to ordinary shoppers.
+  - Depends on: Tasks 1 to 3
+  - Validate with: design-system drift check, browser smoke on desktop/mobile and metadata inspection
+
+- [ ] Task 5: Migrate Temu-specific content into a merchant vertical and add multi-merchant usage hubs
+  - Fichier: `site/src/pages/guides/`, guide data files, and shared guide templates
+  - Action: preserve useful Temu guides as one merchant/source while creating usage-first category pages and volatility notes that work across merchants.
+  - User story link: gives users useful gadget discovery paths instead of a single-store silo.
+  - Depends on: Tasks 2 to 4
+  - Validate with: route build, content rendering checks and disclosure presence review
+
+- [ ] Task 6: Prepare dated educational guides about import fees, stock posture, seller context, platform origins and recommendation logic
+  - Fichier: new guide routes and supporting editorial docs under `site/src/pages/` and `shipglowz_data/workflow/research/`
+  - Action: write merchant-aware educational pages that answer common search questions without inventing unverifiable claims.
+  - User story link: helps consumers understand how to buy more safely and what limits apply.
+  - Depends on: fresh-docs evidence for import and merchant claims plus Task 2
+  - Validate with: source review, copy audit and dated evidence check
+
+- [ ] Task 7: Audit legacy URLs and machine-readable SEO outputs before any public cutover
+  - Fichier: sitemap generation, redirects config if any, `site/public/llms.txt`, metadata helpers
+  - Action: map TemuGlowz routes to live ShopGlowz destinations or documented redirects, and update canonicals and summaries accordingly.
+  - User story link: preserves discoverability and avoids broken entry points from search.
+  - Depends on: Tasks 4 and 5
+  - Validate with: sitemap diff, redirect audit and browser proof on legacy routes
+
+- [ ] Task 8: Re-run readiness and only then start implementation
+  - Fichier: this spec plus any newly touched governance artifacts
+  - Action: attach missing fresh-docs evidence, confirm no open questions remain and route back to `101-sg-ready`.
+  - User story link: prevents the build from drifting into unsupported claims or incomplete migration decisions.
+  - Depends on: Tasks 1 to 7 defined clearly enough for a fresh agent
+  - Validate with: `101-sg-ready` verdict
 
 ## Acceptance Criteria
 
@@ -156,9 +240,41 @@ Mettre à jour branding, business/GTM, editorial content map, page-intent map, c
 
 Tests unitaires pour registre/domaines, tests de collection et metadata, build Astro, audit sitemap/canonicals, puis `/108-sg-browser` pour les parcours accueil → usage → marchand et ancienne URL → destination. `/406-sg-seo` intervient avant toute bascule de domaine.
 
-## Open Decisions
+## Risks
 
-Le renommage public ShopGlowz est le défaut retenu. Le domaine, le nom du package `@temuglowz/site`, les dépôts et les routes techniques seront traités dans une décision de migration séparée afin d'éviter une rupture irréversible.
+- Brand drift risk: public pages, docs and machine-readable surfaces may diverge if ShopGlowz is applied only to visible copy and not to metadata, redirects and summaries.
+- Claim risk: multi-merchant educational content can easily overstate seller origin, stock reliability, import posture or algorithm behavior without dated sources.
+- SEO migration risk: removing or renaming TemuGlowz routes without a redirect map can destroy existing indexation and trust signals.
+- Affiliate compliance risk: outbound links and commission disclosures may be non-compliant if merchant terms are assumed by analogy from Temu.
+- Design-system risk: homepage and guide refresh work could introduce one-off visuals outside `site/src/styles/global.css` if the shared token authority is bypassed.
+- Scope risk: trying to rename package names, domains or repositories inside the same implementation wave would blur a public rebrand into a deeper technical migration.
+
+## Execution Notes
+
+- Read order for implementation after readiness:
+  1. `shipglowz_data/branding/branding.md`
+  2. `shipglowz_data/editorial/content-map.md` and claim-governance artifacts
+  3. `shipglowz_data/technical/site/design-system-authority.md`
+  4. shared public UI files under `site/src/`
+  5. guide data and route generation files
+- Fresh-docs verdict for this repaired draft: `fresh-docs gap` on affiliate terms, trademark/domain availability and import guidance; `fresh-docs not needed` for local Astro structure during this spec-writing run.
+- Fresh-docs verdict for this repaired draft: `fresh-docs checked` for Temu partner rules, Amazon affiliate/disclosure rules, and French import-charge volatility; `fresh-docs not needed` for domain or repository rename behavior because those migrations are out of scope here.
+- Stop conditions for implementation:
+  - do not add affiliate links for a merchant whose terms were not checked
+  - do not publish educational claims about origin, stock or import rules without dated evidence
+  - do not remove legacy routes before redirect or equivalence proof exists
+  - do not introduce page-local visual literals outside the current design-system authority
+- Validation commands expected once implementation starts:
+  - project lint and build for the site
+  - design drift scan on changed UI files
+  - browser proof for homepage, guide and legacy-route scenarios
+  - focused tests for merchant registry, allowlisted outbound domains and disclosure requirements
+- Static-site exception:
+  - runtime observability requirements such as Sentry instrumentation do not block this spec because the public-site slice is a static editorial surface; build proof, route proof and claim-proof obligations are the primary controls here.
+
+## Open Questions
+
+None for the public brand direction itself. Deferred decisions remain explicitly out of scope for this spec: domain migration, package rename `@temuglowz/site`, repository rename and any deeper technical identifier migration.
 
 ## Skill Run History
 
@@ -167,14 +283,17 @@ Le renommage public ShopGlowz est le défaut retenu. Le domaine, le nom du packa
 | 2026-07-13 17:00:00 UTC | 001-sg-build | Reframed the product as ShopGlowz, a multi-merchant gadget discovery hub, and created a new spec superseding the Temu-only content direction. | implemented | `/101-sg-ready shopglowz-multi-merchant-gadget-platform` |
 | 2026-07-13 15:55:20 UTC | 706-continue | Confirmed the active chantier and resolved the next action-ready step without switching scope. | routed | `/101-sg-ready shopglowz-multi-merchant-gadget-platform` |
 | 2026-07-13 18:51:02 UTC | 101-sg-ready | Reviewed the spec for execution readiness and kept it out of implementation because mandatory readiness sections and fresh-doc evidence are still missing. | not ready | `/100-sg-spec shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 19:14:22 UTC | 100-sg-spec | Repaired the spec structure after readiness feedback by adding proof, risks, execution notes and tighter implementation tasks. | implemented | `/101-sg-ready shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 20:05:21 UTC | 101-sg-ready | Confirmed the repaired spec is still not ready because core dependencies remain stale or draft and fresh-doc checks are still missing for merchant terms and import claims. | not ready | `/100-sg-spec shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 20:38:59 UTC | 100-sg-spec | Reframed stale Temu-first governance docs as migration inputs and attached dated official sources for affiliate and import-rule constraints. | implemented | `/101-sg-ready shopglowz-multi-merchant-gadget-platform` |
 
 ## Current Chantier Flow
 
-- `100-sg-spec`: completed — draft created.
-- `101-sg-ready`: not ready — return to spec hardening.
+- `100-sg-spec`: completed — draft repaired after readiness feedback.
+- `101-sg-ready`: pending — rerun after dependency hardening.
 - `102-sg-start`: pending.
 - `103-sg-verify`: pending.
 - `104-sg-end`: pending.
 - `005-sg-ship`: pending.
 
-Next command: `/100-sg-spec shopglowz-multi-merchant-gadget-platform`.
+Next command: `/101-sg-ready shopglowz-multi-merchant-gadget-platform`.
