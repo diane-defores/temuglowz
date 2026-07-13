@@ -6,7 +6,7 @@ project: "TemuGlowz"
 created: "2026-07-12"
 created_at: "2026-07-12 21:48:39 UTC"
 updated: "2026-07-12"
-updated_at: "2026-07-12 22:41:10 UTC"
+updated_at: "2026-07-13 07:07:41 UTC"
 status: reviewed
 source_skill: 100-sg-spec
 source_model: "GPT-5 Codex"
@@ -39,7 +39,7 @@ supersedes: []
 evidence:
   - "The working tree contains tracked deletions from root source paths and untracked destinations under app/, site/, and shipglowz_data/."
   - "The user supplied the target topology and requested a final independent audit, repair, and full local verification without commit or push."
-next_step: "/005-sg-ship shipglowz_data/workflow/specs/temuglowz-workspace-root-migration.md"
+next_step: "/405-sg-prod puis /107-sg-test --retest BUG-2026-07-12-001"
 ---
 
 # TemuGlowz Workspace Root Migration
@@ -211,6 +211,10 @@ None.
 | 2026-07-12 22:41:10 UTC | 103-sg-verify | unknown | Verified install, typecheck, lint, 102 app tests, 2 site tests, app build, 9-page site build, residue scans, ignore state, and diff whitespace. | verified | `/104-sg-end shipglowz_data/workflow/specs/temuglowz-workspace-root-migration.md` |
 | 2026-07-12 22:41:10 UTC | 104-sg-end | unknown | Synchronized the spec, task history, and changelog for local closure while preserving the separate open Android bug boundary. | closed | `/005-sg-ship shipglowz_data/workflow/specs/temuglowz-workspace-root-migration.md` |
 | 2026-07-12 22:46:55 UTC | 005-sg-ship | unknown | full-close ship | shipped | `/405-sg-prod temuglowz` |
+| 2026-07-12 23:29:59 UTC | 405-sg-prod | unknown | post-ship production verification | partial | Vercel production `https://temuglowz-site.vercel.app/` READY; deployment `main` SHA `8134e453e54f25757fe2e69fab60486d963fdefc` has `d7cb609a5a98fdcfd83276b9472a6ee451ed9d74` as its direct parent; Vercel build: 9 pages in 16s, no error or warning; HTTP 200 without redirect with `TemuGlowz` marker; Android CI success; GitHub `site-checks` failed because Node 20.19 is unsupported by Astro (requires >=22.12); Vercel preview check suite for SHA `d7cb609` queued without deployment. Next: `/106-sg-fix aligner site-checks sur Node >=22.12 puis revalider`. |
+| 2026-07-12 23:47:41 UTC | 106-sg-fix | unknown | bounded CI runtime repair | fix-attempted | Updated `.github/workflows/site-checks.yml`, `.github/workflows/dev-builds.yml`, root `package.json`, and `site/package.json` from Node 20.19 to Node 22.12 / `>=22.12.0 <23`; local site typecheck, 2 tests, 9-page build, and diff hygiene passed. Bug dossier created; hosted CI retest remains pending push. Next: `/005-sg-ship` then `/405-sg-prod` then `/107-sg-test --retest BUG-2026-07-12-001`. |
+| 2026-07-13 07:07:41 UTC | 001-sg-build | gpt-5.4-mini | Orchestrated bounded closure and ship preparation for the Node runtime repair; local proof is complete, hosted CI proof remains pending. | partial | `/104-sg-end` then `/005-sg-ship` |
+| 2026-07-13 07:07:41 UTC | 104-sg-end | gpt-5.4-mini | Synchronized closure bookkeeping and retained partial status because hosted CI retest is not yet available. | deferred | `/005-sg-ship` |
 
 ## Current Chantier Flow
 
@@ -218,7 +222,9 @@ None.
 - `101-sg-ready`: ready
 - `102-sg-start`: implemented
 - `103-sg-verify`: verified
-- `104-sg-end`: closed locally
-- `005-sg-ship`: shipped/complete
+- `104-sg-end`: deferred; closure bookkeeping synchronized, hosted CI proof pending
+- `005-sg-ship`: pending in this run
+- Post-ship verification (`405-sg-prod`): partial; production Vercel is READY and live, Android CI succeeded, but GitHub `site-checks` fails on unsupported Node 20.19 and the `d7cb609` Vercel preview check suite remains queued without deployment.
+- `106-sg-fix`: fix-attempted; CI runtime and package engine constraints are aligned on Node 22.12, with local site proof passing. Hosted retest remains pending.
 - Remaining out of scope: `BUG-2026-06-11-001` stays open (`high`, `fix-attempted`) pending separate Android retest.
-- Next: `/405-sg-prod temuglowz`
+- Next: `/005-sg-ship` then `/405-sg-prod` then `/107-sg-test --retest BUG-2026-07-12-001`

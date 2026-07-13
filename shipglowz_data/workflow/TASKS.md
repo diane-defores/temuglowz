@@ -18,7 +18,7 @@
 
 ## Historical completed work
 
-🟢 [temuglowz] task: Migrate the repository root into the canonical app, site, and governance workspace | status: done | area: workspace-migration | next: /005-sg-ship shipglowz_data/workflow/specs/temuglowz-workspace-root-migration.md | notes: local install, typecheck, lint, 102 app tests, 2 site tests, app build, 9-page site build, residue scans, ignore checks, and git diff --check passed; commit and push remain pending
+🟢 [temuglowz] task: Migrate the repository root into the canonical app, site, and governance workspace | status: done | area: workspace-migration | next: /405-sg-prod puis /107-sg-test --retest BUG-2026-07-12-001 | notes: migration shipped previously; Node 22.12 CI runtime repair is locally validated and is being shipped separately; hosted CI retest remains pending
 🟢 [temuglowz] task: Fix guide hreflang emission to follow page language | status: done | area: seo-i18n | next: none | notes: Layout.astro now derives hreflang from the page lang prop instead of forcing en on French guides
 🟢 [temuglowz] task: Add page-level guide structured data for public Astro guides | status: done | area: seo-structured-data | next: none | notes: added shared guideSchemas helper and wired BreadcrumbList, Article, FAQPage, and ItemList support into current guide pages
 🟢 [temuglowz] task: Improve guide product-card image rendering contract for CWV | status: done | area: seo-cwv-images | next: none | notes: reserved image dimensions and aspect ratio, added explicit priority control, and aligned Astro and Vue product-card rendering paths
