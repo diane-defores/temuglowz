@@ -6,7 +6,7 @@ project: "TemuGlowz"
 created: "2026-07-12"
 created_at: "2026-07-12 21:48:39 UTC"
 updated: "2026-07-12"
-updated_at: "2026-07-13 07:09:31 UTC"
+updated_at: "2026-07-13 07:15:00 UTC"
 status: reviewed
 source_skill: 100-sg-spec
 source_model: "GPT-5 Codex"
@@ -216,16 +216,18 @@ None.
 | 2026-07-13 07:07:41 UTC | 001-sg-build | gpt-5.4-mini | Orchestrated bounded closure and ship preparation for the Node runtime repair; local proof is complete, hosted CI proof remains pending. | partial | `/104-sg-end` then `/005-sg-ship` |
 | 2026-07-13 07:07:41 UTC | 104-sg-end | gpt-5.4-mini | Synchronized closure bookkeeping and retained partial status because hosted CI retest is not yet available. | deferred | `/005-sg-ship` |
 | 2026-07-13 07:09:31 UTC | 005-sg-ship | gpt-5.4-mini | Shipped the bounded Node runtime repair and closure bookkeeping on `preview` as commit `d024877`; checks passed and push succeeded. | shipped | `/405-sg-prod` then `/107-sg-test --retest BUG-2026-07-12-001` |
+| 2026-07-13 07:13:38 UTC | 405-sg-prod | gpt-5 | Verified Vercel preview for HEAD `3036de9` (`READY`, exact preview build, Astro 9 pages, Node 22.x) and production `https://temuglowz-site.vercel.app/` (`READY`, SHA `8134e45`, HTTP 200, no redirect, public TemuGlowz markers); GitHub site and Android checks for `d024877` are green; static runtime logs returned no events/errors. | implemented | `/107-sg-test --retest BUG-2026-07-12-001` |
+| 2026-07-13 07:15:00 UTC | 405-sg-prod | gpt-5 | Retested the pushed repair at `d0248771a3e14965be69691e75aa5cf4c474b8e8`: Vercel preview `https://temuglowz-site-nss2jg757-diane-ds-projects.vercel.app/` is READY with Astro and Node 24.x runtime; production `https://temuglowz-site.vercel.app/` returns HTTP 200 with zero redirects and public `TemuGlowz` content; GitHub Site Checks run `29231129575` and Android run `29231129638` are successful. | success | `/103-sg-verify` then `/104-sg-end`; final closure intentionally remains pending |
 
 ## Current Chantier Flow
 
 - `100-sg-spec`: complete
 - `101-sg-ready`: ready
 - `102-sg-start`: implemented
-- `103-sg-verify`: verified
-- `104-sg-end`: deferred; closure bookkeeping synchronized, hosted CI proof pending
+- `103-sg-verify`: pending current verification record for the repaired CI behavior; the earlier migration verification remains preserved above
+- `104-sg-end`: deferred; final closure cannot be represented until the current `103-sg-verify` result is explicit
 - `005-sg-ship`: shipped; commit `d024877` pushed to `origin/preview`
-- Post-ship verification (`405-sg-prod`): partial; production Vercel is READY and live, Android CI succeeded, and the Node 22.12 repair is now pushed; hosted CI and matching preview deployment retest remain pending.
-- `106-sg-fix`: fix-attempted; CI runtime and package engine constraints are aligned on Node 22.12, with local site proof passing. Hosted retest remains pending.
+- Post-ship verification (`405-sg-prod`): complete; exact preview deployment for HEAD `3036de9` is READY and built successfully with Node 22.x, production is READY/live on `8134e45`, public HTTP/content checks pass, and static runtime logs show no events/errors.
+- `106-sg-fix`: fixed-pending-verify; CI runtime and package engine constraints are aligned on Node 22.12, local site proof passes, and hosted `405-sg-prod` evidence is successful. Current `103-sg-verify` and `104-sg-end` records remain required before closure.
 - Remaining out of scope: `BUG-2026-06-11-001` stays open (`high`, `fix-attempted`) pending separate Android retest.
-- Next: `/405-sg-prod` then `/107-sg-test --retest BUG-2026-07-12-001`
+- Next: `/103-sg-verify` then `/104-sg-end` to represent current verification and closure; no `107-sg-test` run is claimed by this handoff.
