@@ -48,12 +48,24 @@ defineProps<{
         </div>
       </div>
 
-      <div class="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-        <div class="mb-1.5 sm:mb-3">
-          <h3 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 sm:text-base">
-            {{ name }}
-          </h3>
-          <p class="text-xs text-muted-foreground mt-0.5 line-clamp-2 sm:line-clamp-none sm:text-sm sm:mt-1">{{ description }}</p>
+      <div class="flex-1 min-w-0 flex flex-col justify-between py-0.5 relative">
+        <div class="flex items-start justify-between gap-2">
+          <div class="mb-1.5 sm:mb-3">
+            <h3 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 sm:text-base">
+              {{ name }}
+            </h3>
+            <p class="text-xs text-muted-foreground mt-0.5 line-clamp-2 sm:line-clamp-none sm:text-sm sm:mt-1">{{ description }}</p>
+          </div>
+          <a
+            v-if="productUrl"
+            :href="productUrl"
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            class="shrink-0 inline-flex items-center justify-center gap-1 px-2.5 py-1 rounded-full bg-primary text-background font-medium hover:bg-primary/90 transition-colors shadow-md shadow-primary/20 text-[10px] sm:px-4 sm:py-2 sm:text-xs -mt-1 -mr-1 sm:-mt-2 sm:-mr-2"
+          >
+            Voir sur Temu
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3 sm:w-3.5 sm:h-3.5"><path d="M7 17 17 7M7 7h10v10"/></svg>
+          </a>
         </div>
 
         <div class="flex flex-wrap gap-1 sm:gap-2 mb-1.5 sm:mb-3">
@@ -61,20 +73,10 @@ defineProps<{
           <span v-if="pros?.length" class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] sm:text-xs">{{ pros[0] }}</span>
         </div>
 
-        <div class="flex items-center justify-between gap-2">
-          <div>
+        <div class="flex justify-end">
+          <div class="text-right">
             <p class="text-base font-bold text-foreground sm:text-xl">{{ price }}</p>
           </div>
-          <a
-            v-if="productUrl"
-            :href="productUrl"
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            class="shrink-0 inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-full bg-primary text-background font-medium hover:bg-primary/90 transition-colors shadow-md shadow-primary/20 text-xs sm:px-5 sm:py-2.5 sm:text-sm"
-          >
-            Voir sur Temu
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3 sm:w-4 sm:h-4"><path d="M7 17 17 7M7 7h10v10"/></svg>
-          </a>
         </div>
       </div>
     </div>

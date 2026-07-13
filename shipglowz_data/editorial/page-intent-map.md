@@ -1,7 +1,7 @@
 ---
 artifact: editorial_plan
 metadata_schema_version: "1.0"
-artifact_version: "1.1.0"
+artifact_version: "1.2.0"
 project: "TemuGlowz"
 created: "2026-07-12"
 updated: "2026-07-12"
@@ -20,6 +20,7 @@ supersedes: []
 evidence:
   - "The public site has product, guide, and trust pages with different user jobs."
   - "Operator decision 2026-07-13: the homepage should feel like a friendly catalogue of useful, cute, and unusual gadgets rather than an application sales page."
+  - "Operator feedback 2026-07-13: homepage copy must speak to everyday shoppers, not sound like a company explaining its strategy to entrepreneurs."
 next_step: "/206-sg-audit-copy public guides"
 ---
 
@@ -37,7 +38,9 @@ Secondary CTA: discover the application through a discreet, accurately labelled 
 
 Required content: playful catalogue-first hero, use-case discovery cues, featured published guides, selection method, independent/non-test posture, and a reminder to verify volatile product details on Temu.
 
-Forbidden shortcuts: price tracking or alerts, automated extraction or monitoring, fabricated testimonials or savings, unproved pricing/subscription claims, simulated newsletter confirmation, empty category destinations, hands-on test claims, or Temu partnership language without evidence.
+Voice: everyday, warm and desire-led. Talk about finds, small daily problems, gift ideas and the pleasure of discovering something clever. Keep governance terms such as “editorial catalogue”, “criteria”, “methodology”, “published selection” and “independent project” out of the main browsing journey; translate necessary safeguards into simple shopping advice.
+
+Forbidden shortcuts: price tracking or alerts, automated extraction or monitoring, fabricated testimonials or savings, unproved pricing/subscription claims, simulated newsletter confirmation, empty category destinations, hands-on test claims, Temu partnership language without evidence, or entrepreneur-facing strategy language in consumer discovery copy.
 
 ## Public guides
 

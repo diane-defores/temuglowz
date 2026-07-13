@@ -13,8 +13,8 @@ interface Props {
 }
 
 const {
-  title = 'TemuGlowz — Sélections indépendantes de gadgets Temu',
-  description = 'Découvrez des sélections indépendantes de gadgets Temu par usage et les informations à vérifier avant achat.',
+  title = 'TemuGlowz — Des gadgets Temu utiles, malins et surprenants',
+  description = 'Découvrez des gadgets Temu pratiques, mignons ou inattendus pour la maison, les cadeaux, les vacances et le quotidien.',
   path = '',
   image = '/og-image.png',
   noIndex = false,
@@ -30,7 +30,7 @@ const defaultSchemas = [
     "@type": "WebSite",
     name: "TemuGlowz",
     url: "https://temuglowz.com",
-    description: "Sélections éditoriales indépendantes de gadgets Temu par usage.",
+    description: "Des idées de gadgets Temu utiles, mignons et surprenants pour le quotidien.",
   },
   {
     "@context": "https://schema.org",
@@ -64,7 +64,7 @@ const allSchemas = [...defaultSchemas, ...jsonLd]
     <meta property="og:description" content={description} />
     <meta property="og:site_name" content="TemuGlowz" />
     <meta property="og:image" content={ogImageUrl} />
-    <meta property="og:image:width" content="1729" />
+    <meta property="og:image:width" content="1728" />
     <meta property="og:image:height" content="910" />
     <meta property="og:image:alt" content={title} />
 

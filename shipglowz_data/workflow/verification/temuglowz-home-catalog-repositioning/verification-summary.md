@@ -54,3 +54,19 @@ No scraper, Temu session access, affiliate identifier, data collection, payment 
 This verifies the homepage child chantier only. It does not establish Temu affiliate approval or global affiliate readiness, and it does not authorize commit, push or deployment.
 
 Verification verdict: pass for the bounded local homepage catalogue-first scope.
+
+## Consumer-copy refinement — 2026-07-13
+
+Following operator feedback, the homepage was rewritten to address everyday shoppers rather than sound like a company explaining its positioning. The visible journey now uses ordinary language around useful finds, gifts, kitchen shortcuts, hot days and small daily problems. Governance-heavy terms were removed from the browsing copy and necessary safeguards were translated into simple pre-purchase reminders.
+
+- Homepage-specific card titles now favor natural discovery language while canonical guide titles remain available for guide/schema contracts.
+- Navigation, footer, title, description and default WebSite schema copy were aligned.
+- The Open Graph artwork was edited with the exact consumer-facing line “Les gadgets qu’on ne cherchait pas… mais qu’on veut déjà.” using the built-in image generation workflow; final asset saved at `site/public/og-image.png` (1728×910).
+- Typecheck, tests and static build pass.
+- Focused forbidden-claim and entrepreneur-jargon scans pass for active homepage source.
+- Desktop and mobile browser captures show coherent wrapping, no horizontal overflow, zero console errors and zero unnamed controls.
+
+Additional evidence:
+
+- `home-desktop-consumer-copy.png`
+- `home-mobile-consumer-copy.png`

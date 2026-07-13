@@ -4,6 +4,7 @@ import DiscoveryIcon from './DiscoveryIcon.astro'
 interface Guide {
   slug: string
   title: string
+  homepageTitle?: string
   description: string
   category: string
   readingHint: string
@@ -20,10 +21,10 @@ const { guides } = Astro.props
   <div class="mx-auto max-w-6xl">
     <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
       <div class="max-w-3xl">
-        <p class="text-sm font-medium uppercase tracking-wider text-muted-foreground">À feuilleter maintenant</p>
-        <h2 id="selections-title" class="mt-3 font-instrument-sans text-3xl font-bold text-foreground sm:text-5xl">Deux sélections qui ont déjà de quoi raconter.</h2>
+        <p class="text-sm font-medium uppercase tracking-wider text-muted-foreground">Nos trouvailles du moment</p>
+        <h2 id="selections-title" class="mt-3 font-instrument-sans text-3xl font-bold text-foreground sm:text-5xl">Commencez par celles-ci.</h2>
       </div>
-      <a href="/guides" class="inline-flex items-center gap-2 text-sm font-medium text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">Voir tous les guides <span aria-hidden="true">→</span></a>
+      <a href="/guides" class="inline-flex items-center gap-2 text-sm font-medium text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">Voir toutes les trouvailles <span aria-hidden="true">→</span></a>
     </div>
 
     {guides.length > 0 ? (
@@ -34,16 +35,16 @@ const { guides } = Astro.props
               <span class="rounded-full bg-muted px-3 py-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">{guide.category}</span>
               <DiscoveryIcon name={index === 0 ? 'kitchen' : 'wind'} />
             </div>
-            <h3 class="mt-10 text-2xl font-semibold text-foreground sm:text-3xl">{guide.title}</h3>
+            <h3 class="mt-10 text-2xl font-semibold text-foreground sm:text-3xl">{guide.homepageTitle || guide.title}</h3>
             <p class="mt-4 leading-relaxed text-muted-foreground">{guide.readingHint || guide.description}</p>
             <a href={guide.slug} class="mt-8 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">
-              Lire la sélection <span aria-hidden="true">→</span>
+              Je veux voir <span aria-hidden="true">→</span>
             </a>
           </article>
         ))}
       </div>
     ) : (
-      <p class="mt-10 rounded-3xl border border-dashed border-border bg-card p-7 text-muted-foreground">Les prochaines sélections sont en préparation. Aucun raccourci vers un guide vide.</p>
+      <p class="mt-10 rounded-3xl border border-dashed border-border bg-card p-7 text-muted-foreground">De nouvelles trouvailles arrivent bientôt. Revenez jeter un œil&nbsp;!</p>
     )}
   </div>
 </section>

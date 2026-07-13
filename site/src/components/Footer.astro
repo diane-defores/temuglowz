@@ -2,13 +2,13 @@
 import DiscoveryIcon from './DiscoveryIcon.astro'
 
 const footerLinks: Record<string, { label: string; href: string }[]> = {
-  Sélections: [
-    { label: 'Tous les guides', href: '/guides' },
+  Trouvailles: [
+    { label: 'Tout voir', href: '/guides' },
     { label: 'Gadgets de cuisine', href: '/guides/kitchen-gadgets' },
     { label: 'Fraîcheur d’été', href: '/guides/summer-cooling' },
   ],
-  Transparence: [
-    { label: 'Notre méthode', href: '/#method' },
+  'À savoir': [
+    { label: 'Comment on choisit', href: '/#method' },
     { label: 'Confidentialité', href: '/privacy' },
     { label: 'Conditions d’utilisation', href: '/terms' },
   ],
@@ -24,7 +24,7 @@ const currentYear = new Date().getFullYear()
           <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground"><DiscoveryIcon name="sparkles" class="h-4 w-4" /></span>
           <span class="font-semibold text-foreground">TemuGlowz</span>
         </a>
-        <p class="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">Un catalogue éditorial indépendant pour découvrir des gadgets Temu par usage, avec curiosité et sans masquer ce qui reste à vérifier.</p>
+        <p class="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">Des gadgets utiles, mignons, surprenants… et plein d’idées auxquelles on n’aurait pas forcément pensé.</p>
         <a href="/app" class="mt-5 inline-flex text-sm text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">À propos de l’application</a>
       </div>
 
@@ -42,7 +42,7 @@ const currentYear = new Date().getFullYear()
 
     <div class="mt-12 flex flex-col gap-3 border-t border-border pt-7 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
       <p>&copy; {currentYear} TemuGlowz.</p>
-      <p>Projet indépendant, sans affiliation officielle avec Temu à ce jour.</p>
+      <p>TemuGlowz est un site indépendant et n’est pas un site officiel de Temu.</p>
     </div>
   </div>
 </footer>

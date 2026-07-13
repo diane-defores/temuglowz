@@ -2,10 +2,10 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 const navItems = [
-  { label: 'Univers', href: '/#themes' },
-  { label: 'Sélections', href: '/#selections' },
-  { label: 'Méthode', href: '/#method' },
-  { label: 'Tous les guides', href: '/guides' },
+  { label: 'Les idées', href: '/#themes' },
+  { label: 'En ce moment', href: '/#selections' },
+  { label: 'Comment on choisit', href: '/#method' },
+  { label: 'Tout voir', href: '/guides' },
 ]
 
 const isDark = ref(true)

@@ -4,6 +4,7 @@ import summerCoolingData from './summer-cooling.json'
 export interface GuideIndexEntry {
   slug: string
   title: string
+  homepageTitle: string
   description: string
   updatedDate: string
   category: string
@@ -14,17 +15,19 @@ export const guideIndex: GuideIndexEntry[] = [
   {
     slug: '/guides/kitchen-gadgets',
     title: kitchenGadgetsData.title,
+    homepageTitle: 'Les petits gadgets qui simplifient vraiment la cuisine',
     description: kitchenGadgetsData.description,
     updatedDate: kitchenGadgetsData.updatedDate,
     category: 'Cuisine',
-    readingHint: 'Ustensiles, rangement et accessoires à comparer pour la cuisine du quotidien.',
+    readingHint: 'Découper, ranger, nettoyer… des idées toutes simples pour se faciliter la vie.',
   },
   {
     slug: '/guides/summer-cooling',
     title: summerCoolingData.title,
+    homepageTitle: 'Les accessoires qui rendent les grosses chaleurs plus supportables',
     description: summerCoolingData.description,
     updatedDate: summerCoolingData.updatedDate,
     category: 'Été',
-    readingHint: 'Formats portables et accessoires à comparer pour les journées chaudes.',
+    readingHint: 'Ventilos de poche, accessoires frais et autres idées bienvenues quand le thermomètre grimpe.',
   },
 ]

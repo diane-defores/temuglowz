@@ -5,28 +5,28 @@ const themes = [
   {
     icon: 'kitchen' as const,
     title: 'Cuisine futée',
-    description: 'Ustensiles, rangement et accessoires à comparer pour gagner en confort au quotidien.',
+    description: 'Des ustensiles et accessoires tout simples pour cuisiner, ranger et nettoyer plus facilement.',
     href: '/guides/kitchen-gadgets',
-    status: 'Guide publié',
+    status: 'À découvrir maintenant',
   },
   {
     icon: 'cooling' as const,
     title: 'Été au frais',
-    description: 'Ventilation, fraîcheur nomade et petits formats pour mieux traverser les journées chaudes.',
+    description: 'Ventilos de poche, accessoires frais et petites astuces pour mieux supporter les journées chaudes.',
     href: '/guides/summer-cooling',
-    status: 'Guide publié',
+    status: 'À découvrir maintenant',
   },
   {
     icon: 'gift' as const,
     title: 'Cadeaux inattendus',
-    description: 'Des pistes mignonnes ou insolites à explorer pour une future sélection complète.',
-    status: 'Thème en préparation',
+    description: 'Des idées mignonnes, drôles ou inattendues pour faire plaisir sans offrir toujours la même chose.',
+    status: 'Bientôt par ici',
   },
   {
     icon: 'outdoors' as const,
     title: 'Escapades pratiques',
-    description: 'Des idées compactes pour le camping, la voiture et les week-ends — sans faux rayon à moitié vide.',
-    status: 'Thème en préparation',
+    description: 'Des objets compacts et pratiques à glisser dans la voiture, la tente ou le sac du week-end.',
+    status: 'Bientôt par ici',
   },
 ]
 ---
@@ -34,9 +34,9 @@ const themes = [
 <section id="themes" class="scroll-mt-28 bg-card px-4 py-16 sm:py-24" aria-labelledby="themes-title">
   <div class="mx-auto max-w-6xl">
     <div class="max-w-3xl">
-      <p class="text-sm font-medium uppercase tracking-wider text-muted-foreground">La caverne, bien rangée</p>
-      <h2 id="themes-title" class="mt-3 font-instrument-sans text-3xl font-bold text-foreground sm:text-5xl">Choisissez une envie, pas un tunnel de vente.</h2>
-      <p class="mt-4 text-lg leading-relaxed text-muted-foreground">Deux univers sont déjà prêts à explorer. Les prochains restent clairement indiqués comme des idées en préparation.</p>
+      <p class="text-sm font-medium uppercase tracking-wider text-muted-foreground">À chacun sa petite obsession</p>
+      <h2 id="themes-title" class="mt-3 font-instrument-sans text-3xl font-bold text-foreground sm:text-5xl">Vous cherchez quoi aujourd’hui&nbsp;?</h2>
+      <p class="mt-4 text-lg leading-relaxed text-muted-foreground">Un coup de pouce en cuisine, un peu d’air frais ou une idée cadeau qui change&nbsp;? Piochez selon votre envie.</p>
     </div>
 
     <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -47,7 +47,7 @@ const themes = [
             <p class="mt-6 text-xs font-medium uppercase tracking-wider text-muted-foreground">{theme.status}</p>
             <h3 class="mt-2 text-xl font-semibold text-foreground group-hover:text-foreground">{theme.title}</h3>
             <p class="mt-3 text-sm leading-relaxed text-muted-foreground">{theme.description}</p>
-            <span class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-foreground">Ouvrir le guide <span aria-hidden="true">→</span></span>
+            <span class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-foreground">Voir les idées <span aria-hidden="true">→</span></span>
           </a>
         ) : (
           <article class="rounded-3xl border border-dashed border-border bg-background/50 p-6">
@@ -55,7 +55,7 @@ const themes = [
             <p class="mt-6 text-xs font-medium uppercase tracking-wider text-muted-foreground">{theme.status}</p>
             <h3 class="mt-2 text-xl font-semibold text-foreground">{theme.title}</h3>
             <p class="mt-3 text-sm leading-relaxed text-muted-foreground">{theme.description}</p>
-            <span class="mt-6 inline-flex rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">Pas encore de lien</span>
+            <span class="mt-6 inline-flex rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">Ça arrive bientôt</span>
           </article>
         )
       ))}

@@ -1,12 +1,12 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "1.2.0"
+artifact_version: "1.3.0"
 project: "temuglowz"
 created: "2026-07-13"
 created_at: "2026-07-13 11:36:26 UTC"
 updated: "2026-07-13"
-updated_at: "2026-07-13 12:16:46 UTC"
+updated_at: "2026-07-13 14:12:08 UTC"
 status: reviewed
 source_skill: 100-sg-spec
 source_model: "GPT-5 Codex"
@@ -47,7 +47,7 @@ depends_on:
     artifact_version: "1.1.0"
     required_status: reviewed
   - artifact: "shipglowz_data/editorial/page-intent-map.md"
-    artifact_version: "1.1.0"
+    artifact_version: "1.2.0"
     required_status: reviewed
   - artifact: "shipglowz_data/technical/guidelines.md"
     artifact_version: "1.0.0"
@@ -246,7 +246,7 @@ exception_without_proof:
 - `shipglowz_data/technical/site/design-system-authority.md` version `1.0.0`: public-site token source, focus/reduced-motion expectations and drift proof.
 - `shipglowz_data/workflow/specs/temuglowz-temu-affiliate-readiness.md` version `1.0.0`: umbrella public-site trust, affiliation and production-proof gates.
 - `shipglowz_data/editorial/content-map.md` version `1.1.0`: catalogue-first homepage job and update triggers.
-- `shipglowz_data/editorial/page-intent-map.md` version `1.1.0`: homepage audience, primary/secondary CTAs, required content and forbidden shortcuts.
+- `shipglowz_data/editorial/page-intent-map.md` version `1.2.0`: homepage audience, everyday-shopper voice, primary/secondary CTAs, required content and forbidden shortcuts.
 - `shipglowz_data/technical/guidelines.md` version `1.0.0`: internal language doctrine, French public-copy rules and project-wide claim boundaries.
 - `site/src/site/data/guideIndex.ts`: canonical list of guides safe to feature without duplicating guide content in the homepage.
 - Temu Terms of Use, effective 2025-10-11 and checked 2026-07-13: restrictions against crawl/scrape/spider behavior and significant-content copying; limited use absent permission.
@@ -470,6 +470,7 @@ None block readiness review. The implementation should use the two currently sub
 | 2026-07-13 12:12:32 UTC | 102-sg-start | GPT-5 Codex | Implemented the catalogue-first homepage composition, guide binding, active navigation/footer, catalogue metadata/schema, OG artwork and bounded visual identity; removed misleading app/pricing/testimonial/newsletter surfaces from active composition. | implemented | `/108-sg-browser http://127.0.0.1:4321/ homepage catalogue desktop/mobile` |
 | 2026-07-13 12:14:00 UTC | 108-sg-browser | GPT-5 Codex | Verified the built homepage at desktop and mobile widths, corrected missing emoji glyphs with code-native SVG icons, then rechecked responsive layout, navigation/theme controls, accessibility structure, console and network. | pass | `/103-sg-verify shipglowz_data/workflow/specs/temuglowz-home-catalog-repositioning.md` |
 | 2026-07-13 12:16:46 UTC | 103-sg-verify | GPT-5 Codex | Verified the user story, success/error behavior, 12 required checklist scenarios, build/typecheck/tests, claim/schema/link scans, metadata coherence, scoped design-system findings and durable browser evidence. | verified | `/104-sg-end shipglowz_data/workflow/specs/temuglowz-home-catalog-repositioning.md` |
+| 2026-07-13 14:12:08 UTC | 200-sg-redact | GPT-5 Codex | Rewrote the complete homepage journey after operator feedback to replace entrepreneur-facing strategy language with everyday shopper language focused on useful finds, simple pleasures, gift ideas and daily-life problems; aligned homepage card titles, metadata, navigation, footer and social artwork. | implemented and browser-checked | `/104-sg-end shipglowz_data/workflow/specs/temuglowz-home-catalog-repositioning.md` |
 
 ## Current Chantier Flow
 
