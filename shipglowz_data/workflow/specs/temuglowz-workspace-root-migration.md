@@ -6,7 +6,7 @@ project: "TemuGlowz"
 created: "2026-07-12"
 created_at: "2026-07-12 21:48:39 UTC"
 updated: "2026-07-12"
-updated_at: "2026-07-13 07:07:41 UTC"
+updated_at: "2026-07-13 07:09:31 UTC"
 status: reviewed
 source_skill: 100-sg-spec
 source_model: "GPT-5 Codex"
@@ -215,6 +215,7 @@ None.
 | 2026-07-12 23:47:41 UTC | 106-sg-fix | unknown | bounded CI runtime repair | fix-attempted | Updated `.github/workflows/site-checks.yml`, `.github/workflows/dev-builds.yml`, root `package.json`, and `site/package.json` from Node 20.19 to Node 22.12 / `>=22.12.0 <23`; local site typecheck, 2 tests, 9-page build, and diff hygiene passed. Bug dossier created; hosted CI retest remains pending push. Next: `/005-sg-ship` then `/405-sg-prod` then `/107-sg-test --retest BUG-2026-07-12-001`. |
 | 2026-07-13 07:07:41 UTC | 001-sg-build | gpt-5.4-mini | Orchestrated bounded closure and ship preparation for the Node runtime repair; local proof is complete, hosted CI proof remains pending. | partial | `/104-sg-end` then `/005-sg-ship` |
 | 2026-07-13 07:07:41 UTC | 104-sg-end | gpt-5.4-mini | Synchronized closure bookkeeping and retained partial status because hosted CI retest is not yet available. | deferred | `/005-sg-ship` |
+| 2026-07-13 07:09:31 UTC | 005-sg-ship | gpt-5.4-mini | Shipped the bounded Node runtime repair and closure bookkeeping on `preview` as commit `d024877`; checks passed and push succeeded. | shipped | `/405-sg-prod` then `/107-sg-test --retest BUG-2026-07-12-001` |
 
 ## Current Chantier Flow
 
@@ -223,8 +224,8 @@ None.
 - `102-sg-start`: implemented
 - `103-sg-verify`: verified
 - `104-sg-end`: deferred; closure bookkeeping synchronized, hosted CI proof pending
-- `005-sg-ship`: pending in this run
-- Post-ship verification (`405-sg-prod`): partial; production Vercel is READY and live, Android CI succeeded, but GitHub `site-checks` fails on unsupported Node 20.19 and the `d7cb609` Vercel preview check suite remains queued without deployment.
+- `005-sg-ship`: shipped; commit `d024877` pushed to `origin/preview`
+- Post-ship verification (`405-sg-prod`): partial; production Vercel is READY and live, Android CI succeeded, and the Node 22.12 repair is now pushed; hosted CI and matching preview deployment retest remain pending.
 - `106-sg-fix`: fix-attempted; CI runtime and package engine constraints are aligned on Node 22.12, with local site proof passing. Hosted retest remains pending.
 - Remaining out of scope: `BUG-2026-06-11-001` stays open (`high`, `fix-attempted`) pending separate Android retest.
-- Next: `/005-sg-ship` then `/405-sg-prod` then `/107-sg-test --retest BUG-2026-07-12-001`
+- Next: `/405-sg-prod` then `/107-sg-test --retest BUG-2026-07-12-001`
