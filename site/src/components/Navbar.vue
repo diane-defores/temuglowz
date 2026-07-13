@@ -21,7 +21,10 @@ function initTheme(): void {
 }
 
 function applyTheme(enabled: boolean): void {
-  document.documentElement.classList.toggle('dark', enabled)
+  isDark.value = enabled
+  const root = document.documentElement
+  root.classList.toggle('dark', enabled)
+  root.classList.toggle('light', !enabled)
   localStorage.setItem('theme', enabled ? 'dark' : 'light')
 }
 

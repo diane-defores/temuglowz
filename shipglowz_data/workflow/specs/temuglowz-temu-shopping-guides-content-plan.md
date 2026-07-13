@@ -6,11 +6,11 @@ project: "TemuGlowz"
 created: "2026-07-13"
 created_at: "2026-07-13 14:21:10 UTC"
 updated: "2026-07-13"
-updated_at: "2026-07-13 15:20:47 UTC"
-status: in_progress
+updated_at: "2026-07-13 15:45:35 UTC"
+status: active
 source_skill: 100-sg-spec
 source_model: "GPT-5 Codex"
-scope: "Hybrid discovery hub combining Temu product guides with consumer explainers about prices, stock, sellers, similar listings, platform context, and recommender systems"
+scope: "Hybrid discovery hub combining Temu product guides with consumer explainers about prices, stock, sellers, similar listings, platform context, recommender systems, and international-purchase charges/European fulfilment"
 owner: "Diane"
 confidence: high
 user_story: "En tant qu'acheteur francophone sur Temu, je veux explorer au même endroit des trouvailles par envie et des repères simples sur les prix, les stocks, les vendeurs, les annonces similaires, l'origine de la plateforme et ses recommandations, afin de passer naturellement de l'inspiration à une décision plus éclairée sans avoir l'impression de lire un blog classique."
@@ -55,6 +55,7 @@ evidence:
   - "Operator direction 2026-07-13: the destination must feel like an original mixed discovery hub, not a conventional blog separate from product guides."
   - "PDD Holdings' 2025 Form 20-F says Temu was founded in Boston in September 2022 and expanded to Europe in April 2023."
   - "Temu's current terms document automated recommender systems, the main categories of input signals, paid advertised recommendations, sorting controls, and a personalisation opt-out."
+  - "The reviewed French customs and government sources describe a temporary 3-euro duty by customs category/line for eligible imported distance-sales goods from 1 July 2026 to 1 July 2028, plus a separate European management fee announced from November 2026 whose terms remain to be checked."
 next_step: "/102-sg-start TemuGlowz Hybrid Discovery Hub Content Plan"
 ---
 
@@ -89,6 +90,8 @@ TemuGlowz turns its existing guide surface into a playful discovery hub: one ent
 - Given a reader asks who sells on Temu, when they open the marketplace guide, then the article explains the roles of platform, seller, manufacturer, brand, and local or cross-border fulfillment without claiming that every seller or product comes from China.
 - Given a reader asks where Temu comes from, when they open the platform-context explainer, then they can distinguish Temu's September 2022 Boston launch from PDD Holdings' group context and from the origin of an individual seller or product.
 - Given a reader asks whether Temu has an algorithm, when they open the recommender-systems explainer, then they can understand the documented categories of recommendation signals, sorting choices, advertising distinction, and personalisation controls without being told that Temu's full formula is known.
+- Given a reader wonders why a small international order now costs more, when they open the import-charges repère, then they can distinguish the documented temporary duty from any future management fee, understand that the calculation is not simply "per parcel", and know which checkout facts to verify without being promised a final cost.
+- Given a reader sees an offer described as shipped from Europe, when they open the European-warehouse repère, then they can distinguish stock already in the EU from direct importation without inferring that a marketplace, seller, or individual listing avoids charges or has changed its logistics.
 - Given a published article depends on a volatile external policy, when its source-review date reaches the freshness threshold, then it is flagged for editorial review and is not presented as newly verified until the source is checked again.
 - Given an article is substantive and approved, when the static site builds, then it has a canonical URL, Article and Breadcrumb structured data, correct metadata, internal links, sitemap inclusion, and an accessible static HTML reading path.
 
@@ -99,6 +102,7 @@ TemuGlowz turns its existing guide surface into a playful discovery hub: one ent
 - If a policy differs by country, account, app version, seller, variant, or date, state the scope and direct the reader to verify the current French Temu interface before acting.
 - If an article has no current primary source for its central promise, exclude it from sitemap, internal promotion, and `llms.txt` until the evidence gap is resolved.
 - If an article references an authority investigation, attribute the finding to the authority and preserve its procedural status; do not convert a platform-level concern into an accusation about a specific listing.
+- If a charge, fee, eligibility threshold, shipment origin, or fulfilment status cannot be established from the current official source and the actual checkout, do not calculate a final basket cost or state that a particular order will avoid import charges.
 - If the article collection schema, build, metadata, or link checks fail, do not publish or index the affected route.
 
 ## Problem
@@ -107,7 +111,7 @@ Temu exposes shoppers to many changing prices, stock states, seller identities, 
 
 ## Solution
 
-Create a source-backed hybrid discovery hub. The existing `/guides` route becomes the visitor-facing hub — labelled as an exploration space rather than a catalogue or blog — with two immediate paths: `Des idées pour…` for themed product selections and `Un doute avant d'acheter ?` for short practical explainers. Keep `/blog/[slug]` as the stable technical article route initially, but call its content `repères` or `fiches pratiques` in the interface; do not use "blog" as the primary visitor-facing label. Publish in three waves, beginning with the highest-confidence official workflows, then marketplace and comparison literacy, then higher-risk safety and consumer-protection topics. Each explainer follows a shared evidence, freshness, internal-linking, and indexing contract.
+Create a source-backed hybrid discovery hub. The existing `/guides` route becomes the visitor-facing hub — labelled as an exploration space rather than a catalogue or blog — with two immediate paths: `Des idées pour…` for themed product selections and `Un doute avant d'acheter ?` for short practical explainers. Keep `/blog/[slug]` as the stable technical article route initially, but call its content `repères` or `fiches pratiques` in the interface; do not use "blog" as the primary visitor-facing label. Add a bounded pillar on import charges, international purchases, and European fulfilment, using official French/EU sources and checkout-verification guidance. It remains Temu-relevant in this plan but is intentionally written so its concepts can be reused if a later, separately specified multi-merchant gadget site is approved. Publish in waves, beginning with the highest-confidence official workflows, then marketplace, comparison, and international-purchase literacy, then higher-risk safety and consumer-protection topics. Each explainer follows a shared evidence, freshness, internal-linking, and indexing contract.
 
 ## Scope In
 
@@ -117,6 +121,7 @@ Create a source-backed hybrid discovery hub. The existing `/guides` route become
 - Create a reusable explainer template with source date, evidence labels, update date, practical checklist, related selections, and a clear independence note.
 - Add a hub module that lets the reader choose an idea-first path or a question-first path, then uses mixed cards to connect the two.
 - Publish the eight planned source-backed articles in three waves, beginning with the two Wave 1 explainers.
+- Publish a source-backed import-charges and European-fulfilment pillar in a later wave, without changing the current Temu-first promise or silently launching a multi-merchant product.
 - Prepare briefs for six adjacent articles without indexing thin drafts.
 - Add internal links between the homepage price/stock notice, themed selections, the exploration hub, and relevant explainers once those destinations are substantive.
 - Update sitemap, `llms.txt`, content map, page intent, claim register, and editorial freshness policy.
@@ -132,6 +137,8 @@ Create a source-backed hybrid discovery hub. The existing `/guides` route become
 - A live database of prices, stock, sellers, ratings, or product listings.
 - Claims that two listings are the same product, come from the same factory, or have equivalent quality based only on photos or titles.
 - Claims that all sellers or products come from China.
+- A claim that Temu, a seller, or a listing has avoided, absorbed, or adapted to an import charge, or has moved stock to Europe, unless a current source proves that exact scoped claim.
+- A final-cost calculator, a guaranteed fee estimate, or advice that a reader will pay no import-related charge from a stated warehouse or delivery label.
 - Legal advice, definitive product-safety certification, seller verification, or guaranteed eligibility for price adjustment.
 - Publishing all planned articles in one batch before the first wave has passed quality and search-intent review.
 - New analytics collection or advertising technology; existing search-performance tools may be reviewed separately after publication.
@@ -144,6 +151,9 @@ Create a source-backed hybrid discovery hub. The existing `/guides` route become
 - Every article must distinguish four evidence classes when applicable: `Politique Temu`, `Constat d'une autorité`, `Observation datée`, and `Interprétation prudente`.
 - Every central external claim requires a source URL and `sourceCheckedAt` date.
 - Temu policy claims require revalidation at least every 90 days and before a material rewrite; authority/legal-status claims require event-driven review when their status changes.
+- Import-charge claims require revalidation before a material rewrite and on each announced date/regulatory change: the reviewed temporary duty applies from 1 July 2026 through 1 July 2028, while the European management fee announced from November 2026 remains subject to current official terms.
+- Explain the documented temporary duty as 3 euros per customs category/line for eligible imported distance-sales goods, not as a universal 3-euro fee per parcel or per item; readers must verify the applicable charge and final checkout amount.
+- Distinguish direct imported dispatch from stock already held in the EU. A warehouse label alone is not proof of a particular seller's customs treatment, final price, or delivery promise.
 - Product, price, availability, delivery, rating, seller, and variant information is volatile and must be presented as something to verify on Temu.
 - Articles may explain how to check the current interface, but must not promise that every account, country, seller, or product exposes the same controls.
 - TemuGlowz remains independent and must not imply Temu endorsement, authorization, partnership, or affiliate approval.
@@ -176,6 +186,8 @@ Required scenarios:
 - `TC-CONTENT-009`: homepage price/stock notices link only to published relevant explanations and remain understandable without following the link.
 - `TC-CONTENT-010`: `/guides` gives visible equal-weight access to themed selections and practical explainers, and the visitor-facing interface does not call the destination a blog.
 - `TC-CONTENT-011`: mixed hub cards distinguish an inspiration destination from an explainer without making either look secondary or unfinished.
+- `TC-CONTENT-012`: the import-charges repère names the source-check date, the 1 July 2026–1 July 2028 temporary-duty window, and the 3-euro category/line scope without reducing it to a per-parcel rule or quoting a guaranteed final cost.
+- `TC-CONTENT-013`: the European-fulfilment repère distinguishes direct import from stock already in the EU and contains no unsupported claim that Temu, a seller, or a listing avoids charges, has adapted logistics, or guarantees a locally dispatched order.
 
 Exception with proof: production and Search Console evidence are not required to approve the local editorial implementation, but are required before claiming real search visibility, indexing, impressions, clicks, or traffic impact.
 
@@ -206,6 +218,10 @@ Exception without proof: never claim SEO success, Temu policy universality, curr
 - Current official Temu recommender-system disclosures, accessed 2026-07-13:
   - `https://www.temu.com/ca/terms-of-use.html`
   - `https://www.temu.com/pt-en/support/c3/support-f-44-s-6992.html`
+- French customs and government information on low-value imported distance sales, accessed 2026-07-13:
+  - `https://www.douane.gouv.fr/fiche/droit-de-douane-forfaitaire-de-3-euros-sur-les-ventes-distance-de-biens-importes`
+  - `https://www.info.gouv.fr/actualite/taxe-sur-les-petits-colis-ce-qui-change`
+  - `shipglowz_data/workflow/research/france-temu-frais-importation-et-positionnement-gadgets.md`
 
 Fresh-docs verdict: `fresh-docs checked`. Official Temu, SEC, European Commission, and Astro sources support the bounded plan. Temu publicly documents categories of recommender-system signals, sorting controls, sponsored recommendations, and a personalisation opt-out; it does not publish a complete formula, fixed weights, or a case-by-case reason for an individual result. Personalized pricing and undocumented ranking claims remain out of scope.
 
@@ -219,6 +235,7 @@ Fresh-docs verdict: `fresh-docs checked`. Official Temu, SEC, European Commissio
 - A platform-level authority finding never becomes an unsupported accusation about an individual seller or listing.
 - No article creates urgency, guarantees savings, or encourages a purchase before verification.
 - Product-selection guides and explanatory articles remain distinct but cross-link when the reader job is adjacent.
+- International-purchase guidance explains the rule and the checks to make; it does not become a checkout simulator, a delivery-origin verifier, or a claim that one marketplace is categorically more or less economical.
 
 ## Links & Consequences
 
@@ -229,6 +246,7 @@ Fresh-docs verdict: `fresh-docs checked`. Official Temu, SEC, European Commissio
 - Shared article layout and evidence components must reuse the current TemuGlowz design system and avoid client hydration unless interaction genuinely requires it.
 - The site design-system authority already names `site/src/styles/global.css` as the token carrier; reuse it and extend its component bridge only if the mixed hub introduces a genuinely shared boundary.
 - `site/src/site/data/publishedContent.ts` is the single supported query for published explainers; hub/archive/related-content views consume it and `site/tests/published-editorial-routes.test.ts` blocks a build if sitemap or `llms.txt` diverges from it.
+- The import-charges and European-fulfilment repères can later be reused by a separately approved multi-merchant gadget experience, but this Temu-first spec does not add Amazon, affiliate links, comparison promises, or a change of site positioning.
 - The homepage price/stock notice can become an internal-link bridge after the corresponding articles are published, without weakening the concise consumer warning.
 - Product buying guides can link to the similar-listings and seller-check articles near their verification advice.
 - Editorial governance must add the missing public-surface and blog/article policies before articles are promoted.
@@ -253,6 +271,8 @@ Claim Impact Plan:
 - Sellers: explain marketplace roles and visible seller context; no blanket origin statement or verified-seller claim.
 - Platform context: distinguish Temu's September 2022 Boston launch, PDD Holdings' group context, and the origin or location of any individual seller/product; avoid a reductive one-line nationality claim.
 - Recommender systems: explain only documented signal categories, sorting options, paid advertised recommendations, and settings; never present them as Temu's full algorithm or the exact reason a product was shown.
+- Import charges: state only the current official scope — temporary 3-euro duty by customs category/line for eligible imported distance-sales goods from 1 July 2026 through 1 July 2028 — with a visible source-check date. Describe the European management fee announced from November 2026 as pending confirmation of its current terms; never combine fees into a promised basket total.
+- European fulfilment: explain that stock already held in the EU differs from direct importation, but do not claim an exact shipment origin, customs result, fee avoidance, or logistics adaptation for Temu, a seller, or a listing without scoped evidence.
 - Audience: do not make a "who buys on Temu" demographic claim without a dated, methodologically stated independent measurement source.
 - Similar listings: teach comparison without declaring product identity, factory identity, or equal quality.
 - Discounts and urgency: attribute European authority findings precisely and do not extrapolate them to a specific listing without evidence.
@@ -267,6 +287,8 @@ Claim Impact Plan:
 - A seller is local while a product or fulfillment path remains cross-border, or the inverse.
 - A product card, photo, or title changes after an article is published.
 - An authority action is ongoing, preliminary, appealed, updated, or closed.
+- A reader sees "entrepôt européen", "expédié depuis l'UE", or a local seller label but checkout information or the actual fulfilment path remains unclear.
+- The announced November 2026 European management fee changes, is delayed, or gains material conditions after the article was last checked.
 - An old article remains indexed after its central source changes materially.
 - A planned article has a strong keyword but insufficient primary evidence.
 - A related product-selection guide is unpublished or thin and must not receive an internal link.
@@ -315,6 +337,13 @@ Claim Impact Plan:
   - Depends on: Wave 1 quality review and fresh official/authority source check.
   - Validate with: claim scan, authority attribution review, similarity/origin/algorithm forbidden-claim scan, documented-signal source review, and `TC-CONTENT-004`/`005`.
 
+- [ ] Task 6a: Publish the international-purchase literacy pillar.
+  - Files: `site/src/content/articles/frais-importation-achats-internationaux.md`, `site/src/content/articles/entrepots-europeens-expedition-import.md`, `shipglowz_data/editorial/research/temu-shopping-guides-source-map.md`, `shipglowz_data/editorial/ROADMAP.md`.
+  - Action: Publish `Frais d'importation et achats internationaux : ce qu'il faut vérifier avant de commander` first, then `Entrepôt européen ou expédition directe : ce que cela change vraiment` only after a fresh source review. Cover the temporary 3-euro duty by customs category/line, its 1 July 2026–1 July 2028 window, and the separately announced European management fee from November 2026 whose terms must be rechecked. Give readers questions to verify at checkout; do not calculate an order total or claim that Temu, a seller, or an offer avoids charges or has adopted a warehouse strategy. Keep the concepts reusable for a future separately specified multi-merchant gadget site without adding any new merchant or affiliate surface here.
+  - User story link: turns a confusing regulatory change into calm, practical buying literacy without false certainty.
+  - Depends on: Task 2, fresh official customs/government source check, and Wave 1 quality review.
+  - Validate with: official-source date review, claim scan for per-parcel/final-cost/fee-avoidance language, `TC-CONTENT-012`/`013`, and a visible next-review trigger.
+
 - [ ] Task 7: Prepare Wave 3 briefs without indexing thin content.
   - Files: `shipglowz_data/editorial/research/temu-shopping-guides-source-map.md`, `shipglowz_data/editorial/ROADMAP.md`.
   - Action: Prepare source briefs for `Même article, même vendeur, même variante : ce que cela veut dire`, `Produit supprimé, épuisé ou indisponible : comment faire la différence`, `Vendeur local ou transfrontalier : quels indices regarder`, `Comment lire les avis Temu avec recul`, `Que vérifier avant d'acheter un jouet ou un petit appareil électrique`, `Rappels de produits Temu : où vérifier`, `Qui utilise Temu ?`, and `Application Temu ou site web : ce qui change vraiment`. Hold the last two from publication until their central audience or experience claim has a dated source and a distinct reader benefit.
@@ -355,6 +384,8 @@ Claim Impact Plan:
 - [ ] CA15: Given Wave 1 price-adjustment content, when the separate troubleshooting intent is not independently supported, then it is a canonical FAQ within the main guide rather than a competing second explainer.
 - [ ] CA16: Given the platform-context repère, when it discusses Temu's origin, then it distinguishes the documented September 2022 Boston launch, PDD Holdings' group context, and the origin of individual sellers/products; it does not use a reductive nationality claim as the whole answer.
 - [ ] CA17: Given the recommender-systems repère, when it explains how Temu recommends or ranks products, then it labels documented signal categories, sponsored recommendations, sorting controls, and personalisation settings separately from the undisclosed full formula and individual-result reasons.
+- [ ] CA18: Given the import-charges repère, when it explains the temporary duty, then it states the official 3-euro category/line scope and 1 July 2026–1 July 2028 window, separates the announced November 2026 management fee from it, and promises neither a final cost nor a charge-free outcome.
+- [ ] CA19: Given the European-fulfilment repère, when it discusses a European warehouse, then it distinguishes stock already in the EU from direct importation and never treats a label, marketplace, seller, or listing as proof of fee avoidance or logistics adaptation.
 
 ## Test Strategy
 
@@ -363,6 +394,7 @@ Claim Impact Plan:
 - Run `pnpm --filter @temuglowz/site typecheck`, `pnpm --filter @temuglowz/site test:once`, and `pnpm build:site`.
 - Run the blocking published-content test that compares filtered collection entries, generated `/blog/**` routes, sitemap, and `llms.txt`, including a draft/stale exclusion fixture.
 - Scan source and generated HTML for guarantee, live-tracking, universal-origin, product-identity, official-partner, and unsupported algorithm language.
+- Scan import-pillar source and generated HTML for unsupported `par colis`, `par article`, guaranteed-final-cost, charge-free, Temu-adaptation, or seller/warehouse-origin claims; retain the official source-check date and next-review trigger.
 - Validate canonical, robots, Article, BreadcrumbList, heading hierarchy, and internal/external links.
 - Run browser checks on `/guides`, `/blog`, one Wave 1 repère, and one Wave 2 repère at desktop and 390 px mobile, including keyboard focus and console/network review.
 - After a separate ship request, verify production routes and only then observe indexing/search performance through the operator's approved tools.
@@ -373,6 +405,8 @@ Claim Impact Plan:
 - High: SEO temptation can strengthen claims about algorithms, discounts, stock, sellers, China, or identical products. Mitigation: evidence labels, forbidden-claim scans, and primary-source requirement.
 - High: authority findings can be overstated or become procedurally stale. Mitigation: exact attribution, status/date capture, and separate authority-source review.
 - High: algorithm-related search intent can invite invented causal explanations. Mitigation: cite Temu's current recommender disclosures, explain only documented categories and controls, and state plainly what is not public.
+- High: rapidly changing import measures can be simplified into a false fixed fee or a promised checkout total. Mitigation: official French/EU source requirement, explicit category/line wording, visible source-check date, date-triggered refresh, and no calculator or fee-avoidance claim.
+- Medium: European-warehouse language can be mistaken for a universal local-stock or tax outcome. Mitigation: distinguish stock already in the EU from direct importation, require listing/checkout verification, and make no platform-, seller-, or listing-level adaptation claim without evidence.
 - Medium: the phrase "Temu est chinois" can collapse launch history, group context, legal structure, sellers, manufacturing, and fulfillment into one misleading answer. Mitigation: one source-backed origin explainer with explicit distinctions, not several competing nationality pages.
 - Medium: planned launch articles may overlap search intent. Mitigation: one-question-per-article rule, distinct slugs, and explicit internal-link hierarchy.
 - Medium: sitemap and `llms.txt` can drift from generated routes. Mitigation: `publishedContent` as the single query plus a blocking route/discovery parity test.
@@ -394,7 +428,7 @@ Read first:
 6. `site/src/styles/global.css`
 7. `site/src/layouts/Layout.astro`
 
-Implementation order: governance and site design authority -> durable research briefs -> typed explainer collection -> shared template -> hybrid `/guides` hub -> Wave 1 -> Wave 2 -> internal links and discovery files -> verification.
+Implementation order: governance and site design authority -> durable research briefs -> typed explainer collection -> shared template -> hybrid `/guides` hub -> Wave 1 -> Wave 2 -> international-purchase pillar -> internal links and discovery files -> verification.
 
 Recommended architecture: local Markdown explainers loaded at build time with Astro 7 `glob()` and a strict schema. Use `getCollection()` plus `getStaticPaths()` for static approved routes. Keep draft filtering centralized. Build the hub around a small typed view model that joins published product guides and published explainers by `topic` and explicit related slugs; this is a presentation join, not a second editorial index. Reuse current layout, `site/src/styles/global.css` tokens, footer, and accessibility conventions. Avoid CMS, live loaders, client-side article rendering, remote runtime fetching, or an isolated blog-design system.
 
@@ -415,6 +449,8 @@ Explorer (/guides)
 
 Une troisième entrée légère, `Comprendre Temu`, peut apparaître sous ces deux chemins lorsque les premiers repères sont substantiels. Elle renvoie à l'origine/lancement de la plateforme et au fonctionnement documenté des recommandations; elle n'est ni une page de rumeurs, ni une promesse d'expliquer une formule secrète.
 
+Une entrée de repère complémentaire, `Acheter depuis l'international`, peut rejoindre le chemin des questions seulement lorsque ses deux destinations sont substantielles. Elle répond aux recherches sur frais, importation et entrepôts européens avec des explications datées; elle ne promet pas le prix final d'un panier ni une exception pour Temu.
+
 Every destination presents one small bridge to the other branch: a themed selection gets a relevant "à savoir" repère; a repère gets a relevant "à explorer" selection. The hub is an editorial trail through the site, not a chronological feed.
 ```
 
@@ -430,6 +466,8 @@ Publication order and SEO role:
 | 2 | P1 | Prix barrés et stock limité sur Temu : les vérifications à faire avant d'acheter | consumer protection | counters urgency and supports careful buying |
 | 2 | P1 | Qui est derrière Temu ? Origine, lancement et fonctionnement en bref | platform context | answers the natural "Temu est-il chinois ?" question without a reductive shortcut |
 | 2 | P1 | Comment Temu recommande des produits : ce que la plateforme déclare | recommender literacy | explains documented signals and settings, not a secret formula |
+| 3 | P1 | Frais d'importation et achats internationaux : ce qu'il faut vérifier avant de commander | regulatory shopping literacy | answers fee confusion with official scope and checkout checks, not a final-cost estimate |
+| 3 | P1 | Entrepôt européen ou expédition directe : ce que cela change vraiment | fulfilment literacy | explains the distinction without claiming marketplace or seller adaptation |
 
 Internal-link hierarchy:
 
@@ -439,6 +477,7 @@ Internal-link hierarchy:
 - Stock content links to similar-listing comparison and relevant product-selection guides.
 - Marketplace/seller content links to comparison and safety briefs.
 - Platform-context and recommender repères link to the seller, comparison, and price/stock explainers when the reader needs a practical next step.
+- Import-charge content links to the fulfilment repère and to a generic checklist for verifying the current checkout; it does not direct readers to a supposedly fee-free merchant or listing.
 - Buying guides link back to the comparison/seller explanation near their verification advice.
 - The homepage notice links to the most directly relevant published repère, never to a planned route.
 
@@ -447,6 +486,7 @@ Stop conditions:
 - Stop article drafting if the central primary source is missing, contradictory, or cannot be scoped to the intended reader.
 - Stop indexing if governance, schema, source date, or claim review is incomplete.
 - Reroute to `203-sg-research` for a disputed marketplace, regulatory, safety, or origin claim.
+- Hold the import-charge or European-fulfilment repère in draft if the official source changes materially, if the November 2026 fee terms cannot be scoped, or if a claim would require proving a particular shipment path or marketplace adaptation.
 - Reroute to `406-sg-seo` after the briefs exist if keyword cannibalization or technical SEO architecture remains uncertain.
 - Do not ship from this spec without separate user authorization and a clean bounded staging scope.
 
@@ -467,14 +507,15 @@ No blocking questions. The safe default is a French hybrid exploration hub under
 | 2026-07-13 14:34:10 UTC | 007-sg-content | GPT-5 Codex | Added the source-backed platform-context and recommender-systems cluster, with explicit limits on algorithm and audience claims. | implemented | Revalidate readiness before implementation. |
 | 2026-07-13 15:17:42 UTC | 101-sg-ready | GPT-5 Codex | Validated the hybrid hub contract, source and freshness boundaries, existing site design authority, article count, route/discovery parity test, and Wave 1 execution order. | ready | `/102-sg-start TemuGlowz Hybrid Discovery Hub Content Plan` |
 | 2026-07-13 15:20:47 UTC | 102-sg-start | GPT-5 Codex | Implemented the first public slice: build-time article collection, reusable repère template and structured data, two source-backed Wave 1 explainers, secondary archive, and equal-weight Explorer hub paths. | partial | Complete governance/source-pack/parity tests and the remaining content waves before verification. |
+| 2026-07-13 15:45:35 UTC | 007-sg-content | GPT-5 Codex | Added the source-backed import-charges, international-purchase, and European-fulfilment content pillar with date, source, reusable-scope, and no-overclaim constraints. | implemented | Resume `/102-sg-start` with governance/source-pack work and fresh official-source checks before publishing this later-wave pillar. |
 
 ## Current Chantier Flow
 
 - `100-sg-spec`: completed — draft plan updated with the hybrid exploration-hub direction.
 - `101-sg-ready`: completed — ready; scope, content surface, site design authority, source contract, and execution specificity validated.
-- `102-sg-start`: partial — first public slice implemented; governance/source pack, parity test, and remaining waves are still required.
+- `102-sg-start`: partial — first public slice implemented; governance/source pack, parity test, later Temu waves, and the planned import/European-fulfilment pillar are still required.
 - `103-sg-verify`: pending — verify the implemented wave and public claims.
 - `104-sg-end`: pending — close bookkeeping after verification.
 - `005-sg-ship`: pending — only after explicit ship authorization.
 
-Next command: `/102-sg-start TemuGlowz Hybrid Discovery Hub Content Plan` — resume with Tasks 1–2 and the route/discovery parity test before the next wave.
+Next command: `/102-sg-start TemuGlowz Hybrid Discovery Hub Content Plan` — resume with Tasks 1–2 and the route/discovery parity test; complete a fresh official-source check before the import/European-fulfilment pillar.

@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 - Added a technical workflow document for authenticated Temu product enrichment so browser login and payload extraction can be repeated without relying on conversation context.
 - Added a planning brief and source log for a future geek-objects guide so category design can continue without relying on the currently degraded Temu browsing account.
 - Added a research report on Temu official access options so affiliate pages, partner APIs, EU research endpoints, and scraping-policy constraints are recorded canonically before any sourcing automation decisions.
+- Added a comparative research report for Amazon and SHEIN official access options so affiliate API viability, seller-platform limits, and merchant-priority decisions are documented before building multi-merchant sourcing.
+- Added an operator checklist for Amazon Associates and Creators API onboarding so real approval status, quotas, policy limits, and go/no-go decisions can be captured repeatably.
 
 ## 2026-06-10
 

@@ -13,7 +13,9 @@ const isMenuOpen = ref(false)
 
 function applyTheme(enabled: boolean): void {
   isDark.value = enabled
-  document.documentElement.classList.toggle('dark', enabled)
+  const root = document.documentElement
+  root.classList.toggle('dark', enabled)
+  root.classList.toggle('light', !enabled)
   try {
     localStorage.setItem('theme', enabled ? 'dark' : 'light')
   } catch {
