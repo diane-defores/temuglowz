@@ -1,6 +1,6 @@
 <template>
   <section id="reviews" class="py-16 sm:py-24 bg-card">
-    <div class="max-w-6xl mx-auto px-4">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="text-center mb-12 sm:mb-16" data-reveal>
         <p class="animate-fade-up text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">Use Cases</p>
         <h2

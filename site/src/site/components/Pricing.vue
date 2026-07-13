@@ -1,6 +1,6 @@
 <template>
   <section id="pricing" class="py-16 sm:py-24 bg-background">
-    <div class="max-w-6xl mx-auto px-4">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="text-center mb-12" data-reveal>
         <h2 class="animate-fade-up text-3xl sm:text-4xl font-bold text-foreground mb-4" style="font-family: var(--font-instrument-sans);">
           Simple, Transparent Pricing

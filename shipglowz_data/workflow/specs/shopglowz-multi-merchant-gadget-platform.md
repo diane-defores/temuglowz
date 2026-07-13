@@ -1,13 +1,13 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "ShopGlowz"
 created: "2026-07-13"
 created_at: "2026-07-13 17:00:00 UTC"
 updated: "2026-07-13"
-updated_at: "2026-07-13 15:55:20 UTC"
-status: draft
+updated_at: "2026-07-13 18:51:02 UTC"
+status: reviewed
 source_skill: 100-sg-spec
 source_model: "GPT-5 Codex"
 scope: "Brand repositioning and multi-merchant affiliate gadget discovery hub"
@@ -38,7 +38,7 @@ evidence:
   - "Operator directive 2026-07-13: rename the public direction to ShopGlowz and make the site multi-merchant."
   - "Existing Temu-focused content plan and homepage repositioning spec are too narrow for the new promise."
   - "Research report on French import changes recommends a merchant-neutral gadget guide with Temu as one source among others."
-next_step: "/101-sg-ready shopglowz-multi-merchant-gadget-platform"
+next_step: "/100-sg-spec shopglowz-multi-merchant-gadget-platform"
 ---
 
 # Title
@@ -47,7 +47,7 @@ ShopGlowz — plateforme éditoriale multi-enseignes de gadgets
 
 ## Status
 
-Draft. The public brand change is approved in principle; readiness must validate the migration, affiliate, SEO and brand-authority contracts before implementation.
+Reviewed, not ready. The public brand change is approved in principle, but the spec still needs missing readiness sections and fresh external-document checks before implementation.
 
 ## User Story
 
@@ -166,14 +166,15 @@ Le renommage public ShopGlowz est le défaut retenu. Le domaine, le nom du packa
 |---|---|---|---|---|
 | 2026-07-13 17:00:00 UTC | 001-sg-build | Reframed the product as ShopGlowz, a multi-merchant gadget discovery hub, and created a new spec superseding the Temu-only content direction. | implemented | `/101-sg-ready shopglowz-multi-merchant-gadget-platform` |
 | 2026-07-13 15:55:20 UTC | 706-continue | Confirmed the active chantier and resolved the next action-ready step without switching scope. | routed | `/101-sg-ready shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 18:51:02 UTC | 101-sg-ready | Reviewed the spec for execution readiness and kept it out of implementation because mandatory readiness sections and fresh-doc evidence are still missing. | not ready | `/100-sg-spec shopglowz-multi-merchant-gadget-platform` |
 
 ## Current Chantier Flow
 
 - `100-sg-spec`: completed — draft created.
-- `101-sg-ready`: pending.
+- `101-sg-ready`: not ready — return to spec hardening.
 - `102-sg-start`: pending.
 - `103-sg-verify`: pending.
 - `104-sg-end`: pending.
 - `005-sg-ship`: pending.
 
-Next command: `/101-sg-ready shopglowz-multi-merchant-gadget-platform`.
+Next command: `/100-sg-spec shopglowz-multi-merchant-gadget-platform`.

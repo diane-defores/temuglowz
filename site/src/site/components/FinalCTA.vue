@@ -1,6 +1,6 @@
 <template>
   <section class="py-16 sm:py-24 bg-background">
-    <div class="max-w-4xl mx-auto px-4 text-center" data-reveal>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center" data-reveal>
       <h2 class="animate-fade-up-slow text-3xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 tracking-tight" style="font-family: var(--font-cal-sans);">
         Ready to Organize Your Temu Shopping?
       </h2>

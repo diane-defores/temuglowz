@@ -1,6 +1,6 @@
 <template>
   <section class="py-16 sm:py-24 bg-background">
-    <div class="max-w-2xl mx-auto px-4 text-center" data-reveal>
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center" data-reveal>
       <h2 class="animate-fade-up text-2xl sm:text-3xl font-bold text-foreground mb-4" style="font-family: var(--font-instrument-sans);">
         Stay in the Loop
       </h2>
