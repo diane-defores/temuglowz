@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ProductCard from './ProductCard.vue'
+import ProductReviews from './ProductReviews.vue'
 
 interface Product {
   name: string
@@ -116,13 +117,17 @@ defineProps<{
           Découvrez notre sélection des meilleurs produits dans cette catégorie.
         </p>
 
-        <div class="space-y-8">
-          <ProductCard
-            v-for="(product, productIndex) in section.products"
-            :key="product.rank"
-            v-bind="product"
-            :highlighted="section.id === sections[0]?.id && productIndex === 0"
-          />
+        <div class="space-y-5 sm:space-y-8">
+          <div v-for="(product, productIndex) in section.products" :key="product.rank">
+            <ProductCard
+              v-bind="product"
+              :highlighted="section.id === sections[0]?.id && productIndex === 0"
+            />
+            <ProductReviews
+              v-if="product.reviews?.length"
+              :reviews="product.reviews"
+            />
+          </div>
         </div>
       </section>
 

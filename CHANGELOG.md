@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - Improved guide product-card image rendering with explicit dimensions, aspect-ratio reservation, and controlled image priority for better layout stability.
 - Added a technical workflow document for authenticated Temu product enrichment so browser login and payload extraction can be repeated without relying on conversation context.
 - Added a planning brief and source log for a future geek-objects guide so category design can continue without relying on the currently degraded Temu browsing account.
+- Added a research report on Temu official access options so affiliate pages, partner APIs, EU research endpoints, and scraping-policy constraints are recorded canonically before any sourcing automation decisions.
 
 ## 2026-06-10
 

@@ -1,16 +1,14 @@
 ---
+import DiscoveryIcon from './DiscoveryIcon.astro'
+
 const footerLinks: Record<string, { label: string; href: string }[]> = {
-  Produit: [
-    { label: 'Fonctionnalités', href: '/#features' },
-    { label: 'Tarifs', href: '/#pricing' },
-    { label: 'Application', href: '/app' },
+  Sélections: [
+    { label: 'Tous les guides', href: '/guides' },
+    { label: 'Gadgets de cuisine', href: '/guides/kitchen-gadgets' },
+    { label: 'Fraîcheur d’été', href: '/guides/summer-cooling' },
   ],
-  Ressources: [
-    { label: 'Guides', href: '/guides' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'GitHub', href: 'https://github.com/dianedef/temu-shopping-lists' },
-  ],
-  Juridique: [
+  Transparence: [
+    { label: 'Notre méthode', href: '/#method' },
     { label: 'Confidentialité', href: '/privacy' },
     { label: 'Conditions d’utilisation', href: '/terms' },
   ],
@@ -19,43 +17,32 @@ const currentYear = new Date().getFullYear()
 ---
 
 <footer class="border-t border-border bg-background">
-  <div class="max-w-6xl mx-auto px-4 py-16">
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-8" data-reveal>
-      <div class="col-span-2 md:col-span-1 animate-fade-up">
-        <a href="/" class="flex items-center gap-2 mb-4">
-          <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
-            <svg viewBox="0 0 32 32" class="w-5 h-5" fill="none" aria-hidden="true"><path d="M12 9.5v13l11-6.5L12 9.5Z" fill="#18181b"/><rect x="20" y="14" width="2.5" height="9" rx="1.25" fill="#18181b"/></svg>
-          </div>
+  <div class="mx-auto max-w-6xl px-4 py-14">
+    <div class="grid gap-10 md:grid-cols-[minmax(0,1.3fr)_repeat(2,minmax(0,0.7fr))]">
+      <div>
+        <a href="/" class="inline-flex items-center gap-2 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">
+          <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground"><DiscoveryIcon name="sparkles" class="h-4 w-4" /></span>
           <span class="font-semibold text-foreground">TemuGlowz</span>
         </a>
-        <p class="text-sm text-muted-foreground/70 mb-4">Vos achats Temu, enfin organisés. Le local, toujours.</p>
-        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-glow"></span>
-          <span class="text-xs text-muted-foreground">Développement actif</span>
-        </div>
+        <p class="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">Un catalogue éditorial indépendant pour découvrir des gadgets Temu par usage, avec curiosité et sans masquer ce qui reste à vérifier.</p>
+        <a href="/app" class="mt-5 inline-flex text-sm text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">À propos de l’application</a>
       </div>
 
       {Object.entries(footerLinks).map(([title, links]) => (
-        <div class="animate-fade-up">
-          <h4 class="text-sm font-semibold text-foreground mb-4">{title}</h4>
-          <ul class="space-y-3">
+        <div>
+          <h2 class="text-sm font-semibold text-foreground">{title}</h2>
+          <ul class="mt-4 space-y-3">
             {links.map((link) => (
-              <li>
-                <a href={link.href} class="text-sm text-muted-foreground/70 hover:text-foreground transition-colors">
-                  {link.label}
-                </a>
-              </li>
+              <li><a href={link.href} class="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">{link.label}</a></li>
             ))}
           </ul>
         </div>
       ))}
     </div>
 
-    <div class="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p class="text-sm text-muted-foreground/70">&copy; {currentYear} TemuGlowz. Tous droits réservés.</p>
-      <div class="flex items-center gap-6">
-        <a href="https://github.com/dianedef/temu-shopping-lists" class="text-sm text-muted-foreground/70 hover:text-foreground transition-colors">GitHub</a>
-      </div>
+    <div class="mt-12 flex flex-col gap-3 border-t border-border pt-7 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <p>&copy; {currentYear} TemuGlowz.</p>
+      <p>Projet indépendant, sans affiliation officielle avec Temu à ce jour.</p>
     </div>
   </div>
 </footer>

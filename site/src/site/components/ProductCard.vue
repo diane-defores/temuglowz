@@ -18,85 +18,64 @@ defineProps<{
 </script>
 
 <template>
-  <article class="group relative p-6 rounded-2xl bg-card border border-border hover:border-primary/30 transition-all duration-300">
-    <div class="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-primary text-background flex items-center justify-center font-bold text-lg shadow-lg">
+  <article class="group relative p-2.5 sm:p-5 rounded-2xl bg-card border border-border hover:border-primary/30 shadow-sm hover:shadow-md transition-all duration-300">
+    <div class="absolute -top-2 -left-2 w-7 h-7 rounded-full bg-primary text-background flex items-center justify-center font-bold text-xs shadow-md z-10 sm:w-9 sm:h-9 sm:text-sm sm:-top-2.5 sm:-left-2.5">
       #{{ rank }}
     </div>
 
-    <div class="flex flex-col sm:flex-row gap-6">
-      <div class="sm:w-48 shrink-0">
+    <div class="flex flex-row gap-2.5 sm:gap-5">
+      <div class="relative w-24 shrink-0 sm:w-44">
         <picture>
-          <source v-if="imageAvif" :srcset="imageAvif" type="image/avif" sizes="(min-width: 640px) 12rem, 100vw" />
-          <source v-if="imageWebp" :srcset="imageWebp" type="image/webp" sizes="(min-width: 640px) 12rem, 100vw" />
+          <source v-if="imageAvif" :srcset="imageAvif" type="image/avif" sizes="(min-width: 640px) 11rem, 100vw" />
+          <source v-if="imageWebp" :srcset="imageWebp" type="image/webp" sizes="(min-width: 640px) 11rem, 100vw" />
           <img
             :src="image"
             :alt="name"
             :width="imageWidth ?? 400"
             :height="imageHeight ?? 300"
-            class="w-full h-48 object-cover rounded-lg bg-background"
+            class="w-full aspect-square object-cover rounded-xl bg-background"
             :style="{ aspectRatio: `${imageWidth ?? 400} / ${imageHeight ?? 300}` }"
             :loading="highlighted ? 'eager' : 'lazy'"
             :decoding="highlighted ? 'sync' : 'async'"
             :fetchpriority="highlighted ? 'high' : 'auto'"
-            sizes="(min-width: 640px) 12rem, 100vw"
+            sizes="(min-width: 640px) 11rem, 100vw"
             onerror="this.src='https://placehold.co/400x300/cccccc/666666?text=Produit'"
           />
         </picture>
+        <div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 backdrop-blur-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <span class="font-medium">{{ rating }}/5</span>
+        </div>
       </div>
 
-      <div class="flex-1">
-        <div class="flex items-start justify-between gap-4 mb-3">
-          <h3 class="text-xl font-semibold text-foreground group-hover:text-primary transition-colors">
+      <div class="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+        <div class="mb-1.5 sm:mb-3">
+          <h3 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 sm:text-base">
             {{ name }}
           </h3>
-          <div class="flex items-center gap-1 text-amber-400">
-            <svg v-for="i in 5" :key="i" class="w-4 h-4" :class="i <= rating ? 'fill-current' : 'opacity-30'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            <span class="text-sm text-muted-foreground ml-1">{{ rating }}/5</span>
+          <p class="text-xs text-muted-foreground mt-0.5 line-clamp-2 sm:line-clamp-none sm:text-sm sm:mt-1">{{ description }}</p>
+        </div>
+
+        <div class="flex flex-wrap gap-1 sm:gap-2 mb-1.5 sm:mb-3">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-medium sm:text-xs">Guide complet</span>
+          <span v-if="pros?.length" class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] sm:text-xs">{{ pros[0] }}</span>
+        </div>
+
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <p class="text-base font-bold text-foreground sm:text-xl">{{ price }}</p>
           </div>
+          <a
+            v-if="productUrl"
+            :href="productUrl"
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            class="shrink-0 inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-full bg-primary text-background font-medium hover:bg-primary/90 transition-colors shadow-md shadow-primary/20 text-xs sm:px-5 sm:py-2.5 sm:text-sm"
+          >
+            Voir sur Temu
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3 sm:w-4 sm:h-4"><path d="M7 17 17 7M7 7h10v10"/></svg>
+          </a>
         </div>
-
-        <p class="text-sm text-muted-foreground mb-4">{{ description }}</p>
-
-        <div class="mb-4">
-          <p class="text-2xl font-bold text-foreground">{{ price }}</p>
-        </div>
-
-        <div v-if="pros?.length" class="mb-4">
-          <h4 class="text-sm font-semibold text-foreground mb-2">Points forts :</h4>
-          <ul class="flex flex-wrap gap-2">
-            <li
-              v-for="pro in pros"
-              :key="pro"
-              class="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs"
-            >
-              {{ pro }}
-            </li>
-          </ul>
-        </div>
-
-        <div v-if="cons?.length" class="mb-4">
-          <h4 class="text-sm font-semibold text-muted-foreground mb-2">Points faibles :</h4>
-          <ul class="flex flex-wrap gap-2">
-            <li
-              v-for="con in cons"
-              :key="con"
-              class="inline-flex items-center px-2.5 py-1 rounded-full bg-red-500/10 text-red-400 text-xs"
-            >
-              {{ con }}
-            </li>
-          </ul>
-        </div>
-
-        <a
-          v-if="productUrl"
-          :href="productUrl"
-          target="_blank"
-          rel="noopener noreferrer sponsored"
-          class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary text-background font-medium hover:bg-primary/90 transition-colors shadow-lg shadow-primary/25"
-        >
-          Voir sur Temu
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M7 17 17 7M7 7h10v10"/></svg>
-        </a>
       </div>
     </div>
   </article>

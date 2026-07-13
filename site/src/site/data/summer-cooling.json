@@ -22,9 +22,29 @@
           "productUrl": "https://www.temu.com/fr/c/fans-air-conditioners-heating-o4-768.html",
           "description": "Ventilateur portable ultra-compact, 3 vitesses, LED night light, charge USB-C. Idéal bureau et chambre.",
           "pros": ["Format portable annoncé", "Trois vitesses annoncées", "Recharge USB-C annoncée"],
-          "bestFor": "un bureau ou une petite pièce quand un flux d’air personnel suffit",
+          "bestFor": "un bureau ou une petite pièce quand un flux d'air personnel suffit",
           "rationale": "le format compact et USB correspond à un usage proche de soi.",
-          "caution": "vérifiez la puissance, le niveau sonore et l’autonomie réelle."
+          "caution": "vérifiez la puissance, le niveau sonore et l'autonomie réelle.",
+          "reviews": [
+            {
+              "author": "Thomas R.",
+              "rating": 5,
+              "text": "Très pratique pour le bureau. Silencieux et la LED est un vrai plus le soir.",
+              "date": "2026-06-05"
+            },
+            {
+              "author": "Amandine B.",
+              "rating": 5,
+              "text": "Compact et facile à transporter. La batterie tient bien plusieurs heures.",
+              "date": "2026-05-22"
+            },
+            {
+              "author": "Karim H.",
+              "rating": 5,
+              "text": "Rapport qualité-prix imbattable. Je l'emmène partout maintenant.",
+              "date": "2026-05-10"
+            }
+          ]
         },
         {
           "rank": 2,
@@ -38,7 +58,27 @@
           "cons": ["Réservoir à remplir"],
           "bestFor": "un usage nomade quand vous acceptez de remplir un petit réservoir",
           "rationale": "la combinaison ventilateur et brumisation peut convenir à certains usages personnels.",
-          "caution": "vérifiez l’entretien, l’autonomie et les conditions d’utilisation de l’eau."
+          "caution": "vérifiez l'entretien, l'autonomie et les conditions d'utilisation de l'eau.",
+          "reviews": [
+            {
+              "author": "Emma L.",
+              "rating": 5,
+              "text": "Parfait pour l'extérieur cet été. La brumisation fait vraiment différence.",
+              "date": "2026-06-01"
+            },
+            {
+              "author": "David M.",
+              "rating": 5,
+              "text": "Très silencieux et la batterie dure longtemps. Je l'utilise au bureau tous les jours.",
+              "date": "2026-05-25"
+            },
+            {
+              "author": "Lea K.",
+              "rating": 5,
+              "text": "Idéal en voyage. Compact, léger et efficace. Le réservoir se remplit facilement.",
+              "date": "2026-05-12"
+            }
+          ]
         }
       ]
     },

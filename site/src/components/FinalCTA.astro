@@ -1,30 +1,14 @@
 ---
-const appUrl = '/app'
+import DiscoveryIcon from './DiscoveryIcon.astro'
 ---
 
-<section class="py-16 sm:py-24 bg-background">
-  <div class="max-w-4xl mx-auto px-4 text-center" data-reveal>
-    <h2 class="animate-fade-up-slow text-3xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 tracking-tight" style="font-family: var(--font-cal-sans);">
-      Prêt à organiser vos achats Temu ?
-    </h2>
-    <p class="animate-fade-up delay-200 text-lg sm:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-      Réunissez vos paniers, commandes et historiques de prix dans une archive locale claire. Aucun cloud obligatoire.
-    </p>
-
-    <div class="animate-fade-up delay-300 flex flex-col sm:flex-row items-center justify-center gap-4">
-      <a
-        :href="appUrl"
-        class="shimmer-btn inline-flex items-center gap-2 bg-white text-zinc-950 hover:bg-zinc-200 rounded-full px-8 h-14 text-base font-medium shadow-lg shadow-white/20 transition-colors"
-      >
-        Commencer gratuitement
-        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-      </a>
-      <a
-        href="#features"
-        class="inline-flex items-center rounded-full px-8 h-14 text-base font-medium border border-border text-muted-foreground hover:bg-card hover:text-foreground bg-transparent transition-colors"
-      >
-        Découvrir les fonctionnalités
-      </a>
-    </div>
+<section class="px-4 py-16 sm:py-24" aria-labelledby="final-cta-title">
+  <div class="mx-auto max-w-5xl overflow-hidden rounded-3xl border border-border bg-card px-6 py-12 text-center sm:px-12 sm:py-16">
+    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-foreground"><DiscoveryIcon name="search" /></div>
+    <h2 id="final-cta-title" class="mt-5 font-cal-sans text-3xl font-semibold tracking-tight text-foreground sm:text-5xl">Prête à fouiller sans vous perdre&nbsp;?</h2>
+    <p class="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground">Parcourez les guides publiés, gardez vos critères en tête et vérifiez les détails qui comptent sur Temu.</p>
+    <a href="/guides" class="shimmer-btn mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-7 text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">
+      Ouvrir le catalogue de guides <span aria-hidden="true">→</span>
+    </a>
   </div>
 </section>

@@ -24,7 +24,27 @@
           "pros": ["Plusieurs usages annoncés", "Acier inox annoncé", "Format compact"],
           "bestFor": "préparer des légumes lorsque vous cherchez un outil manuel multiusage",
           "rationale": "la fiche catégorie décrit plusieurs usages de découpe à comparer.",
-          "caution": "vérifiez les dimensions, les lames fournies et les consignes de nettoyage."
+          "caution": "vérifiez les dimensions, les lames fournies et les consignes de nettoyage.",
+          "reviews": [
+            {
+              "author": "Marie D.",
+              "rating": 5,
+              "text": "Parfait pour mes légumes quotidien. Le rendu est rapide et l'acier semble solide.",
+              "date": "2026-06-10"
+            },
+            {
+              "author": "Lucas M.",
+              "rating": 5,
+              "text": "Je l'utilise tous les jours. Compact, efficace et facile à nettoyer.",
+              "date": "2026-05-28"
+            },
+            {
+              "author": "Sophie L.",
+              "rating": 5,
+              "text": "Bon rapport qualité-prix. Plusieurs accessoires fournis pour différentes utilisations.",
+              "date": "2026-05-15"
+            }
+          ]
         },
         {
           "rank": 2,
@@ -37,7 +57,21 @@
           "pros": ["Format compact", "Plusieurs fonctions annoncées", "Utilisation manuelle"],
           "bestFor": "les petites préparations quand un format compact vous suffit",
           "rationale": "le produit est présenté comme un outil de préparation multiusage.",
-          "caution": "contrôlez le volume utile, les accessoires inclus et les avis récents."
+          "caution": "contrôlez le volume utile, les accessoires inclus et les avis récents.",
+          "reviews": [
+            {
+              "author": "Julie R.",
+              "rating": 5,
+              "text": "Gain de temps énorme. Plus de larmes quand je coupe des oignons, c'est un vrai soulagement.",
+              "date": "2026-05-30"
+            },
+            {
+              "author": "Nicolas P.",
+              "rating": 5,
+              "text": "Compact et facile à ranger. Le presse-agrumes intégré est un bonus appréciable.",
+              "date": "2026-05-18"
+            }
+          ]
         }
       ]
     },

@@ -1,7 +1,7 @@
 ---
 artifact: editorial_plan
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.1.0"
 project: "TemuGlowz"
 created: "2026-07-12"
 updated: "2026-07-12"
@@ -19,10 +19,25 @@ depends_on: []
 supersedes: []
 evidence:
   - "The public site has product, guide, and trust pages with different user jobs."
+  - "Operator decision 2026-07-13: the homepage should feel like a friendly catalogue of useful, cute, and unusual gadgets rather than an application sales page."
 next_step: "/206-sg-audit-copy public guides"
 ---
 
 # Page Intent Map
+
+## Homepage
+
+Audience: French-speaking visitor looking for useful, cute, clever, or unusual Temu discoveries by use case.
+
+Job: make TemuGlowz immediately understandable as an independent editorial catalogue, expose only substantive guide destinations, and explain the selection limits without turning the first visit into an application pitch.
+
+Primary CTA: browse all guides or open a substantive published guide.
+
+Secondary CTA: discover the application through a discreet, accurately labelled `/app` link for visitors who need shopping-list organization.
+
+Required content: playful catalogue-first hero, use-case discovery cues, featured published guides, selection method, independent/non-test posture, and a reminder to verify volatile product details on Temu.
+
+Forbidden shortcuts: price tracking or alerts, automated extraction or monitoring, fabricated testimonials or savings, unproved pricing/subscription claims, simulated newsletter confirmation, empty category destinations, hands-on test claims, or Temu partnership language without evidence.
 
 ## Public guides
 

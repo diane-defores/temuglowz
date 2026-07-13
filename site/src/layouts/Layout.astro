@@ -13,8 +13,8 @@ interface Props {
 }
 
 const {
-  title = 'TemuGlowz — Vos achats Temu, enfin organisés.',
-  description = 'Archivez vos paniers et commandes Temu en local, suivez l’évolution des prix et organisez vos produits sans stockage cloud.',
+  title = 'TemuGlowz — Sélections indépendantes de gadgets Temu',
+  description = 'Découvrez des sélections indépendantes de gadgets Temu par usage et les informations à vérifier avant achat.',
   path = '',
   image = '/og-image.png',
   noIndex = false,
@@ -24,16 +24,13 @@ const {
 
 const canonicalUrl = new URL(path, 'https://temuglowz.com/').toString()
 const ogImageUrl = image.startsWith('http') ? image : new URL(image, 'https://temuglowz.com/').toString()
-const normalizedLang = lang.toLowerCase()
-const hreflang = normalizedLang.split('-')[0] || 'fr'
-
 const defaultSchemas = [
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "TemuGlowz",
     url: "https://temuglowz.com",
-    description: "Archive locale de listes d’achats Temu.",
+    description: "Sélections éditoriales indépendantes de gadgets Temu par usage.",
   },
   {
     "@context": "https://schema.org",
@@ -42,20 +39,6 @@ const defaultSchemas = [
     url: "https://temuglowz.com",
     logo: "https://temuglowz.com/favicon.svg",
     sameAs: [],
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: "TemuGlowz",
-    url: "https://temuglowz.com",
-    applicationCategory: "ShoppingApplication",
-    operatingSystem: "Web",
-    description: "Archivez et organisez vos paniers et commandes Temu en local.",
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "EUR",
-    },
   },
 ]
 
@@ -81,8 +64,8 @@ const allSchemas = [...defaultSchemas, ...jsonLd]
     <meta property="og:description" content={description} />
     <meta property="og:site_name" content="TemuGlowz" />
     <meta property="og:image" content={ogImageUrl} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image:width" content="1729" />
+    <meta property="og:image:height" content="910" />
     <meta property="og:image:alt" content={title} />
 
     <meta name="twitter:card" content="summary_large_image" />
@@ -97,7 +80,7 @@ const allSchemas = [...defaultSchemas, ...jsonLd]
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
     {allSchemas.map((schema) => (
-      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
 
     <title>{title}</title>
@@ -107,7 +90,7 @@ const allSchemas = [...defaultSchemas, ...jsonLd]
       Aller au contenu
     </a>
     <div class="noise-overlay" aria-hidden="true"></div>
-    <Navbar appUrl="https://temuglowz.com" />
+    <Navbar client:load />
     <slot />
     <script>
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches

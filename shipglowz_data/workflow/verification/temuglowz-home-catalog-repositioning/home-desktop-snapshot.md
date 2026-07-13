@@ -1,0 +1,193 @@
+- generic [active] [ref=f1e1] [box=0,0,1440,3789]:
+  - link "Aller au contenu" [ref=f1e2] [cursor=pointer] [box=-1,-1,1,1]:
+    - /url: "#main-content"
+  - banner [ref=f1e4] [box=272,16,896,62]:
+    - navigation "Navigation principale" [ref=f1e5] [box=288,16,864,62]:
+      - link "TemuGlowz — Accueil" [ref=f1e6] [cursor=pointer] [box=305,31,128,32]:
+        - /url: /
+        - img [ref=f1e8] [box=313,39,16,16]
+        - generic [ref=f1e11] [box=345,35,88,24]: TemuGlowz
+      - generic [ref=f1e197] [box=520,29,383,36]:
+        - link "Univers" [ref=f1e198] [cursor=pointer] [box=520,29,73,36]:
+          - /url: /#themes
+        - link "Sélections" [ref=f1e199] [cursor=pointer] [box=597,29,93,36]:
+          - /url: /#selections
+        - link "Méthode" [ref=f1e200] [cursor=pointer] [box=694,29,83,36]:
+          - /url: /#method
+        - link "Tous les guides" [ref=f1e201] [cursor=pointer] [box=780,29,123,36]:
+          - /url: /guides
+      - generic [ref=f1e12] [box=991,29,144,36]:
+        - link "L’application" [ref=f1e202] [cursor=pointer] [box=991,29,104,36]:
+          - /url: /app
+        - button "Passer au mode clair" [ref=f1e13] [box=1099,29,36,36]:
+          - img [ref=f1e14] [box=1107,37,20,20]
+  - main [ref=f1e20] [box=0,0,1440,3789]:
+    - region "Des gadgets malins, sans le grand déballage de promesses." [ref=f1e21] [box=0,0,1440,852]:
+      - generic [ref=f1e22] [box=144,160,1152,596]:
+        - generic [ref=f1e23] [box=144,160,662,596]:
+          - paragraph [ref=f1e24] [box=144,160,338,38]:
+            - img [ref=f1e25] [box=161,171,16,16]
+            - text: Catalogue indépendant de trouvailles Temu
+          - heading "Des gadgets malins, sans le grand déballage de promesses." [level=1] [ref=f1e29] [box=144,222,662,288]:
+            - text: Des gadgets malins,
+            - generic [ref=f1e30] [box=144,294,662,216]: sans le grand déballage de promesses.
+          - paragraph [ref=f1e31] [box=144,534,662,98]: TemuGlowz rassemble des sélections utiles, mignonnes ou franchement insolites par usage. On vous aide à explorer ; vous gardez le dernier mot sur Temu.
+          - generic [ref=f1e32] [box=144,668,662,48]:
+            - link "Explorer les guides" [ref=f1e33] [cursor=pointer] [box=144,668,221,48]:
+              - /url: /guides
+              - text: Explorer les guides
+              - img [ref=f1e34] [box=321,684,16,16]
+            - link "Voir les sélections du moment" [ref=f1e36] [cursor=pointer] [box=377,668,282,48]:
+              - /url: "#selections"
+          - paragraph [ref=f1e37] [box=144,736,662,20]: Sélections éditoriales, pas de test en laboratoire ni de partenariat officiel avec Temu.
+        - generic "Aperçu des univers de découverte" [ref=f1e38] [box=854,260,442,396]:
+          - generic [ref=f1e39] [box=854,260,442,396]:
+            - generic [ref=f1e40] [box=854,260,215,198]:
+              - img [ref=f1e41] [box=879,285,28,28]
+              - paragraph [ref=f1e44] [box=879,333,165,24]: Cuisine futée
+              - paragraph [ref=f1e45] [box=879,361,165,40]: Les petits outils qui simplifient le quotidien.
+            - generic [ref=f1e46] [box=1081,292,215,166]:
+              - img [ref=f1e47] [box=1106,317,28,28]
+              - paragraph [ref=f1e50] [box=1106,365,165,24]: Fraîcheur nomade
+              - paragraph [ref=f1e51] [box=1106,393,165,40]: Des formats à comparer quand ça chauffe.
+            - generic [ref=f1e52] [box=854,438,215,218]:
+              - img [ref=f1e53] [box=879,463,28,28]
+              - paragraph [ref=f1e57] [box=879,511,165,48]: Idées qui surprennent
+              - paragraph [ref=f1e58] [box=879,563,165,40]: Mignon, inattendu, parfois les deux.
+            - generic [ref=f1e59] [box=1081,470,215,186]:
+              - img [ref=f1e60] [box=1106,495,28,28]
+              - paragraph [ref=f1e63] [box=1106,543,165,24]: Pratique partout
+              - paragraph [ref=f1e64] [box=1106,571,165,60]: Pour la maison, les sorties et les petits imprévus.
+    - region "Choisissez une envie, pas un tunnel de vente." [ref=f1e65] [box=0,852,1440,740]:
+      - generic [ref=f1e66] [box=144,948,1152,548]:
+        - generic [ref=f1e67] [box=144,948,768,203]:
+          - paragraph [ref=f1e68] [box=144,948,768,20]: La caverne, bien rangée
+          - heading "Choisissez une envie, pas un tunnel de vente." [level=2] [ref=f1e69] [box=144,980,768,96]
+          - paragraph [ref=f1e70] [box=144,1092,768,59]: Deux univers sont déjà prêts à explorer. Les prochains restent clairement indiqués comme des idées en préparation.
+        - generic [ref=f1e71] [box=144,1190,1152,305]:
+          - link "Guide publié Cuisine futée Ustensiles, rangement et accessoires à comparer pour gagner en confort au quotidien. Ouvrir le guide" [ref=f1e72] [cursor=pointer] [box=144,1190,276,305]:
+            - /url: /guides/kitchen-gadgets
+            - img [ref=f1e73] [box=169,1215,28,28]
+            - paragraph [ref=f1e76] [box=169,1267,226,16]: Guide publié
+            - heading "Cuisine futée" [level=3] [ref=f1e77] [box=169,1291,226,28]
+            - paragraph [ref=f1e78] [box=169,1331,226,68]: Ustensiles, rangement et accessoires à comparer pour gagner en confort au quotidien.
+            - generic [ref=f1e79] [box=169,1423,114,20]:
+              - text: Ouvrir le guide
+              - generic [ref=f1e80] [box=271,1423,12,20]: →
+          - link "Guide publié Été au frais Ventilation, fraîcheur nomade et petits formats pour mieux traverser les journées chaudes. Ouvrir le guide" [ref=f1e81] [cursor=pointer] [box=436,1190,276,305]:
+            - /url: /guides/summer-cooling
+            - img [ref=f1e82] [box=461,1215,28,28]
+            - paragraph [ref=f1e85] [box=461,1267,226,16]: Guide publié
+            - heading "Été au frais" [level=3] [ref=f1e86] [box=461,1291,226,28]
+            - paragraph [ref=f1e87] [box=461,1331,226,68]: Ventilation, fraîcheur nomade et petits formats pour mieux traverser les journées chaudes.
+            - generic [ref=f1e88] [box=461,1423,114,20]:
+              - text: Ouvrir le guide
+              - generic [ref=f1e89] [box=563,1423,12,20]: →
+          - article [ref=f1e90] [box=728,1190,276,305]:
+            - img [ref=f1e91] [box=753,1215,28,28]
+            - paragraph [ref=f1e95] [box=753,1267,226,16]: Thème en préparation
+            - heading "Cadeaux inattendus" [level=3] [ref=f1e96] [box=753,1291,226,28]
+            - paragraph [ref=f1e97] [box=753,1331,226,68]: Des pistes mignonnes ou insolites à explorer pour une future sélection complète.
+            - generic [ref=f1e98] [box=753,1423,124,24]: Pas encore de lien
+          - article [ref=f1e99] [box=1020,1190,276,305]:
+            - img [ref=f1e100] [box=1045,1215,28,28]
+            - paragraph [ref=f1e104] [box=1045,1267,226,16]: Thème en préparation
+            - heading "Escapades pratiques" [level=3] [ref=f1e105] [box=1045,1291,226,28]
+            - paragraph [ref=f1e106] [box=1045,1331,226,91]: Des idées compactes pour le camping, la voiture et les week-ends — sans faux rayon à moitié vide.
+            - generic [ref=f1e107] [box=1045,1446,124,24]: Pas encore de lien
+    - region "Deux sélections qui ont déjà de quoi raconter." [ref=f1e108] [box=0,1591,1440,754]:
+      - generic [ref=f1e109] [box=144,1687,1152,562]:
+        - generic [ref=f1e110] [box=144,1687,1152,128]:
+          - generic [ref=f1e111] [box=144,1687,768,128]:
+            - paragraph [ref=f1e112] [box=144,1687,768,20]: À feuilleter maintenant
+            - heading "Deux sélections qui ont déjà de quoi raconter." [level=2] [ref=f1e113] [box=144,1719,768,96]
+          - link "Voir tous les guides" [ref=f1e114] [cursor=pointer] [box=1150,1795,146,20]:
+            - /url: /guides
+            - text: Voir tous les guides
+            - generic [ref=f1e115] [box=1284,1795,12,20]: →
+        - generic [ref=f1e116] [box=144,1855,1152,394]:
+          - article [ref=f1e117] [box=144,1855,566,394]:
+            - generic [ref=f1e118] [box=181,1892,492,28]:
+              - generic [ref=f1e119] [box=181,1892,74,24]: Cuisine
+              - img [ref=f1e120] [box=645,1892,28,28]
+            - 'heading "Gadgets de Cuisine Temu : une sélection à comparer en 2026" [level=3] [ref=f1e123] [box=181,1960,492,72]'
+            - paragraph [ref=f1e124] [box=181,2048,492,52]: Ustensiles, rangement et accessoires à comparer pour la cuisine du quotidien.
+            - link "Lire la sélection" [ref=f1e125] [cursor=pointer] [box=181,2132,170,44]:
+              - /url: /guides/kitchen-gadgets
+              - text: Lire la sélection
+              - generic [ref=f1e126] [box=315,2144,12,20]: →
+          - article [ref=f1e127] [box=730,1855,566,394]:
+            - generic [ref=f1e128] [box=767,1892,492,28]:
+              - generic [ref=f1e129] [box=767,1892,47,24]: Été
+              - img [ref=f1e130] [box=1231,1892,28,28]
+            - 'heading "Ventilateurs et Accessoires Temu pour l’Été 2026 : une sélection à comparer" [level=3] [ref=f1e132] [box=767,1960,492,108]'
+            - paragraph [ref=f1e133] [box=767,2084,492,52]: Formats portables et accessoires à comparer pour les journées chaudes.
+            - link "Lire la sélection" [ref=f1e134] [cursor=pointer] [box=767,2168,170,44]:
+              - /url: /guides/summer-cooling
+              - text: Lire la sélection
+              - generic [ref=f1e135] [box=901,2180,12,20]: →
+    - region "Curieux, oui. Crédules, non." [ref=f1e136] [box=0,2345,1440,480]:
+      - generic [ref=f1e137] [box=144,2441,1152,288]:
+        - generic [ref=f1e138] [box=144,2441,445,265]:
+          - paragraph [ref=f1e139] [box=144,2441,445,20]: Notre boussole
+          - heading "Curieux, oui. Crédules, non." [level=2] [ref=f1e140] [box=144,2473,445,96]
+          - paragraph [ref=f1e141] [box=144,2589,445,117]: "TemuGlowz est un projet éditorial indépendant. Nous repérons et organisons des produits selon des usages concrets et les informations visibles : ce n’est pas un test en main."
+        - list [ref=f1e142] [box=629,2441,667,288]:
+          - listitem [ref=f1e143] [box=629,2441,212,288]:
+            - text: "01"
+            - heading "Partir d’un vrai usage" [level=3] [ref=f1e144] [box=654,2522,162,56]
+            - paragraph [ref=f1e145] [box=654,2590,162,114]: "Cuisine, chaleur, rangement ou cadeau : chaque sélection commence par un besoin compréhensible."
+          - listitem [ref=f1e146] [box=857,2441,212,288]:
+            - text: "02"
+            - heading "Comparer ce qui est visible" [level=3] [ref=f1e147] [box=882,2522,162,56]
+            - paragraph [ref=f1e148] [box=882,2590,162,114]: Format, fonction annoncée et points d’attention servent à préparer votre propre comparaison.
+          - listitem [ref=f1e149] [box=1084,2441,212,288]:
+            - text: "03"
+            - heading "Vérifier avant d’acheter" [level=3] [ref=f1e150] [box=1109,2522,162,56]
+            - paragraph [ref=f1e151] [box=1109,2590,162,114]: "Prix, variante, disponibilité, livraison, vendeur et avis peuvent changer : contrôlez-les toujours sur Temu."
+    - region "Prête à fouiller sans vous perdre ?" [ref=f1e152] [box=0,2825,1440,597]:
+      - generic [ref=f1e153] [box=208,2921,1024,405]:
+        - img [ref=f1e155] [box=706,2996,28,28]
+        - heading "Prête à fouiller sans vous perdre ?" [level=2] [ref=f1e159] [box=257,3054,926,48]
+        - paragraph [ref=f1e160] [box=384,3122,672,59]: Parcourez les guides publiés, gardez vos critères en tête et vérifiez les détails qui comptent sur Temu.
+        - link "Ouvrir le catalogue de guides" [ref=f1e161] [cursor=pointer] [box=573,3212,295,48]:
+          - /url: /guides
+          - text: Ouvrir le catalogue de guides
+          - generic [ref=f1e162] [box=826,3224,13,24]: →
+    - generic [ref=f1e164] [box=144,3422,1152,366]:
+      - generic [ref=f1e165] [box=160,3478,1120,157]:
+        - generic [ref=f1e166] [box=160,3478,501,157]:
+          - link "TemuGlowz" [ref=f1e167] [cursor=pointer] [box=160,3478,128,32]:
+            - /url: /
+            - img [ref=f1e169] [box=168,3486,16,16]
+            - generic [ref=f1e173] [box=200,3482,88,24]: TemuGlowz
+          - paragraph [ref=f1e174] [box=160,3526,384,68]: Un catalogue éditorial indépendant pour découvrir des gadgets Temu par usage, avec curiosité et sans masquer ce qui reste à vérifier.
+          - link "À propos de l’application" [ref=f1e175] [cursor=pointer] [box=160,3615,156,20]:
+            - /url: /app
+        - generic [ref=f1e176] [box=701,3478,270,157]:
+          - heading "Sélections" [level=2] [ref=f1e177] [box=701,3478,270,20]
+          - list [ref=f1e178] [box=701,3514,270,96]:
+            - listitem [ref=f1e179] [box=701,3514,270,24]:
+              - link "Tous les guides" [ref=f1e180] [cursor=pointer] [box=701,3517,99,19]:
+                - /url: /guides
+            - listitem [ref=f1e181] [box=701,3550,270,24]:
+              - link "Gadgets de cuisine" [ref=f1e182] [cursor=pointer] [box=701,3553,124,19]:
+                - /url: /guides/kitchen-gadgets
+            - listitem [ref=f1e183] [box=701,3586,270,24]:
+              - link "Fraîcheur d’été" [ref=f1e184] [cursor=pointer] [box=701,3589,97,19]:
+                - /url: /guides/summer-cooling
+        - generic [ref=f1e185] [box=1010,3478,270,157]:
+          - heading "Transparence" [level=2] [ref=f1e186] [box=1010,3478,270,20]
+          - list [ref=f1e187] [box=1010,3514,270,96]:
+            - listitem [ref=f1e188] [box=1010,3514,270,24]:
+              - link "Notre méthode" [ref=f1e189] [cursor=pointer] [box=1010,3517,98,19]:
+                - /url: /#method
+            - listitem [ref=f1e190] [box=1010,3550,270,24]:
+              - link "Confidentialité" [ref=f1e191] [cursor=pointer] [box=1010,3553,97,19]:
+                - /url: /privacy
+            - listitem [ref=f1e192] [box=1010,3586,270,24]:
+              - link "Conditions d’utilisation" [ref=f1e193] [cursor=pointer] [box=1010,3589,149,19]:
+                - /url: /terms
+      - generic [ref=f1e194] [box=160,3684,1120,49]:
+        - paragraph [ref=f1e195] [box=160,3713,128,20]: © 2026 TemuGlowz.
+        - paragraph [ref=f1e196] [box=867,3713,413,20]: Projet indépendant, sans affiliation officielle avec Temu à ce jour.

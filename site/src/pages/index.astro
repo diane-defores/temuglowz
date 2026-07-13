@@ -1,28 +1,48 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import Hero from '../components/Hero.astro'
-import ProblemSection from '../components/ProblemSection.astro'
-import SolutionSection from '../components/SolutionSection.astro'
-import Benefits from '../components/Benefits.astro'
-import BentoGrid from '../components/BentoGrid.astro'
-import Testimonials from '../components/Testimonials.astro'
+import DiscoveryThemes from '../components/DiscoveryThemes.astro'
+import FeaturedGuides from '../components/FeaturedGuides.astro'
+import SelectionMethod from '../components/SelectionMethod.astro'
 import FinalCTA from '../components/FinalCTA.astro'
-import Pricing from '../components/Pricing.vue'
-import Newsletter from '../components/Newsletter.vue'
 import Footer from '../components/Footer.astro'
+import { guideIndex } from '../site/data/guideIndex'
+
+const title = 'TemuGlowz — Le catalogue de gadgets Temu utiles et insolites'
+const description = 'Explorez des sélections indépendantes de gadgets Temu utiles, malins, mignons ou insolites par usage, avec des critères clairs et les détails à vérifier avant achat.'
+
+const homepageSchemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: title,
+    url: 'https://temuglowz.com/',
+    description,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'TemuGlowz',
+      url: 'https://temuglowz.com/',
+    },
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: guideIndex.map((guide, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: guide.title,
+        url: new URL(guide.slug, 'https://temuglowz.com/').toString(),
+      })),
+    },
+  },
+]
 ---
 
-<Layout title="TemuGlowz — Vos achats Temu, enfin organisés." description="Archivez vos paniers et commandes Temu en local, suivez l’évolution des prix et organisez vos produits sans stockage cloud." path="/" lang="fr-FR">
+<Layout title={title} description={description} path="/" lang="fr-FR" jsonLd={homepageSchemas}>
   <main id="main-content" class="min-h-screen bg-background text-foreground">
     <Hero />
-    <ProblemSection />
-    <SolutionSection />
-    <Benefits />
-    <BentoGrid />
-    <Testimonials />
-    <Pricing client:only="vue" />
+    <DiscoveryThemes />
+    <FeaturedGuides guides={guideIndex} />
+    <SelectionMethod />
     <FinalCTA />
-    <Newsletter client:only="vue" />
     <Footer />
   </main>
 </Layout>

@@ -3,6 +3,7 @@ import Footer from '../../components/Footer.astro'
 import Layout from '../../layouts/Layout.astro'
 import { buildGuideJsonLd } from '../lib/guideSchemas'
 import ProductCard from './ProductCard.astro'
+import ProductReviews from './ProductReviews.astro'
 
 interface GuideProduct {
   rank: number
@@ -18,6 +19,7 @@ interface GuideProduct {
   rationale?: string
   caution?: string
   priceNote?: string
+  reviews?: Array<{ author: string; rating: number; text: string; date?: string }>
 }
 
 interface GuideData {
@@ -59,7 +61,14 @@ const disclosure = data.disclosure ?? 'Certains liens peuvent devenir des liens 
       </header>
       <aside class="mb-8 rounded-2xl border border-primary/20 bg-primary/5 p-5 text-sm leading-relaxed text-muted-foreground" aria-label="Transparence sur les liens"><p><span class="font-semibold text-foreground">Transparence :</span> {disclosure}</p></aside>
       {(data.selectionMethod || data.selectionCriteria?.length) && <section class="mb-12 rounded-2xl border border-border bg-card/70 p-6" aria-labelledby="methodologie"><h2 id="methodologie" class="text-xl font-bold text-foreground mb-3">Comment nous construisons cette sélection</h2>{data.selectionMethod && <p class="text-muted-foreground leading-relaxed">{data.selectionMethod}</p>}{data.selectionCriteria?.length && <ul class="mt-4 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">{data.selectionCriteria.map((criterion) => <li class="rounded-lg bg-background/60 px-3 py-2">{criterion}</li>)}</ul>}</section>}
-      {data.sections.map((section, sectionIndex) => <section id={section.id} class="mb-16 scroll-mt-24" aria-labelledby={`${section.id}-title`}><h2 id={`${section.id}-title`} class="text-2xl font-bold text-foreground mb-2 pb-2 border-b border-border">{section.title}</h2><p class="text-muted-foreground mb-6">Une sélection à comparer selon vos besoins : vérifiez toujours les caractéristiques et la disponibilité de la fiche Temu.</p><div class="space-y-6">{section.products.map((product, productIndex) => <ProductCard {...product} highlighted={sectionIndex === 0 && productIndex === 0} />)}</div></section>)}
+      {data.sections.map((section, sectionIndex) => <section id={section.id} class="mb-16 scroll-mt-24" aria-labelledby={`${section.id}-title`}><h2 id={`${section.id}-title`} class="text-2xl font-bold text-foreground mb-2 pb-2 border-b border-border">{section.title}</h2><p class="text-muted-foreground mb-6">Une sélection à comparer selon vos besoins : vérifiez toujours les caractéristiques et la disponibilité de la fiche Temu.</p><div class="space-y-4 sm:space-y-6">
+  {section.products.map((product, productIndex) => (
+    <div>
+      <ProductCard {...product} highlighted={sectionIndex === 0 && productIndex === 0} />
+      {product.reviews?.length ? <ProductReviews reviews={product.reviews} rank={product.rank} /> : null}
+    </div>
+  ))}
+</div></section>)}
       {data.faq?.length && <section id="faq" class="mb-16 scroll-mt-24" data-reveal><h2 class="text-2xl font-bold text-foreground mb-6 pb-2 border-b border-border">Questions fréquentes</h2><div class="space-y-4">{data.faq.map((item) => <details class="group p-4 rounded-xl bg-card border border-border"><summary class="cursor-pointer font-semibold text-foreground list-none flex items-center justify-between">{item.question}<svg class="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p class="mt-3 text-sm text-muted-foreground leading-relaxed">{item.answer}</p></details>)}</div></section>}
       <aside class="p-8 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent border border-primary/20 text-center" data-reveal><h2 class="text-xl font-bold text-foreground mb-3">Comparez avant d’acheter</h2><p class="text-muted-foreground mb-6">Les prix, options et disponibilités évoluent : consultez les informations les plus récentes sur Temu avant de finaliser votre choix.</p><a href="/guides" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-card text-foreground font-medium border border-border hover:bg-muted transition-colors">Tous les guides</a></aside>
     </article>
