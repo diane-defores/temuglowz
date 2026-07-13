@@ -8,13 +8,12 @@ const navItems = [
   { label: 'Tout voir', href: '/guides' },
 ]
 
-const isDark = ref(true)
+const isDark = ref(false)
 const isMenuOpen = ref(false)
 
 function applyTheme(enabled: boolean): void {
   isDark.value = enabled
   document.documentElement.classList.toggle('dark', enabled)
-  document.documentElement.classList.toggle('light', !enabled)
   try {
     localStorage.setItem('theme', enabled ? 'dark' : 'light')
   } catch {

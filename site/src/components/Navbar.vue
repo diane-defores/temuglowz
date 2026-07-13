@@ -12,7 +12,7 @@ const navItems = [
   { label: 'Cas d’usage', href: '/#reviews' },
 ]
 
-const isDark = ref(true)
+const isDark = ref(false)
 
 function initTheme(): void {
   const saved = localStorage.getItem('theme')
