@@ -20,6 +20,7 @@
 
 ## Historical completed work
 
+🟢 [temuglowz] task: ShipGlowz multi-merchant public rebrand and usage hubs | status: done | area: public-site-rebrand | spec: shipglowz_data/workflow/specs/shopglowz-multi-merchant-gadget-platform.md | next: /405-sg-prod temuglowz | notes: ShopGlowz positioning, multi-merchant contracts, educational hub, SEO parity, checklist evidence and local browser proof shipped; hosted static verification remains a post-push follow-up
 🟢 [temuglowz] task: Migrate the repository root into the canonical app, site, and governance workspace | status: done | area: workspace-migration | next: /405-sg-prod puis /107-sg-test --retest BUG-2026-07-12-001 | notes: migration shipped previously; Node 22.12 CI runtime repair is locally validated and is being shipped separately; hosted CI retest remains pending
 🟢 [temuglowz] task: Fix guide hreflang emission to follow page language | status: done | area: seo-i18n | next: none | notes: Layout.astro now derives hreflang from the page lang prop instead of forcing en on French guides
 🟢 [temuglowz] task: Add page-level guide structured data for public Astro guides | status: done | area: seo-structured-data | next: none | notes: added shared guideSchemas helper and wired BreadcrumbList, Article, FAQPage, and ItemList support into current guide pages

@@ -33,6 +33,8 @@ Local browser proof already captured the main public scenarios on the built site
 - Legacy public article route `/blog/ajustement-prix-temu`: live content still loads instead of breaking.
 - Console: no error observed on the checked public routes.
 
+The three new usage hubs were browser-checked locally on desktop and the tech hub was resized to a 390px mobile viewport. Each route exposed the expected ShopGlowz title and heading, two outbound destinations (Temu and Amazon) with `noopener noreferrer`, and no horizontal overflow was observed. The browser console returned zero errors and zero warnings for the session.
+
 ## Merchant and volatility proof
 
 The current public guide contract now exposes merchant-specific cues instead of pretending the site is tied to one merchant identity:
@@ -59,7 +61,7 @@ It does not prove:
 - that all remaining multi-merchant guide pages are written
 - that the dated educational guide wave is finished
 - a future domain or slug migration; that work would require explicit 301 rules and post-deploy HTTP proof
-- browser interaction and outbound-link behavior on the three newly added usage hubs; route this to `/108-sg-browser` before ship readiness
+- affiliate eligibility or current program terms for future merchants such as AliExpress or SHEIN; these require a separate merchant-policy check before publication
 - that governance and historical archives are globally renamed from TemuGlowz
 
 For those remaining items, the chantier still depends on further `102-sg-start` implementation before a clean `103-sg-verify` verdict is realistic.

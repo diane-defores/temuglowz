@@ -6,7 +6,7 @@ project: "ShopGlowz"
 created: "2026-07-13"
 created_at: "2026-07-13 17:00:00 UTC"
 updated: "2026-07-13"
-updated_at: "2026-07-14 15:49:00 UTC"
+updated_at: "2026-07-14 19:30:00 UTC"
 status: ready
 source_skill: 100-sg-spec
 source_model: "GPT-5 Codex"
@@ -32,7 +32,7 @@ evidence:
   - "Operator directive 2026-07-13: rename the public direction to ShopGlowz and make the site multi-merchant."
   - "Existing Temu-focused content plan and homepage repositioning spec are too narrow for the new promise."
   - "Research report on French import changes recommends a merchant-neutral gadget guide with Temu as one source among others."
-next_step: "/102-sg-start shopglowz-multi-merchant-gadget-platform"
+next_step: "none"
 ---
 
 # Title
@@ -309,14 +309,17 @@ None for the public brand direction itself. Deferred decisions remain explicitly
 | 2026-07-14 15:48:24 UTC | 102-sg-start | Implemented three usage-first multi-merchant hubs for gifts, camping/outdoors and office/tech. Each hub exposes the same typed merchant-destination contract for Temu and Amazon, states checked dates and volatility limits, links to related educational guides, updates the guide index, sitemap and llms.txt, and adds parity coverage. | implemented | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
 | 2026-07-14 15:49:00 UTC | 102-sg-start | Closed the implementation evidence pack for Tasks 5 to 8: updated the legacy-route map for the new hubs, added the multi-merchant checklist scenario, refreshed the durable verification summary, and confirmed sitemap/llms/test/build proof. Remaining proof is browser validation of the new hub routes. | implemented | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
 | 2026-07-14 16:02:00 UTC | 103-sg-verify | Vérification ciblée : AliExpress est présent dans un article comparatif mais pas encore comme destination du registre marchand; SHEIN n'est pas encore intégré. Les trois hubs restent conformes au périmètre implémenté Temu + Amazon, tandis que l'ajout de nouvelles enseignes exige une vérification séparée des programmes et conditions. La preuve navigateur des nouveaux hubs reste à faire. | partial | `/108-sg-browser shopglowz usage hubs` |
+| 2026-07-14 18:50:37 UTC | 108-sg-browser | Browser proof passed locally for `/guides/gifts`, `/guides/camping` and `/guides/tech-gadgets`: ShopGlowz titles and headings render, Temu and Amazon destinations are visible with safe link attributes, the 390px mobile check has no horizontal overflow, and the console has zero errors or warnings. | pass | `/104-sg-end shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-14 19:30:00 UTC | 104-sg-end | Closed the ShopGlowz public rebrand and multi-merchant usage-hub implementation after local automated checks, SEO parity evidence, checklist status and browser proof passed. Hosted static verification remains a post-push follow-up. | closed | `/005-sg-ship end la tache` |
+| 2026-07-14 19:30:00 UTC | 005-sg-ship | Shipped the completed ShopGlowz public rebrand and usage-hub tranche with full-close bookkeeping, changelog alignment and passing local checks. | shipped | `/405-sg-prod temuglowz` |
 
 ## Current Chantier Flow
 
 - `100-sg-spec`: completed — draft repaired after readiness feedback.
 - `101-sg-ready`: ready.
 - `102-sg-start`: implemented — all listed code, content, SEO mapping and readiness-pack tasks are now complete. Each new hub supports Temu and Amazon via the same destination contract, with sitemap/llms parity and durable checklist evidence.
-- `103-sg-verify`: pending — browser proof must be rerun for the three new usage hubs before ship readiness can be claimed.
-- `104-sg-end`: pending.
-- `005-sg-ship`: pending.
+- `103-sg-verify`: verified — local browser proof passed for the three new usage hubs; future AliExpress/SHEIN additions remain out of scope until merchant-policy checks are completed.
+- `104-sg-end`: completed — closure summary and changelog are aligned with the implemented and locally proven public-site scope.
+- `005-sg-ship`: shipped — commit/push completed; hosted static verification remains the next operational step.
 
-Next command: `/108-sg-browser shopglowz usage hubs`.
+Next command: `/405-sg-prod temuglowz`.

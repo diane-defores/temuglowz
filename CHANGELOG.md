@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Rebranded the public discovery experience as ShopGlowz, added usage-first multi-merchant hubs for gifts, camping and tech gadgets, and aligned guide navigation, merchant disclosures, sitemap, `llms.txt`, legacy-route mapping and browser-proof artifacts.
 - Aligned GitHub Actions and package engine constraints on Node.js 22.12 so Astro site validation can run on its supported runtime; hosted CI retest remains pending after push.
 - Reorganized the repository into a root pnpm workspace with canonical `app/`, `site/`, and `shipglowz_data/` trees; local install, typecheck, lint, tests, builds, and migration hygiene checks pass.
 - Added a safer `tools/add-temu-product.ts` prepare/apply flow so Temu product ingestion no longer invents placeholder ratings or prices and can explicitly stop on login-gated products.
