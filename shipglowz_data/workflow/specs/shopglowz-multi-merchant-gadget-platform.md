@@ -6,7 +6,7 @@ project: "ShopGlowz"
 created: "2026-07-13"
 created_at: "2026-07-13 17:00:00 UTC"
 updated: "2026-07-13"
-updated_at: "2026-07-13 21:06:17 UTC"
+updated_at: "2026-07-14 15:49:00 UTC"
 status: ready
 source_skill: 100-sg-spec
 source_model: "GPT-5 Codex"
@@ -199,28 +199,28 @@ Mettre à jour branding, business/GTM, editorial content map, page-intent map, c
   - Depends on: Tasks 1 to 3
   - Validate with: design-system drift check, browser smoke on desktop/mobile and metadata inspection
 
-- [ ] Task 5: Migrate Temu-specific content into a merchant vertical and add multi-merchant usage hubs
+- [x] Task 5: Migrate Temu-specific content into a merchant vertical and add multi-merchant usage hubs
   - Fichier: `site/src/pages/guides/`, guide data files, and shared guide templates
   - Action: preserve useful Temu guides as one merchant/source while creating usage-first category pages and volatility notes that work across merchants.
   - User story link: gives users useful gadget discovery paths instead of a single-store silo.
   - Depends on: Tasks 2 to 4
   - Validate with: route build, content rendering checks and disclosure presence review
 
-- [ ] Task 6: Prepare dated educational guides about import fees, stock posture, seller context, platform origins and recommendation logic
+- [x] Task 6: Prepare dated educational guides about import fees, stock posture, seller context, platform origins and recommendation logic
   - Fichier: new guide routes and supporting editorial docs under `site/src/pages/` and `shipglowz_data/workflow/research/`
   - Action: write merchant-aware educational pages that answer common search questions without inventing unverifiable claims.
   - User story link: helps consumers understand how to buy more safely and what limits apply.
   - Depends on: fresh-docs evidence for import and merchant claims plus Task 2
   - Validate with: source review, copy audit and dated evidence check
 
-- [ ] Task 7: Audit legacy URLs and machine-readable SEO outputs before any public cutover
+- [x] Task 7: Audit legacy URLs and machine-readable SEO outputs before any public cutover
   - Fichier: sitemap generation, redirects config if any, `site/public/llms.txt`, metadata helpers
   - Action: map TemuGlowz routes to live ShopGlowz destinations or documented redirects, and update canonicals and summaries accordingly.
   - User story link: preserves discoverability and avoids broken entry points from search.
   - Depends on: Tasks 4 and 5
   - Validate with: sitemap diff, redirect audit and browser proof on legacy routes
 
-- [ ] Task 8: Prepare the readiness evidence pack for the implementation wave
+- [x] Task 8: Prepare the readiness evidence pack for the implementation wave
   - Fichier: this spec plus the updated governance artifacts from Tasks 1 to 7
   - Action: confirm that merchant-policy checks, disclosure rules, redirect mapping and documentation rewrites are attached to the implementation branch so `101-sg-ready` and `103-sg-verify` can validate the wave without hidden assumptions.
   - User story link: prevents the build from drifting into unsupported claims or incomplete migration decisions.
@@ -295,14 +295,28 @@ None for the public brand direction itself. Deferred decisions remain explicitly
 | 2026-07-13 22:49:30 UTC | 103-sg-verify | Verified the local proof and built output for the ShopGlowz public rebrand, but kept the chantier partial because browser/SEO proof and the remaining multi-merchant content tasks are still open. | partial | `/108-sg-browser shopglowz public pages` |
 | 2026-07-13 22:55:20 UTC | 108-sg-browser | Browser-checked the local static site on homepage, guides hub, a product guide, and a legacy Temu article route; visible branding, disclosure, merchant cues, and console cleanliness passed for those scenarios. | pass | `/406-sg-seo shopglowz public rebrand` |
 | 2026-07-13 22:59:30 UTC | 406-sg-seo | Audited sitemap, canonicals, robots, llms.txt, and published-route parity; found a sitemap/noindex contradiction on `guides/gadgets-informatique` and incomplete machine-readable coverage in `llms.txt`. | partial | `/102-sg-start shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 23:05:39 UTC | 102-sg-start | Fixed the machine-readable SEO drift by removing the noindexed `guides/gadgets-informatique` page from the sitemap and expanding `llms.txt` to match the currently published public article corpus, then reran local type and build checks. | partial | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 23:28:50 UTC | 103-sg-verify | Re-verified the public rebrand against local tests, build, drift evidence, browser/SEO findings, and the chantier contract; local proof is coherent, but the chantier is not ship-ready because the checklist artifact is missing and the remaining multi-merchant guide/education/legacy-route tasks in the spec are still incomplete. | not verified | `/102-sg-start shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 23:33:57 UTC | 102-sg-start | Added the missing ShopGlowz rebrand checklist and local verification summary artifacts, validated the checklist status, and reran local type/build proof so the next verification pass can judge against durable evidence instead of a missing proof surface. | partial | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-13 23:56:31 UTC | 103-sg-verify | Re-ran the checklist/status, tests, typecheck, build, and drift evidence against the new durable proof artifacts; the implemented rebrand wave is now locally well-proven, but the chantier still fails a full verification verdict because Tasks 5 to 8 remain incomplete and the spec still promises a broader multi-merchant guide, educational, and legacy-route migration than the repo currently delivers. | not verified | `/102-sg-start shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-14 05:28:27 UTC | 103-sg-verify | Rechecked the durable ShopGlowz proof pack, checklist status, tests, typecheck, build, and drift scan; the local evidence remains coherent for the implemented public rebrand slice, but the chantier still cannot be verified end-to-end because the remaining guide migration, educational content, and broader legacy-route scope promised by Tasks 5 to 8 are still not implemented. | not verified | `/102-sg-start shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-14 05:47:30 UTC | 102-sg-start | Published the first multi-merchant educational article batch for the public hub by turning the existing Temu, Amazon, and AliExpress marketplace/comparison drafts into live ShopGlowz content, then updated `llms.txt` and reran tests, typecheck, build, and drift proof. | partial | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-14 06:37:30 UTC | 103-sg-verify | Re-ran checklist status, metadata lint, tests, typecheck, build, drift scan, and published-corpus parity after the new article batch; the local proof remains coherent and stronger than before, but the chantier is still not verified because Tasks 5 to 8 are still explicitly open in the spec and the current proof pack still documents only a partial implementation wave rather than the full promised migration. | not verified | `/102-sg-start shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-14 11:16:56 UTC | 102-sg-start | Published three additional dated educational articles on urgency signals, local-seller/local-shipping interpretation, and Temu platform/recommender context, added a supporting research note with official sources, updated `llms.txt`, and reran tests, typecheck, build, metadata lint, and drift proof. | partial | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-14 11:35:40 UTC | 103-sg-verify | Re-ran checklist status, skill audit, metadata lint, tests, typecheck, build, drift scan, built-output inspection, and published-corpus parity after the second educational batch; the implemented ShopGlowz slice remains locally coherent and proven, but the chantier is still not verified end-to-end because Tasks 5, 7, and 8 remain open in the spec and the durable proof pack still covers only a partial migration wave rather than the full promised multi-merchant and legacy-route scope. | not verified | `/102-sg-start shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-14 14:43:36 UTC | 102-sg-start | Completed the legacy-route and machine-readable SEO audit: documented same-URL continuity for unchanged domain/slugs, brought the sitemap to 15 published articles, and added automated sitemap/llms/noindex parity coverage. Marked the dated education task complete because the published corpus now covers import fees, stock/urgency, seller context, platform origin/recommendations and multi-merchant comparison. | implemented | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-14 14:49:14 UTC | 103-sg-verify | Re-ran the required checklist, tests, typecheck, build, metadata lint, drift scan, skill audit, built-output inspection and corpus parity. Local proof passes for the implemented rebrand, education and SEO-audit slices, but the chantier remains not verified: Task 5 is incomplete, so its dependent full legacy-route audit (Task 7) and readiness pack (Task 8) cannot be complete. | not verified | `/102-sg-start shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-14 15:48:24 UTC | 102-sg-start | Implemented three usage-first multi-merchant hubs for gifts, camping/outdoors and office/tech. Each hub exposes the same typed merchant-destination contract for Temu and Amazon, states checked dates and volatility limits, links to related educational guides, updates the guide index, sitemap and llms.txt, and adds parity coverage. | implemented | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-14 15:49:00 UTC | 102-sg-start | Closed the implementation evidence pack for Tasks 5 to 8: updated the legacy-route map for the new hubs, added the multi-merchant checklist scenario, refreshed the durable verification summary, and confirmed sitemap/llms/test/build proof. Remaining proof is browser validation of the new hub routes. | implemented | `/103-sg-verify shopglowz-multi-merchant-gadget-platform` |
+| 2026-07-14 16:02:00 UTC | 103-sg-verify | Vérification ciblée : AliExpress est présent dans un article comparatif mais pas encore comme destination du registre marchand; SHEIN n'est pas encore intégré. Les trois hubs restent conformes au périmètre implémenté Temu + Amazon, tandis que l'ajout de nouvelles enseignes exige une vérification séparée des programmes et conditions. La preuve navigateur des nouveaux hubs reste à faire. | partial | `/108-sg-browser shopglowz usage hubs` |
 
 ## Current Chantier Flow
 
 - `100-sg-spec`: completed — draft repaired after readiness feedback.
 - `101-sg-ready`: ready.
-- `102-sg-start`: partial — brand, governance, merchant registry, outbound-link contract, trust pages, active public chrome, guide hub copy, educational hub structure, guide dataset softening, and sitemap coverage are implemented; new educational pages and deeper merchant-vertical migration still remain.
-- `103-sg-verify`: partial — local proof, built-output inspection, and local browser proof pass, but SEO/legacy-route proof and completion of remaining implementation tasks are still required before ship readiness.
+- `102-sg-start`: implemented — all listed code, content, SEO mapping and readiness-pack tasks are now complete. Each new hub supports Temu and Amazon via the same destination contract, with sitemap/llms parity and durable checklist evidence.
+- `103-sg-verify`: pending — browser proof must be rerun for the three new usage hubs before ship readiness can be claimed.
 - `104-sg-end`: pending.
 - `005-sg-ship`: pending.
 
-Next command: `/102-sg-start shopglowz-multi-merchant-gadget-platform`.
+Next command: `/108-sg-browser shopglowz usage hubs`.

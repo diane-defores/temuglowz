@@ -8,6 +8,7 @@ interface Guide {
   description: string
   category: string
   readingHint: string
+  icon?: 'kitchen' | 'cooling' | 'gift' | 'outdoors' | 'toolbox'
 }
 
 interface Props {
@@ -41,7 +42,7 @@ const { guides } = Astro.props
               Je veux voir <span aria-hidden="true">→</span>
             </a>
             <div class="shrink-0 text-primary/80 group-hover:scale-110 transition-transform duration-300">
-              <DiscoveryIcon name={index === 0 ? 'kitchen' : 'wind'} />
+              <DiscoveryIcon name={guide.icon ?? (index === 0 ? 'kitchen' : 'wind')} />
             </div>
           </div>
         </article>

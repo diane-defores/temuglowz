@@ -1,5 +1,6 @@
 import kitchenGadgetsData from './kitchen-gadgets.json'
 import summerCoolingData from './summer-cooling.json'
+import { usageHubs } from './usageHubs'
 
 export interface GuideIndexEntry {
   slug: string
@@ -10,6 +11,7 @@ export interface GuideIndexEntry {
   category: string
   readingHint: string
   merchantFocus?: string
+  icon?: 'kitchen' | 'cooling' | 'gift' | 'outdoors' | 'toolbox'
 }
 
 export const guideIndex: GuideIndexEntry[] = [
@@ -22,6 +24,7 @@ export const guideIndex: GuideIndexEntry[] = [
     category: 'Cuisine',
     readingHint: 'Découper, ranger, nettoyer… des idées toutes simples pour se faciliter la vie.',
     merchantFocus: 'Temu',
+    icon: 'kitchen',
   },
   {
     slug: '/guides/summer-cooling',
@@ -32,5 +35,16 @@ export const guideIndex: GuideIndexEntry[] = [
     category: 'Été',
     readingHint: 'Ventilos de poche, accessoires frais et autres idées bienvenues quand le thermomètre grimpe.',
     merchantFocus: 'Temu',
+    icon: 'cooling',
   },
+  ...usageHubs.map(({ slug, title, homepageTitle, description, updatedDate, category, readingHint, icon }) => ({
+    slug,
+    title,
+    homepageTitle,
+    description,
+    updatedDate,
+    category,
+    readingHint,
+    icon,
+  })),
 ]

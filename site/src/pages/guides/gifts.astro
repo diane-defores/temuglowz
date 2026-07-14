@@ -1,0 +1,8 @@
+---
+import UsageHub from '../../site/components/UsageHub.astro'
+import { usageHubs } from '../../site/data/usageHubs'
+
+const hub = usageHubs.find((item) => item.slug === '/guides/gifts')!
+---
+
+<UsageHub {hub} />

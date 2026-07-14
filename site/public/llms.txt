@@ -6,11 +6,27 @@ ShopGlowz is an independent project for people who want to discover useful gadge
 
 - Kitchen gadgets: /guides/kitchen-gadgets
 - Summer cooling: /guides/summer-cooling
+- Gift ideas: /guides/gifts
+- Camping and outdoors: /guides/camping
+- Office and tech gadgets: /guides/tech-gadgets
 
 ## Repères pratiques
 
 - Ajustement de prix Temu : /blog/ajustement-prix-temu
+- Colis Temu marqué livré mais introuvable : /blog/colis-temu-marque-livre-introuvable
+- Comment comparer deux produits AliExpress qui se ressemblent : /blog/comparer-deux-produits-aliexpress-qui-se-ressemblent
+- Comment comparer deux produits Amazon qui se ressemblent : /blog/comparer-deux-produits-amazon-qui-se-ressemblent
+- Comment comparer deux produits Temu qui se ressemblent : /blog/comparer-deux-produits-temu-qui-se-ressemblent
+- Commande Temu et seuil de 150 € : /blog/droits-douane-temu-colis-150-euros
+- Entrepôt local sur Temu : /blog/entrepot-local-temu-ce-que-ca-change
+- Montant minimum Temu : /blog/montant-minimum-commande-temu-verifier-panier
+- Pourquoi une commande Temu arrive en plusieurs colis : /blog/pourquoi-commande-temu-divisee-plusieurs-colis
+- Prix barrés et stock limité sur Temu : /blog/prix-barres-stock-limite-temu-que-verifier
 - Produit Temu en rupture : /blog/produit-temu-rupture-stock
+- Temu : d’où vient l’entreprise et comment les recommandations fonctionnent : /blog/temu-entreprise-origine-recommandations
+- Qui vend sur Amazon ? : /blog/qui-vend-sur-amazon-marketplace-vendeur-marque
+- Qui vend sur Temu ? : /blog/qui-vend-sur-temu-marketplace-vendeur-marque
+- Retour Temu : /blog/retour-temu-delai-exceptions-remboursement
 
 Only these published guides are intended as current public recommendation pages. Product details, prices, variants and availability can change; readers should verify them on the merchant page before ordering.
 

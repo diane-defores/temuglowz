@@ -1,0 +1,56 @@
+---
+import Footer from '../../components/Footer.astro'
+import Layout from '../../layouts/Layout.astro'
+import DiscoveryIcon from '../../components/DiscoveryIcon.astro'
+import { getMerchantFromUrl } from '../lib/merchantRegistry'
+import { toTrustedMerchantUrl } from '../lib/affiliate'
+import type { UsageHub } from '../data/usageHubs'
+
+interface Props {
+  hub: UsageHub
+}
+
+const { hub } = Astro.props
+const merchantDestinations = hub.merchants.flatMap((destination) => {
+  const href = toTrustedMerchantUrl(destination.href)
+  const merchant = getMerchantFromUrl(href)
+  return href && merchant ? [{ ...destination, href, merchant }] : []
+})
+---
+
+<Layout title={`${hub.title} | ShopGlowz`} description={hub.description} path={hub.slug} lang="fr-FR">
+  <main id="main-content" class="min-h-screen bg-background text-foreground">
+    <section class="px-4 pb-16 pt-24 sm:pb-24">
+      <div class="mx-auto max-w-6xl">
+        <nav class="mb-8 flex items-center gap-2 text-xs text-muted-foreground" aria-label="Fil d’Ariane">
+          <a href="/" class="hover:text-foreground">Accueil</a><span aria-hidden="true">›</span><a href="/guides" class="hover:text-foreground">Guides</a><span aria-hidden="true">›</span><span class="text-foreground">{hub.category}</span>
+        </nav>
+        <div class="grid gap-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(280px,0.75fr)] lg:items-start">
+          <header data-reveal>
+            <span class="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-muted-foreground">Hub par usage · {hub.category}</span>
+            <h1 class="mt-6 text-4xl font-bold tracking-tight sm:text-5xl" style="font-family: var(--font-cal-sans);">{hub.title}</h1>
+            <p class="mt-5 max-w-3xl text-lg leading-relaxed text-muted-foreground">{hub.intro}</p>
+          </header>
+          <aside class="rounded-3xl border border-border bg-card/70 p-6" data-reveal>
+            <div class="flex items-center gap-3 text-primary"><DiscoveryIcon name={hub.icon} class="h-8 w-8" /><span class="text-sm font-semibold uppercase tracking-[0.16em]">Le bon point de départ</span></div>
+            <ul class="mt-5 space-y-3 text-sm leading-relaxed text-muted-foreground">{hub.checks.map((check) => <li class="border-b border-border pb-3 last:border-0 last:pb-0">{check}</li>)}</ul>
+          </aside>
+        </div>
+
+        <section class="mt-12" aria-labelledby="destinations-title" data-reveal>
+          <div class="mb-6"><p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Plusieurs enseignes, même méthode</p><h2 id="destinations-title" class="mt-2 text-3xl font-semibold" style="font-family: var(--font-instrument-sans);">Où commencer la recherche</h2><p class="mt-3 max-w-3xl text-muted-foreground">Ces liens ouvrent une destination de recherche, pas une promesse de produit, de prix ou de stock. Comparez ensuite la fiche exacte.</p></div>
+          <div class="grid gap-5 md:grid-cols-2">
+            {merchantDestinations.map(({ href, merchant, checkedAt, note }) => <article class="rounded-3xl border border-border bg-card/70 p-6"><div class="flex items-center justify-between gap-4"><h3 class="text-2xl font-semibold text-foreground">{merchant.name}</h3><span class="rounded-full border border-border bg-background px-2 py-1 text-xs text-muted-foreground">Vérifié : {checkedAt}</span></div><p class="mt-4 text-sm leading-relaxed text-muted-foreground">{note}</p><a href={href} target="_blank" rel="noopener noreferrer" class="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90">Explorer chez {merchant.name}<span aria-hidden="true">↗</span></a></article>)}
+          </div>
+        </section>
+
+        <section class="mt-12 rounded-3xl border border-primary/20 bg-primary/5 p-6 sm:p-8" aria-labelledby="limits-title" data-reveal>
+          <h2 id="limits-title" class="text-2xl font-semibold" style="font-family: var(--font-instrument-sans);">Ce qu’il faut vérifier avant de choisir</h2>
+          <p class="mt-3 max-w-3xl leading-relaxed text-muted-foreground">ShopGlowz rassemble des pistes éditoriales. Les prix, vendeurs, variantes, frais, stocks et délais évoluent ; vérifiez ces informations sur la destination marchande avant toute commande. ShopGlowz n’est pas le site officiel des enseignes citées.</p>
+          <div class="mt-6 flex flex-wrap gap-3">{hub.relatedLinks.map((link) => <a href={link.href} class="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground hover:bg-muted">{link.label} →</a>)}</div>
+        </section>
+      </div>
+    </section>
+    <Footer />
+  </main>
+</Layout>
