@@ -312,6 +312,8 @@ None for the public brand direction itself. Deferred decisions remain explicitly
 | 2026-07-14 18:50:37 UTC | 108-sg-browser | Browser proof passed locally for `/guides/gifts`, `/guides/camping` and `/guides/tech-gadgets`: ShopGlowz titles and headings render, Temu and Amazon destinations are visible with safe link attributes, the 390px mobile check has no horizontal overflow, and the console has zero errors or warnings. | pass | `/104-sg-end shopglowz-multi-merchant-gadget-platform` |
 | 2026-07-14 19:30:00 UTC | 104-sg-end | Closed the ShopGlowz public rebrand and multi-merchant usage-hub implementation after local automated checks, SEO parity evidence, checklist status and browser proof passed. Hosted static verification remains a post-push follow-up. | closed | `/005-sg-ship end la tache` |
 | 2026-07-14 19:30:00 UTC | 005-sg-ship | Shipped the completed ShopGlowz public rebrand and usage-hub tranche with full-close bookkeeping, changelog alignment and passing local checks. | shipped | `/405-sg-prod temuglowz` |
+| 2026-07-14 19:44:38 UTC | 405-sg-prod | Le déploiement Vercel du commit `27a5308e6a9749b0d1c76d6519d8138175789370` est signalé `success` par GitHub. La vérification live reste partielle : `temuglowz.com` ne résout pas dans l’environnement courant et l’URL Preview confirmée redirige vers le SSO Vercel, empêchant de vérifier le HTML public et les nouveaux hubs. | partial | `/405-sg-prod temuglowz après résolution DNS/accès Preview` |
+| 2026-07-14 21:46:04 UTC | 405-sg-prod | Retest réussi sur `https://temuglowz-site.vercel.app/` : accueil et trois hubs répondent HTTP 200 sans redirection, les marqueurs ShopGlowz et titres attendus sont présents, et le navigateur confirme le rendu du hub cadeaux et du hub tech sans erreur console sur une session propre. | verified | `/108-sg-browser https://temuglowz-site.vercel.app hubs` |
 
 ## Current Chantier Flow
 
@@ -320,6 +322,6 @@ None for the public brand direction itself. Deferred decisions remain explicitly
 - `102-sg-start`: implemented — all listed code, content, SEO mapping and readiness-pack tasks are now complete. Each new hub supports Temu and Amazon via the same destination contract, with sitemap/llms parity and durable checklist evidence.
 - `103-sg-verify`: verified — local browser proof passed for the three new usage hubs; future AliExpress/SHEIN additions remain out of scope until merchant-policy checks are completed.
 - `104-sg-end`: completed — closure summary and changelog are aligned with the implemented and locally proven public-site scope.
-- `005-sg-ship`: shipped — commit/push completed; hosted static verification remains the next operational step.
+- `005-sg-ship`: shipped — commit/push completed; hosted static verification is now verified on the public Vercel alias, while the custom domain DNS remains a separate configuration issue.
 
-Next command: `/405-sg-prod temuglowz`.
+Next command: `/108-sg-browser https://temuglowz-site.vercel.app hubs`.
